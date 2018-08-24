@@ -9,7 +9,7 @@
 static int count = 0;
 
 static Hardware *hardware;
-static OperandMappings *mappings;
+static OpMappings *mappings;
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GameRom *gameRom = readGameRom(lpCmdLine);
 
 	hardware = initCPU(gameRom, true);
-	mappings = initMappings(hardware);
+	mappings = initOpMappings(hardware);
 
 	int argc = 0;
 	glutInit(&argc, NULL);

@@ -36,8 +36,8 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	return hardware;
 }
 
-OperandMappings* initMappings(Hardware *hardware) {
-	OperandMappings *mappings = malloc(sizeof(OperandMappings));
+OpMappings* initOpMappings(Hardware *hardware) {
+	OpMappings *mappings = malloc(sizeof(OpMappings));
 
 	mappings->operands1 = calloc(NUM_OPCODES, sizeof(GBValue *));
 	mappings->operands2 = calloc(NUM_OPCODES, sizeof(GBValue *));
@@ -71,12 +71,12 @@ OperandMappings* initMappings(Hardware *hardware) {
 	return mappings;
 }
 
-void tickCPU(Hardware *hardware, OperandMappings *mappings) {
+void tickCPU(Hardware *hardware, OpMappings *mappings) {
 	unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
 	processInstruction(hardware, mappings, instruction);
 }
 
-void processInstruction(Hardware *hardware, OperandMappings *mappings, const unsigned char *instruction) {
+void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned char *instruction) {
 	//get the operation size to calculate the next PC address
 	char opSize = mappings->opSizeBytes[*instruction];
 	opSize = opSize < 1 ? 1 : opSize;

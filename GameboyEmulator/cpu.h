@@ -6,11 +6,11 @@
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues);
 
-OperandMappings *initMappings(Hardware *hardware);
+OpMappings *initOpMappings(Hardware *hardware);
 
-void tickCPU(Hardware *hardware, OperandMappings *mappings);
+void tickCPU(Hardware *hardware, OpMappings *mappings);
 
-void processInstruction(Hardware *hardware, OperandMappings *mappings, unsigned char *instruction);
+void processInstruction(Hardware *hardware, OpMappings *mappings, unsigned char *instruction);
 
 void getImmediateValue16(Hardware *hardware, int startAddress, int *result);
 

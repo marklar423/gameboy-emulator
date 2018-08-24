@@ -47,15 +47,6 @@ typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
 } ResultInfo;
 
-typedef struct _FlagResult {
-	bool *isZero, *isSubtract, *isHalfCarry, *isCarry;
-} FlagResult; //NULL = don't set, true = set to 1, false = set to 0
-
-typedef struct _FlagCondition {
-	unsigned char condition;
-	bool negate;
-} FlagCondition;
-
 typedef struct _Hardware {
 	GameRom *rom;
 	Registers *registers;
@@ -65,14 +56,29 @@ typedef struct _Hardware {
 	unsigned char *workRam;
 } Hardware;
 
-typedef struct _OperandMappings {
+typedef struct _FlagResult {
+	bool *isZero, *isSubtract, *isHalfCarry, *isCarry;
+} FlagResult; //NULL = don't set, true = set to 1, false = set to 0
+
+typedef struct _FlagCondition {
+	unsigned char condition;
+	bool negate;
+} FlagCondition;
+
+typedef struct _OpCycleCount {
+	int executeCycles;
+	int dontExecuteCycles; //for conditional operations like jump, when the condition is false
+} OpCycleCount;
+
+typedef struct _OpMappings {
 	GBValue **operands1, **operands2, **destinations;
 	int **results;
 	int **nextPCs, **nextSPs;
 	FlagCondition **flagConditions;
 	FlagResult **flagResults;
 	char *opSizeBytes; //default is 1
-} OperandMappings;
+	OpCycleCount **cycleCounts; //default is 1 cycle per operation
+} OpMappings;
 
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
