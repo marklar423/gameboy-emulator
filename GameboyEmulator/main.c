@@ -27,9 +27,14 @@ void display(void) {
 	OutputDebugString(log);
 }
 
-void idle() {
-	tickCpu(hardware, mappings);
+void timer(int value) {
+	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
+	
+	for (int i = 0; i <= TARGET_CPU_TICKS_FRAME; i++) {
+		tickCpu(hardware, mappings);
+	}
 }
+
 
 GameRom* readBytes(const char* filePath) {
 	FILE *filePtr;
@@ -75,7 +80,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	glutCreateWindow("Gameboy Emulator");
 	
 	glutDisplayFunc(display);		
-	glutIdleFunc(idle);
+	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
 	glutMainLoop();
 
 	return 0;

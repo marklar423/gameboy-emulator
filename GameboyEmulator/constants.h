@@ -40,6 +40,12 @@ static const unsigned char FLAGS_CY = 16;
 
 static const int NUM_OPCODES = 512;
 
+static const float TARGET_FPS = 60.83;
+static const float TARGET_MILLSECONDS_PER_FRAME = 16.74;
+static const float TARGET_CPU_TICKS_FRAME = 17553; //each CPU tick processes 1 cycle @ 1.048 MHz (or 4 cycles of original CPU)
+static const int TARGET_PPU_TICKS_FRAME = 23040; //each PPU tick draws 1 pixel
+
+
 typedef enum _OpCode {
 	OpCode_ADC_A_A = 0x8f,
 	OpCode_ADC_A_B = 0x88,
