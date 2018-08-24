@@ -77,16 +77,7 @@ void tickCpu(Hardware *hardware, OperandMappings *mappings) {
 }
 
 void processInstruction(Hardware *hardware, OperandMappings *mappings, const unsigned char *instruction) {
-	//char log[50];
-	
-	// ALU
-	// Load/Transfer
-	// Jump
-	// Call/Return
-	// Rotate/Shift
-	// Bit ops
-	// apply flags
-
+	//get the operation size to calculate the next PC address
 	char opSize = mappings->opSizeBytes[*instruction];
 	opSize = opSize < 1 ? 1 : opSize;
 
@@ -94,13 +85,13 @@ void processInstruction(Hardware *hardware, OperandMappings *mappings, const uns
 	
 	populateCachedValues(hardware, nextPCAddressValue);
 
-	//should we process this?
+	//should we process this operation?
 	bool shouldExecute = true;
 
 	FlagCondition *flagCondition = mappings->flagConditions[*instruction];	
 
 	if (flagCondition != NULL) {
-		shouldExecute = (hardware->registers->F & flagCondition->condition == flagCondition->condition);
+		shouldExecute = ((hardware->registers->F & flagCondition->condition) == flagCondition->condition);
 		if (flagCondition->negate) shouldExecute = !shouldExecute;
 	}
 
