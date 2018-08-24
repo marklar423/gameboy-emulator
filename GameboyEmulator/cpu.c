@@ -8,7 +8,7 @@
 #include "cpu_ram.h"
 #include "util.h"
 
-Hardware* initCpu(GameRom *rom, bool populateDefaultValues) {
+Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = calloc(1, sizeof(Hardware));
 
 	hardware->rom = rom;
@@ -71,7 +71,7 @@ OperandMappings* initMappings(Hardware *hardware) {
 	return mappings;
 }
 
-void tickCpu(Hardware *hardware, OperandMappings *mappings) {
+void tickCPU(Hardware *hardware, OperandMappings *mappings) {
 	unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
 	processInstruction(hardware, mappings, instruction);
 }

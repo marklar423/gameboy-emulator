@@ -40,10 +40,25 @@ static const unsigned char FLAGS_CY = 16;
 
 static const int NUM_OPCODES = 512;
 
-static const float TARGET_FPS = 60.83;
-static const float TARGET_MILLSECONDS_PER_FRAME = 16.74;
-static const float TARGET_CPU_TICKS_FRAME = 17553; //each CPU tick processes 1 cycle @ 1.048 MHz (or 4 cycles of original CPU)
-static const int TARGET_PPU_TICKS_FRAME = 23040; //each PPU tick draws 1 pixel
+/*
+ Some notes:
+ - Target clock speed = 1,048,576 Hz
+
+ - Each CPU tick processes 1 cycle @ 1.048 MHz (or 4 cycles of original CPU)
+
+ - For PPU, each line of pixels takes:
+	- 20 clocks OAM search
+	- 43 clocks drawing pixels
+	- 51 clocks idle for h-blank
+ - So each line of pixels total takes 114 clocks
+ - There are 144 "drawing" lines, and 10 additional idle lines for v-blank
+
+ - So total clocks per gameboy frame = 114 x (144 + 10) = 17,556 clocks per gameboy frame
+*/
+
+static const float TARGET_FPS = 59.7;
+static const float TARGET_MILLSECONDS_PER_FRAME = 16.75;
+static const float TARGET_TICKS_FRAME = 17556;
 
 
 typedef enum _OpCode {

@@ -75,6 +75,8 @@ typedef struct _OperandMappings {
 } OperandMappings;
 
 
+GameRom* createGameRom(unsigned char *romBytes, long romLength);
+
 GBValue* createGBValue(bool is16Bit, bool isSplitValue, char *byteValue, char *byteValue2, int *wordValue);
 GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
 int GBValueToInt(GBValue *value);

@@ -4,11 +4,11 @@
 #include "objects.h"
 #include <stdbool.h>
 
-Hardware* initCpu(GameRom *rom, bool populateDefaultValues);
+Hardware* initCPU(GameRom *rom, bool populateDefaultValues);
 
 OperandMappings *initMappings(Hardware *hardware);
 
-void tickCpu(Hardware *hardware, OperandMappings *mappings);
+void tickCPU(Hardware *hardware, OperandMappings *mappings);
 
 void processInstruction(Hardware *hardware, OperandMappings *mappings, unsigned char *instruction);
 

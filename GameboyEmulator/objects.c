@@ -1,6 +1,14 @@
 
 #include "objects.h"
 
+GameRom* createGameRom(unsigned char *romBytes, long romLength) {
+	GameRom *rom = malloc(sizeof(GameRom));
+	rom->romBytes = romBytes;
+	rom->romLength = romLength;
+
+	return rom;
+}
+
 GBValue* createGBValue(bool is16Bit, bool isSplitValue, char *byteValue, char *byteValue2, int *wordValue) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;
