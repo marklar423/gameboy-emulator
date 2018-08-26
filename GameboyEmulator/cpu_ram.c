@@ -14,6 +14,9 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_INTERRUPT_FLAGS) {
 		return &hardware->registers->requestedInterrupts;
 	}
+	else if (address == RAM_LOCATION_INTERRUPTS_ENABLE) {
+		return &hardware->registers->enabledInterrupts;
+	}
 
 	//assert(false && "Unknown RAM location");
 	return NULL;

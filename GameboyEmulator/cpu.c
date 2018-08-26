@@ -33,6 +33,38 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->registers->H = 0x01;
 		hardware->registers->L = 0x4D;
 		hardware->registers->SP = 0xFFFE;
+
+		/**(getRamAddress(hardware, 0xFF05)) = 0x00; //TIMA
+		*(getRamAddress(hardware, 0xFF06)) = 0x00; //TMA
+		*(getRamAddress(hardware, 0xFF07)) = 0x00; //TAC
+		*(getRamAddress(hardware, 0xFF10)) = 0x80; //NR10
+		*(getRamAddress(hardware, 0xFF11)) = 0xBF; //NR11
+		*(getRamAddress(hardware, 0xFF12)) = 0xF3; //NR12
+		*(getRamAddress(hardware, 0xFF14)) = 0xBF; //NR14
+		*(getRamAddress(hardware, 0xFF16)) = 0x3F; //NR21
+		*(getRamAddress(hardware, 0xFF17)) = 0x00; //NR22
+		*(getRamAddress(hardware, 0xFF19)) = 0xBF; //NR24
+		*(getRamAddress(hardware, 0xFF1A)) = 0x7F; //NR30
+		*(getRamAddress(hardware, 0xFF1B)) = 0xFF; //NR31
+		*(getRamAddress(hardware, 0xFF1C)) = 0x9F; //NR32
+		*(getRamAddress(hardware, 0xFF1E)) = 0xBF; //NR33
+		*(getRamAddress(hardware, 0xFF20)) = 0xFF; //NR41
+		*(getRamAddress(hardware, 0xFF21)) = 0x00; //NR42
+		*(getRamAddress(hardware, 0xFF22)) = 0x00; //NR43
+		*(getRamAddress(hardware, 0xFF23)) = 0xBF; //NR30
+		*(getRamAddress(hardware, 0xFF24)) = 0x77; //NR50
+		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51
+		*(getRamAddress(hardware, 0xFF26)) = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
+		*(getRamAddress(hardware, 0xFF40)) = 0x91; //LCDC
+		*(getRamAddress(hardware, 0xFF42)) = 0x00; //SCY
+		*(getRamAddress(hardware, 0xFF43)) = 0x00; //SCX
+		*(getRamAddress(hardware, 0xFF45)) = 0x00; //LYC
+		*(getRamAddress(hardware, 0xFF47)) = 0xFC; //BGP
+		*(getRamAddress(hardware, 0xFF48)) = 0xFF; //OBP0
+		*(getRamAddress(hardware, 0xFF49)) = 0xFF; //OBP1
+		*(getRamAddress(hardware, 0xFF4A)) = 0x00; //WY
+		*(getRamAddress(hardware, 0xFF4B)) = 0x00; //WX*/
+		*(getRamAddress(hardware, 0xFFFF)) = 0x00; //IE
 	}
 
 	return hardware;
@@ -164,8 +196,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	CachedOpValues *cached = hardware->cachedValues;
 
-	getImmediateValue(hardware, hardware->registers->PC + 1, &(cached->immediateByte));
-	getImmediateValue16(hardware, hardware->registers->PC + 1, &(cached->immediateWord));
+	getImmediateByte(hardware, hardware->registers->PC + 1, &(cached->immediateByte));
+	getImmediateWord(hardware, hardware->registers->PC + 1, &(cached->immediateWord));
 
 	joinBytes(&(hardware->registers->C), &(hardware->registers->B), &(cached->BC));
 	joinBytes(&(hardware->registers->E), &(hardware->registers->D), &(cached->DE));
@@ -244,12 +276,12 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 	}
 }
 
-void getImmediateValue16(Hardware *hardware, int startAddress, int *result) {
+void getImmediateWord(Hardware *hardware, int startAddress, int *result) {
 	unsigned char *value1 = getRamAddress(hardware, startAddress);
 	unsigned char *value2 = getRamAddress(hardware, startAddress + 1);
 	joinBytes(value1, value2, result);
 }
 
-void getImmediateValue(Hardware *hardware, int address, unsigned char *result1) {
+void getImmediateByte(Hardware *hardware, int address, unsigned char *result1) {
 	*result1 = *(getRamAddress(hardware, address));
 }
