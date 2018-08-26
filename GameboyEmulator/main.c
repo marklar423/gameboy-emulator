@@ -9,7 +9,7 @@
 static int count = 0;
 
 static Hardware *hardware;
-static OpMappings *mappings;
+static InstructionMapping *mappings;
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -33,7 +33,7 @@ void timer(int value) {
 	
 	for (int i = 0; i <= TARGET_TICKS_FRAME; i++) {
 		tickCPU(hardware, mappings);
-		tickPPU(hardware, mappings);
+		tickPPU(hardware);
 	}
 }
 
@@ -42,7 +42,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	GameRom *gameRom = readGameRom(lpCmdLine);
 
 	hardware = initCPU(gameRom, true);
-	mappings = initOpMappings(hardware);
+	mappings = initInstructionMappings(hardware);
 
 	int argc = 0;
 	glutInit(&argc, NULL);

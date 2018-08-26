@@ -2,6 +2,6 @@
 #include "ppu.h"
 
 
-void tickPPU(Hardware *hardware, OpMappings *mappings) {
+void tickPPU(Hardware *hardware) {
 
 }

@@ -4,8 +4,10 @@
 #include "constants.h"
 #include "objects.h"
 
-void initJumpNextPC(Hardware *hardware, int **nextPCs);
+void populateJumpInstructions(Hardware *hardware, InstructionMapping *mappings);
 
-void initJumpFlagConditions(Hardware *hardware, FlagCondition **flagConditions);
+void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings);
 
-void initJumpOpSizes(Hardware *hardware, char *opSizeBytes);
+void populateJumpFlagConditions(Hardware *hardware, InstructionMapping *mappings);
+
+void populateJumpOpSizes(Hardware *hardware, InstructionMapping *mappings);

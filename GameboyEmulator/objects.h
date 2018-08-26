@@ -54,6 +54,7 @@ typedef struct _Hardware {
 	CachedOpResults *cachedResults;
 	ResultInfo *resultInfo;
 	unsigned char *workRam;
+	int cyclesToWait;
 } Hardware;
 
 typedef struct _FlagResult {
@@ -70,16 +71,15 @@ typedef struct _OpCycleCount {
 	int dontExecuteCycles; //for conditional operations like jump, when the condition is false
 } OpCycleCount;
 
-typedef struct _OpMappings {
-	GBValue **operands1, **operands2, **destinations;
-	int **results;
-	int **nextPCs, **nextSPs;
-	FlagCondition **flagConditions;
-	FlagResult **flagResults;
-	char *opSizeBytes; //default is 1
-	OpCycleCount **cycleCounts; //default is 1 cycle per operation
-} OpMappings;
-
+typedef struct _InstructionMapping {
+	GBValue *operand1, *operand2, *destination;
+	int *result;
+	int *nextPC, *nextSP;
+	FlagCondition *flagCondition;
+	FlagResult *flagResult;
+	char sizeBytes; //default is 1
+	OpCycleCount *cycleCount; //default is 1 cycle per operation
+} InstructionMapping;
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
@@ -97,3 +97,5 @@ int GBValueToInt(GBValue *value);
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);
+
+InstructionMapping* createInstructionMappings(int numInstructions);

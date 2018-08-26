@@ -7,195 +7,205 @@ static const bool TRUE_VAL = true;
 static const unsigned char ONE = 1;
 
 
-void initALUOperands1(Hardware *hardware, GBValue **operands1) {
-	operands1[OpCode_XOR_A] =
-		operands1[OpCode_XOR_B] = 
-		operands1[OpCode_XOR_C] =
-		operands1[OpCode_XOR_D] =
-		operands1[OpCode_XOR_E] =
-		operands1[OpCode_XOR_H] =
-		operands1[OpCode_XOR_L] =
-		operands1[OpCode_XOR_MEM_HL] =
-		operands1[OpCode_XOR_d8] = createGBByteValue(&(hardware->registers->A));
 
-	operands1[OpCode_INC_A] =
-		operands1[OpCode_DEC_A] = createGBByteValue(&(hardware->registers->A));
-	operands1[OpCode_INC_B] =
-		operands1[OpCode_DEC_B] = createGBByteValue(&(hardware->registers->B));
-	operands1[OpCode_INC_BC] =
-		operands1[OpCode_DEC_BC] = createGBWordValue(&(hardware->cachedValues->BC));
-	operands1[OpCode_INC_C] =
-		operands1[OpCode_DEC_C] = createGBByteValue(&(hardware->registers->C));
-	operands1[OpCode_INC_D] =
-		operands1[OpCode_DEC_D] = createGBByteValue(&(hardware->registers->D));
-	operands1[OpCode_INC_DE] =
-		operands1[OpCode_DEC_DE] = createGBWordValue(&(hardware->cachedValues->DE));
-	operands1[OpCode_INC_E] =
-		operands1[OpCode_DEC_E] = createGBByteValue(&(hardware->registers->E));
-	operands1[OpCode_INC_H] =
-		operands1[OpCode_DEC_H] = createGBByteValue(&(hardware->registers->H));
-	operands1[OpCode_INC_HL] =
-		operands1[OpCode_DEC_HL] = createGBWordValue(&(hardware->cachedValues->HL));
-	operands1[OpCode_INC_L] =
-		operands1[OpCode_DEC_L] = createGBByteValue(&(hardware->registers->L));
-	operands1[OpCode_INC_MEM_HL] =
-		operands1[OpCode_DEC_MEM_HL] = createGBBytePointer(&(hardware->cachedValues->memoryHL));
-	operands1[OpCode_INC_SP] =
-		operands1[OpCode_DEC_SP] = createGBWordValue(&(hardware->registers->SP));
+void populateALUInstructions(Hardware *hardware, InstructionMapping *mappings) {
+	populateALUOperands1(hardware, mappings);
+	populateALUOperands2(hardware, mappings);
+	populateALUResults(hardware, mappings);
+	populateALUDestinations(hardware, mappings);
+	populateALUFlagResults(hardware, mappings);
+	populateALUOpSizes(hardware, mappings);
 }
 
-void initALUOperands2(Hardware *hardware, GBValue **operands2) {
-	operands2[OpCode_XOR_A] = createGBByteValue(&(hardware->registers->A));
-	operands2[OpCode_XOR_B] = createGBByteValue(&(hardware->registers->B));
-	operands2[OpCode_XOR_C] = createGBByteValue(&(hardware->registers->C));
-	operands2[OpCode_XOR_D] = createGBByteValue(&(hardware->registers->D));
-	operands2[OpCode_XOR_E] = createGBByteValue(&(hardware->registers->E));
-	operands2[OpCode_XOR_H] = createGBByteValue(&(hardware->registers->H));
-	operands2[OpCode_XOR_L] = createGBByteValue(&(hardware->registers->L));
-	operands2[OpCode_XOR_MEM_HL] = createGBBytePointer(&(hardware->cachedValues->memoryHL));
-	operands2[OpCode_XOR_d8] = createGBByteValue(&(hardware->cachedValues->immediateByte));
+void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_A].operand1 =
+		mappings[OpCode_XOR_B].operand1 =
+		mappings[OpCode_XOR_C].operand1 =
+		mappings[OpCode_XOR_D].operand1 =
+		mappings[OpCode_XOR_E].operand1 =
+		mappings[OpCode_XOR_H].operand1 =
+		mappings[OpCode_XOR_L].operand1 =
+		mappings[OpCode_XOR_MEM_HL].operand1 =
+		mappings[OpCode_XOR_d8].operand1 = createGBByteValue(&(hardware->registers->A));
 
-	operands2[OpCode_DEC_A] =
-		operands2[OpCode_DEC_B] =
-		operands2[OpCode_DEC_BC] =
-		operands2[OpCode_DEC_C] =
-		operands2[OpCode_DEC_D] =
-		operands2[OpCode_DEC_DE] =
-		operands2[OpCode_DEC_E] =
-		operands2[OpCode_DEC_H] =
-		operands2[OpCode_DEC_HL] =
-		operands2[OpCode_DEC_L] =
-		operands2[OpCode_DEC_MEM_HL] =
-		operands2[OpCode_DEC_SP] = 
-		operands2[OpCode_INC_A] =
-		operands2[OpCode_INC_B] =
-		operands2[OpCode_INC_BC] =
-		operands2[OpCode_INC_C] =
-		operands2[OpCode_INC_D] =
-		operands2[OpCode_INC_DE] =
-		operands2[OpCode_INC_E] =
-		operands2[OpCode_INC_H] =
-		operands2[OpCode_INC_HL] =
-		operands2[OpCode_INC_L] =
-		operands2[OpCode_INC_MEM_HL] =
-		operands2[OpCode_INC_SP] = createGBByteValue(&(ONE));
+	mappings[OpCode_INC_A].operand1 =
+		mappings[OpCode_DEC_A].operand1 = createGBByteValue(&(hardware->registers->A));
+	mappings[OpCode_INC_B].operand1 =
+		mappings[OpCode_DEC_B].operand1 = createGBByteValue(&(hardware->registers->B));
+	mappings[OpCode_INC_BC].operand1 =
+		mappings[OpCode_DEC_BC].operand1 = createGBWordValue(&(hardware->cachedValues->BC));
+	mappings[OpCode_INC_C].operand1 =
+		mappings[OpCode_DEC_C].operand1 = createGBByteValue(&(hardware->registers->C));
+	mappings[OpCode_INC_D].operand1 =
+		mappings[OpCode_DEC_D].operand1 = createGBByteValue(&(hardware->registers->D));
+	mappings[OpCode_INC_DE].operand1 =
+		mappings[OpCode_DEC_DE].operand1 = createGBWordValue(&(hardware->cachedValues->DE));
+	mappings[OpCode_INC_E].operand1 =
+		mappings[OpCode_DEC_E].operand1 = createGBByteValue(&(hardware->registers->E));
+	mappings[OpCode_INC_H].operand1 =
+		mappings[OpCode_DEC_H].operand1 = createGBByteValue(&(hardware->registers->H));
+	mappings[OpCode_INC_HL].operand1 =
+		mappings[OpCode_DEC_HL].operand1 = createGBWordValue(&(hardware->cachedValues->HL));
+	mappings[OpCode_INC_L].operand1 =
+		mappings[OpCode_DEC_L].operand1 = createGBByteValue(&(hardware->registers->L));
+	mappings[OpCode_INC_MEM_HL].operand1 =
+		mappings[OpCode_DEC_MEM_HL].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryHL));
+	mappings[OpCode_INC_SP].operand1 =
+		mappings[OpCode_DEC_SP].operand1 = createGBWordValue(&(hardware->registers->SP));
 }
 
-void initALUResults(Hardware *hardware, int **results) {
-	results[OpCode_XOR_A] = 
-		results[OpCode_XOR_B] =
-		results[OpCode_XOR_C] =
-		results[OpCode_XOR_D] =
-		results[OpCode_XOR_E] =
-		results[OpCode_XOR_H] =
-		results[OpCode_XOR_L] =
-		results[OpCode_XOR_MEM_HL] =
-		results[OpCode_XOR_d8] = &(hardware->cachedResults->xor);
+void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_A].operand2 = createGBByteValue(&(hardware->registers->A));
+	mappings[OpCode_XOR_B].operand2 = createGBByteValue(&(hardware->registers->B));
+	mappings[OpCode_XOR_C].operand2 = createGBByteValue(&(hardware->registers->C));
+	mappings[OpCode_XOR_D].operand2 = createGBByteValue(&(hardware->registers->D));
+	mappings[OpCode_XOR_E].operand2 = createGBByteValue(&(hardware->registers->E));
+	mappings[OpCode_XOR_H].operand2 = createGBByteValue(&(hardware->registers->H));
+	mappings[OpCode_XOR_L].operand2 = createGBByteValue(&(hardware->registers->L));
+	mappings[OpCode_XOR_MEM_HL].operand2 = createGBBytePointer(&(hardware->cachedValues->memoryHL));
+	mappings[OpCode_XOR_d8].operand2 = createGBByteValue(&(hardware->cachedValues->immediateByte));
 
-	results[OpCode_DEC_A] =
-		results[OpCode_DEC_B] =
-		results[OpCode_DEC_BC] =
-		results[OpCode_DEC_C] =
-		results[OpCode_DEC_D] =
-		results[OpCode_DEC_DE] =
-		results[OpCode_DEC_E] =
-		results[OpCode_DEC_H] =
-		results[OpCode_DEC_HL] =
-		results[OpCode_DEC_L] =
-		results[OpCode_DEC_MEM_HL] =
-		results[OpCode_DEC_SP] = &(hardware->cachedResults->subtract);
-
-	results[OpCode_INC_A] =
-		results[OpCode_INC_B] =
-		results[OpCode_INC_BC] =
-		results[OpCode_INC_C] =
-		results[OpCode_INC_D] =
-		results[OpCode_INC_DE] =
-		results[OpCode_INC_E] =
-		results[OpCode_INC_H] =
-		results[OpCode_INC_HL] =
-		results[OpCode_INC_L] =
-		results[OpCode_INC_MEM_HL] =
-		results[OpCode_INC_SP] = &(hardware->cachedResults->add);
+	mappings[OpCode_DEC_A].operand2 =
+		mappings[OpCode_DEC_B].operand2 =
+		mappings[OpCode_DEC_BC].operand2 =
+		mappings[OpCode_DEC_C].operand2 =
+		mappings[OpCode_DEC_D].operand2 =
+		mappings[OpCode_DEC_DE].operand2 =
+		mappings[OpCode_DEC_E].operand2 =
+		mappings[OpCode_DEC_H].operand2 =
+		mappings[OpCode_DEC_HL].operand2 =
+		mappings[OpCode_DEC_L].operand2 =
+		mappings[OpCode_DEC_MEM_HL].operand2 =
+		mappings[OpCode_DEC_SP].operand2 =
+		mappings[OpCode_INC_A].operand2 =
+		mappings[OpCode_INC_B].operand2 =
+		mappings[OpCode_INC_BC].operand2 =
+		mappings[OpCode_INC_C].operand2 =
+		mappings[OpCode_INC_D].operand2 =
+		mappings[OpCode_INC_DE].operand2 =
+		mappings[OpCode_INC_E].operand2 =
+		mappings[OpCode_INC_H].operand2 =
+		mappings[OpCode_INC_HL].operand2 =
+		mappings[OpCode_INC_L].operand2 =
+		mappings[OpCode_INC_MEM_HL].operand2 =
+		mappings[OpCode_INC_SP].operand2 = createGBByteValue(&(ONE));
 }
 
-void initALUDestinations(Hardware *hardware, GBValue **destinations) {
-	destinations[OpCode_XOR_A] =
-		destinations[OpCode_XOR_B] =
-		destinations[OpCode_XOR_C] =
-		destinations[OpCode_XOR_D] =
-		destinations[OpCode_XOR_E] =
-		destinations[OpCode_XOR_H] =
-		destinations[OpCode_XOR_L] =
-		destinations[OpCode_XOR_MEM_HL] =
-		destinations[OpCode_XOR_d8] = createGBByteValue(&(hardware->registers->A));
+void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_A].result =
+		mappings[OpCode_XOR_B].result =
+		mappings[OpCode_XOR_C].result =
+		mappings[OpCode_XOR_D].result =
+		mappings[OpCode_XOR_E].result =
+		mappings[OpCode_XOR_H].result =
+		mappings[OpCode_XOR_L].result =
+		mappings[OpCode_XOR_MEM_HL].result =
+		mappings[OpCode_XOR_d8].result = &(hardware->cachedResults->xor);
 
+	mappings[OpCode_DEC_A].result =
+		mappings[OpCode_DEC_B].result =
+		mappings[OpCode_DEC_BC].result =
+		mappings[OpCode_DEC_C].result =
+		mappings[OpCode_DEC_D].result =
+		mappings[OpCode_DEC_DE].result =
+		mappings[OpCode_DEC_E].result =
+		mappings[OpCode_DEC_H].result =
+		mappings[OpCode_DEC_HL].result =
+		mappings[OpCode_DEC_L].result =
+		mappings[OpCode_DEC_MEM_HL].result =
+		mappings[OpCode_DEC_SP].result = &(hardware->cachedResults->subtract);
 
-	destinations[OpCode_INC_A] =
-		destinations[OpCode_DEC_A] = createGBByteValue(&(hardware->registers->A));
-	destinations[OpCode_INC_B] =
-		destinations[OpCode_DEC_B] = createGBByteValue(&(hardware->registers->B));
-	destinations[OpCode_INC_BC] =
-		destinations[OpCode_DEC_BC] = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
-	destinations[OpCode_INC_C] =
-		destinations[OpCode_DEC_C] = createGBByteValue(&(hardware->registers->C));
-	destinations[OpCode_INC_D] =
-		destinations[OpCode_DEC_D] = createGBByteValue(&(hardware->registers->D));
-	destinations[OpCode_INC_DE] =
-		destinations[OpCode_DEC_DE] = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
-	destinations[OpCode_INC_E] =
-		destinations[OpCode_DEC_E] = createGBByteValue(&(hardware->registers->E));
-	destinations[OpCode_INC_H] =
-		destinations[OpCode_DEC_H] = createGBByteValue(&(hardware->registers->H));
-	destinations[OpCode_INC_HL] =
-		destinations[OpCode_DEC_HL] = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
-	destinations[OpCode_INC_L] =
-		destinations[OpCode_DEC_L] = createGBByteValue(&(hardware->registers->L));
-	destinations[OpCode_INC_MEM_HL] =
-		destinations[OpCode_DEC_MEM_HL] = createGBBytePointer(&(hardware->cachedValues->memoryHL));
-	destinations[OpCode_INC_SP] =
-		destinations[OpCode_DEC_SP] = createGBWordValue(&(hardware->registers->SP));
+	mappings[OpCode_INC_A].result =
+		mappings[OpCode_INC_B].result =
+		mappings[OpCode_INC_BC].result =
+		mappings[OpCode_INC_C].result =
+		mappings[OpCode_INC_D].result =
+		mappings[OpCode_INC_DE].result =
+		mappings[OpCode_INC_E].result =
+		mappings[OpCode_INC_H].result =
+		mappings[OpCode_INC_HL].result =
+		mappings[OpCode_INC_L].result =
+		mappings[OpCode_INC_MEM_HL].result =
+		mappings[OpCode_INC_SP].result = &(hardware->cachedResults->add);
 }
 
-void initALUFlagResults(Hardware *hardware, FlagResult **flagResults) {
-	flagResults[OpCode_XOR_A] = 
-		flagResults[OpCode_XOR_B] =
-		flagResults[OpCode_XOR_C] =
-		flagResults[OpCode_XOR_D] =
-		flagResults[OpCode_XOR_E] =
-		flagResults[OpCode_XOR_H] =
-		flagResults[OpCode_XOR_L] =
-		flagResults[OpCode_XOR_MEM_HL] =
-		flagResults[OpCode_XOR_d8] = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &FALSE_VAL, &FALSE_VAL);
+void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_A].destination =
+		mappings[OpCode_XOR_B].destination =
+		mappings[OpCode_XOR_C].destination =
+		mappings[OpCode_XOR_D].destination =
+		mappings[OpCode_XOR_E].destination =
+		mappings[OpCode_XOR_H].destination =
+		mappings[OpCode_XOR_L].destination =
+		mappings[OpCode_XOR_MEM_HL].destination =
+		mappings[OpCode_XOR_d8].destination = createGBByteValue(&(hardware->registers->A));
 
-	flagResults[OpCode_DEC_A] =
-		flagResults[OpCode_DEC_B] =
-		flagResults[OpCode_DEC_C] =
-		flagResults[OpCode_DEC_D] =
-		flagResults[OpCode_DEC_E] =
-		flagResults[OpCode_DEC_H] =
-		flagResults[OpCode_DEC_L] =
-		flagResults[OpCode_DEC_BC] =
-		flagResults[OpCode_DEC_DE] =
-		flagResults[OpCode_DEC_HL] =
-		flagResults[OpCode_DEC_SP] =
-		flagResults[OpCode_DEC_MEM_HL] = createFlagResult(&(hardware->resultInfo->isZero), &TRUE_VAL, &(hardware->resultInfo->isSubHalfBorrow), NULL);
-	
 
-	flagResults[OpCode_INC_A] =
-		flagResults[OpCode_INC_B] =
-		flagResults[OpCode_INC_BC] =
-		flagResults[OpCode_INC_C] =
-		flagResults[OpCode_INC_D] =
-		flagResults[OpCode_INC_DE] =
-		flagResults[OpCode_INC_E] =
-		flagResults[OpCode_INC_H] =
-		flagResults[OpCode_INC_HL] =
-		flagResults[OpCode_INC_L] =
-		flagResults[OpCode_INC_MEM_HL] =
-		flagResults[OpCode_INC_SP] = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), NULL);
+	mappings[OpCode_INC_A].destination =
+		mappings[OpCode_DEC_A].destination = createGBByteValue(&(hardware->registers->A));
+	mappings[OpCode_INC_B].destination =
+		mappings[OpCode_DEC_B].destination = createGBByteValue(&(hardware->registers->B));
+	mappings[OpCode_INC_BC].destination =
+		mappings[OpCode_DEC_BC].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
+	mappings[OpCode_INC_C].destination =
+		mappings[OpCode_DEC_C].destination = createGBByteValue(&(hardware->registers->C));
+	mappings[OpCode_INC_D].destination =
+		mappings[OpCode_DEC_D].destination = createGBByteValue(&(hardware->registers->D));
+	mappings[OpCode_INC_DE].destination =
+		mappings[OpCode_DEC_DE].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
+	mappings[OpCode_INC_E].destination =
+		mappings[OpCode_DEC_E].destination = createGBByteValue(&(hardware->registers->E));
+	mappings[OpCode_INC_H].destination =
+		mappings[OpCode_DEC_H].destination = createGBByteValue(&(hardware->registers->H));
+	mappings[OpCode_INC_HL].destination =
+		mappings[OpCode_DEC_HL].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+	mappings[OpCode_INC_L].destination =
+		mappings[OpCode_DEC_L].destination = createGBByteValue(&(hardware->registers->L));
+	mappings[OpCode_INC_MEM_HL].destination =
+		mappings[OpCode_DEC_MEM_HL].destination = createGBBytePointer(&(hardware->cachedValues->memoryHL));
+	mappings[OpCode_INC_SP].destination =
+		mappings[OpCode_DEC_SP].destination = createGBWordValue(&(hardware->registers->SP));
 }
 
-void initALUOpSizes(Hardware *hardware, char *opSizeBytes) {
-	opSizeBytes[OpCode_XOR_d8] = 2;
+void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_A].flagResult =
+		mappings[OpCode_XOR_B].flagResult =
+		mappings[OpCode_XOR_C].flagResult =
+		mappings[OpCode_XOR_D].flagResult =
+		mappings[OpCode_XOR_E].flagResult =
+		mappings[OpCode_XOR_H].flagResult =
+		mappings[OpCode_XOR_L].flagResult =
+		mappings[OpCode_XOR_MEM_HL].flagResult =
+		mappings[OpCode_XOR_d8].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &FALSE_VAL, &FALSE_VAL);
+
+	mappings[OpCode_DEC_A].flagResult =
+		mappings[OpCode_DEC_B].flagResult =
+		mappings[OpCode_DEC_C].flagResult =
+		mappings[OpCode_DEC_D].flagResult =
+		mappings[OpCode_DEC_E].flagResult =
+		mappings[OpCode_DEC_H].flagResult =
+		mappings[OpCode_DEC_L].flagResult =
+		mappings[OpCode_DEC_BC].flagResult =
+		mappings[OpCode_DEC_DE].flagResult =
+		mappings[OpCode_DEC_HL].flagResult =
+		mappings[OpCode_DEC_SP].flagResult =
+		mappings[OpCode_DEC_MEM_HL].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &TRUE_VAL, &(hardware->resultInfo->isSubHalfBorrow), NULL);
+
+
+	mappings[OpCode_INC_A].flagResult =
+		mappings[OpCode_INC_B].flagResult =
+		mappings[OpCode_INC_BC].flagResult =
+		mappings[OpCode_INC_C].flagResult =
+		mappings[OpCode_INC_D].flagResult =
+		mappings[OpCode_INC_DE].flagResult =
+		mappings[OpCode_INC_E].flagResult =
+		mappings[OpCode_INC_H].flagResult =
+		mappings[OpCode_INC_HL].flagResult =
+		mappings[OpCode_INC_L].flagResult =
+		mappings[OpCode_INC_MEM_HL].flagResult =
+		mappings[OpCode_INC_SP].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), NULL);
+}
+
+void populateALUOpSizes(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_XOR_d8].sizeBytes = 2;
 }

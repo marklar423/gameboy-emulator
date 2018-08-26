@@ -6,7 +6,9 @@
 
 #pragma once
 
-void initLoadOperands1(Hardware *hardware, GBValue **operands1);
-void initLoadDestinations(Hardware *hardware, GBValue **destinations);
-void initLoadOpSizes(Hardware *hardware, char *opSizeBytes);
+void populateLoadInstructions(Hardware *hardware, InstructionMapping *mappings);
+
+void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings);
+void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings);
+void populateLoadOpSizes(Hardware *hardware, InstructionMapping *mappings);
 

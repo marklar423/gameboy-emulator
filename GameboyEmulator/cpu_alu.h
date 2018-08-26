@@ -4,9 +4,11 @@
 #include "objects.h"
 
 
-void initALUOperands1(Hardware *hardware, GBValue **operands1);
-void initALUOperands2(Hardware *hardware, GBValue **operands1);
-void initALUResults(Hardware *hardware, int **results);
-void initALUDestinations(Hardware *hardware, GBValue **destinations);
-void initALUFlagResults(Hardware *hardware, FlagResult **flagResults);
-void initALUOpSizes(Hardware *hardware, char *opSizeBytes);
+void populateALUInstructions(Hardware *hardware, InstructionMapping *mappings);
+
+void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings);
+void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings);
+void populateALUResults(Hardware *hardware, InstructionMapping *mappings);
+void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings);
+void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings);
+void populateALUOpSizes(Hardware *hardware, InstructionMapping *mappings);

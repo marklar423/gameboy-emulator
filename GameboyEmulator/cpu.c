@@ -36,49 +36,31 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	return hardware;
 }
 
-OpMappings* initOpMappings(Hardware *hardware) {
-	OpMappings *mappings = malloc(sizeof(OpMappings));
-
-	mappings->operands1 = calloc(NUM_OPCODES, sizeof(GBValue *));
-	mappings->operands2 = calloc(NUM_OPCODES, sizeof(GBValue *));
-	mappings->results = calloc(NUM_OPCODES, sizeof(int *));
-	mappings->destinations = calloc(NUM_OPCODES, sizeof(GBValue *));
-	mappings->nextPCs = calloc(NUM_OPCODES, sizeof(int *));
-	mappings->nextSPs = calloc(NUM_OPCODES, sizeof(int *));
-	mappings->flagConditions = calloc(NUM_OPCODES, sizeof(FlagCondition *));
-	mappings->flagResults = calloc(NUM_OPCODES, sizeof(FlagResult *));
-	mappings->opSizeBytes = calloc(NUM_OPCODES, sizeof(char));
-
-	initJumpFlagConditions(hardware, mappings->flagConditions);
-
-	initLoadOperands1(hardware, mappings->operands1);
-	initALUOperands1(hardware, mappings->operands1);
-	initALUOperands2(hardware, mappings->operands2);
-
-	initALUResults(hardware, mappings->results);
-
-	initLoadDestinations(hardware, mappings->destinations);
-	initALUDestinations(hardware, mappings->destinations);
-
-	initLoadOpSizes(hardware, mappings->opSizeBytes);
-	initALUOpSizes(hardware, mappings->opSizeBytes);
-	initJumpOpSizes(hardware, mappings->opSizeBytes);
-
-	initJumpNextPC(hardware, mappings->nextPCs);
-
-	initALUFlagResults(hardware, mappings->flagResults);
+InstructionMapping* initInstructionMappings(Hardware *hardware) {
+	InstructionMapping *mappings = calloc(NUM_OPCODES, sizeof(InstructionMapping));
+	
+	populateJumpInstructions(hardware, mappings);
+	populateLoadInstructions(hardware, mappings);
+	populateALUInstructions(hardware, mappings);
+	populateCPUCycleCounts(mappings);
+	populateCPUOpSizes(mappings);
 
 	return mappings;
 }
 
-void tickCPU(Hardware *hardware, OpMappings *mappings) {
-	unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
-	processInstruction(hardware, mappings, instruction);
+void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
+	if (hardware->cyclesToWait <= 1) {
+		unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
+		processInstruction(hardware, &mappings[*instruction], instruction);
+	}
+	else {
+		hardware->cyclesToWait--;
+	}
 }
 
-void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned char *instruction) {
+void processInstruction(Hardware *hardware, InstructionMapping *mapping, const unsigned char *instruction) {
 	//get the operation size to calculate the next PC address
-	char opSize = mappings->opSizeBytes[*instruction];
+	char opSize = mapping->sizeBytes;
 	opSize = opSize < 1 ? 1 : opSize;
 
 	int nextPCAddressValue = hardware->registers->PC + opSize;
@@ -88,7 +70,7 @@ void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned
 	//should we process this operation?
 	bool shouldExecute = true;
 
-	FlagCondition *flagCondition = mappings->flagConditions[*instruction];	
+	FlagCondition *flagCondition = mapping->flagCondition;	
 
 	if (flagCondition != NULL) {
 		shouldExecute = ((hardware->registers->F & flagCondition->condition) == flagCondition->condition);
@@ -106,12 +88,12 @@ void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned
 
 		default:
 			//get the operands
-			operand1 = mappings->operands1[*instruction];
-			operand2 = mappings->operands2[*instruction];
+			operand1 = mapping->operand1;
+			operand2 = mapping->operand2;
 
 			//do the operation
 			int resultValue;
-			int *result = mappings->results[*instruction];
+			int *result = mapping->result;
 			if (result != NULL) {
 				populateCachedResults(hardware->cachedResults, operand1, operand2);
 				resultValue = *result;
@@ -119,19 +101,19 @@ void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned
 			else resultValue = GBValueToInt(operand1);
 			
 			//process flags
-			FlagResult *flagResult = mappings->flagResults[*instruction];
+			FlagResult *flagResult = mapping->flagResult;
 			processFlags(hardware, operand1, operand2, &resultValue, flagResult);
 			
 			//process program counter
-			int *nextPC = mappings->nextPCs[*instruction];
+			int *nextPC = mapping->nextPC;
 			if (nextPC != NULL) nextPCAddressValue = *nextPC;
 			
 			//process stack pointer
-			int *nextSP = mappings->nextSPs[*instruction];
+			int *nextSP = mapping->nextSP;
 			if (nextSP != NULL) hardware->registers->SP = *nextSP;
 
 			//send the result to the right destination
-			destination = mappings->destinations[*instruction];
+			destination = mapping->destination;
 			processDestination(hardware, &resultValue, destination);
 
 			//special cases
@@ -151,7 +133,12 @@ void processInstruction(Hardware *hardware, OpMappings *mappings, const unsigned
 		}
 	}
 
+	//set the next address instruction
 	hardware->registers->PC = nextPCAddressValue;
+	
+	//how many cycles should this instruction take?
+	hardware->cyclesToWait = mapping->cycleCount;
+	hardware->cyclesToWait = hardware->cyclesToWait < 1 ? 1 : hardware->cyclesToWait;
 }
 
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {

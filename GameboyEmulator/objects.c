@@ -75,3 +75,8 @@ int GBValueToInt(GBValue *value) {
 
 	return convertedValue;
 }
+
+InstructionMapping* createInstructionMappings(int numInstructions) {
+	InstructionMapping *instructions = calloc(numInstructions, sizeof(InstructionMapping));
+	return instructions;
+}

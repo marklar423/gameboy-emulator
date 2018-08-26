@@ -1,20 +1,27 @@
 
 #include "cpu_jump.h"
 
-void initJumpNextPC(Hardware *hardware, int **nextPCs) {
-	nextPCs[OpCode_JP_MEM_HL] = &(hardware->cachedValues->HL);
 
-	nextPCs[OpCode_JP_C_a16] =
-		nextPCs[OpCode_JP_NC_a16] =
-		nextPCs[OpCode_JP_NZ_a16] =
-		nextPCs[OpCode_JP_Z_a16] =
-		nextPCs[OpCode_JP_a16] = &(hardware->cachedValues->immediateWord);
+void populateJumpInstructions(Hardware *hardware, InstructionMapping *mappings) {
+	populateJumpNextPC(hardware, mappings);
+	populateJumpFlagConditions(hardware, mappings);
+	populateJumpOpSizes(hardware, mappings);
+}
 
-	nextPCs[OpCode_JR_C_r8] =
-		nextPCs[OpCode_JR_NC_r8] =
-		nextPCs[OpCode_JR_NZ_r8] =
-		nextPCs[OpCode_JR_Z_r8] =
-		nextPCs[OpCode_JR_r8] = &(hardware->cachedValues->NextPCAddressPlusImmediateByteSigned);
+void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_JP_MEM_HL].nextPC = &(hardware->cachedValues->HL);
+
+	mappings[OpCode_JP_C_a16].nextPC =
+		mappings[OpCode_JP_NC_a16].nextPC =
+		mappings[OpCode_JP_NZ_a16].nextPC =
+		mappings[OpCode_JP_Z_a16].nextPC =
+		mappings[OpCode_JP_a16].nextPC = &(hardware->cachedValues->immediateWord);
+
+	mappings[OpCode_JR_C_r8].nextPC =
+		mappings[OpCode_JR_NC_r8].nextPC =
+		mappings[OpCode_JR_NZ_r8].nextPC =
+		mappings[OpCode_JR_Z_r8].nextPC =
+		mappings[OpCode_JR_r8].nextPC = &(hardware->cachedValues->NextPCAddressPlusImmediateByteSigned);
 
 	/*OpCode_CALL_C_a16 = 0xdc,
 		OpCode_CALL_NC_a16 = 0xd4,
@@ -40,31 +47,31 @@ void initJumpNextPC(Hardware *hardware, int **nextPCs) {
 
 }
 
-void initJumpFlagConditions(Hardware *hardware, FlagCondition **flagConditions) {
-	flagConditions[OpCode_JP_C_a16] =
-		flagConditions[OpCode_JR_C_r8] = createFlagCondition(FLAGS_CY, false);
+void populateJumpFlagConditions(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_JP_C_a16].flagCondition =
+		mappings[OpCode_JR_C_r8].flagCondition = createFlagCondition(FLAGS_CY, false);
 
-	flagConditions[OpCode_JR_NC_r8] =
-		flagConditions[OpCode_JP_NC_a16] = createFlagCondition(FLAGS_CY, true);
+	mappings[OpCode_JR_NC_r8].flagCondition =
+		mappings[OpCode_JP_NC_a16].flagCondition = createFlagCondition(FLAGS_CY, true);
 
-	flagConditions[OpCode_JR_NZ_r8] =
-		flagConditions[OpCode_JP_NZ_a16] = createFlagCondition(FLAGS_Z, true);
+	mappings[OpCode_JR_NZ_r8].flagCondition =
+		mappings[OpCode_JP_NZ_a16].flagCondition = createFlagCondition(FLAGS_Z, true);
 
-	flagConditions[OpCode_JR_Z_r8] =
-		flagConditions[OpCode_JP_Z_a16] = createFlagCondition(FLAGS_Z, false);
+	mappings[OpCode_JR_Z_r8].flagCondition =
+		mappings[OpCode_JP_Z_a16].flagCondition = createFlagCondition(FLAGS_Z, false);
 }
 
 
-void initJumpOpSizes(Hardware *hardware, char *opSizeBytes) {
-	opSizeBytes[OpCode_JP_C_a16] =
-		opSizeBytes[OpCode_JP_NC_a16] =
-		opSizeBytes[OpCode_JP_NZ_a16] =
-		opSizeBytes[OpCode_JP_Z_a16] =
-		opSizeBytes[OpCode_JP_a16] = 3;
+void populateJumpOpSizes(Hardware *hardware, InstructionMapping *mappings) {
+	mappings[OpCode_JP_C_a16].sizeBytes =
+		mappings[OpCode_JP_NC_a16].sizeBytes =
+		mappings[OpCode_JP_NZ_a16].sizeBytes =
+		mappings[OpCode_JP_Z_a16].sizeBytes =
+		mappings[OpCode_JP_a16].sizeBytes = 3;
 
-	opSizeBytes[OpCode_JR_C_r8] =
-		opSizeBytes[OpCode_JR_NC_r8] =
-		opSizeBytes[OpCode_JR_NZ_r8] =
-		opSizeBytes[OpCode_JR_Z_r8] =
-		opSizeBytes[OpCode_JR_r8] = 2;
+	mappings[OpCode_JR_C_r8].sizeBytes =
+		mappings[OpCode_JR_NC_r8].sizeBytes =
+		mappings[OpCode_JR_NZ_r8].sizeBytes =
+		mappings[OpCode_JR_Z_r8].sizeBytes =
+		mappings[OpCode_JR_r8].sizeBytes = 2;
 }
