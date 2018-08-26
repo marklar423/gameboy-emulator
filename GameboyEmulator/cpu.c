@@ -78,7 +78,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		if (flagCondition->negate) shouldExecute = !shouldExecute;
 	}
 
-	if (shouldExecute == true) {
+	if (shouldExecute) {
 
 		GBValue *operand1, *operand2, *destination;
 		
@@ -138,7 +138,13 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 	hardware->registers->PC = nextPCAddressValue;
 	
 	//how many cycles should this instruction take?
-	hardware->cyclesToWait = mapping->cycleCount;
+	hardware->cyclesToWait = 1;
+
+	if (mapping->cycleCount != NULL) {
+		if (shouldExecute) hardware->cyclesToWait = mapping->cycleCount->executeCycles;
+		else hardware->cyclesToWait = mapping->cycleCount->dontExecuteCycles;
+	}
+	
 	hardware->cyclesToWait = hardware->cyclesToWait < 1 ? 1 : hardware->cyclesToWait;
 }
 
