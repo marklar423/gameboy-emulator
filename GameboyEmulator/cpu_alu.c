@@ -14,7 +14,6 @@ void populateALUInstructions(Hardware *hardware, InstructionMapping *mappings) {
 	populateALUResults(hardware, mappings);
 	populateALUDestinations(hardware, mappings);
 	populateALUFlagResults(hardware, mappings);
-	populateALUOpSizes(hardware, mappings);
 }
 
 void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
@@ -204,8 +203,4 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_INC_L].flagResult =
 		mappings[OpCode_INC_MEM_HL].flagResult =
 		mappings[OpCode_INC_SP].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), NULL);
-}
-
-void populateALUOpSizes(Hardware *hardware, InstructionMapping *mappings) {
-	mappings[OpCode_XOR_d8].sizeBytes = 2;
 }

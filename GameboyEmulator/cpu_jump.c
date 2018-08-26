@@ -5,7 +5,6 @@
 void populateJumpInstructions(Hardware *hardware, InstructionMapping *mappings) {
 	populateJumpNextPC(hardware, mappings);
 	populateJumpFlagConditions(hardware, mappings);
-	populateJumpOpSizes(hardware, mappings);
 }
 
 void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings) {
@@ -61,17 +60,3 @@ void populateJumpFlagConditions(Hardware *hardware, InstructionMapping *mappings
 		mappings[OpCode_JP_Z_a16].flagCondition = createFlagCondition(FLAGS_Z, false);
 }
 
-
-void populateJumpOpSizes(Hardware *hardware, InstructionMapping *mappings) {
-	mappings[OpCode_JP_C_a16].sizeBytes =
-		mappings[OpCode_JP_NC_a16].sizeBytes =
-		mappings[OpCode_JP_NZ_a16].sizeBytes =
-		mappings[OpCode_JP_Z_a16].sizeBytes =
-		mappings[OpCode_JP_a16].sizeBytes = 3;
-
-	mappings[OpCode_JR_C_r8].sizeBytes =
-		mappings[OpCode_JR_NC_r8].sizeBytes =
-		mappings[OpCode_JR_NZ_r8].sizeBytes =
-		mappings[OpCode_JR_Z_r8].sizeBytes =
-		mappings[OpCode_JR_r8].sizeBytes = 2;
-}

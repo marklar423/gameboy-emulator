@@ -11,4 +11,3 @@ void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings);
 void populateALUResults(Hardware *hardware, InstructionMapping *mappings);
 void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings);
 void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings);
-void populateALUOpSizes(Hardware *hardware, InstructionMapping *mappings);

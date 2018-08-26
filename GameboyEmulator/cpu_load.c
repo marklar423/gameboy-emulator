@@ -116,7 +116,7 @@ void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_LD_A_MEM_BC].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryBC));
 	mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryDE));
 
-	mappings[OpCode_LD_HL_SP_Pr8].operand1 = createGBWordValue(&(hardware->cachedValues->SPPlusImmediateByteSigned));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->cachedValues->SPPlusImmediateByteSigned));
 }
 
 void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) {
@@ -224,7 +224,7 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 	mappings[OpCode_LD_BC_d16].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
 	mappings[OpCode_LD_DE_d16].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
 
-	mappings[OpCode_LD_HL_SP_Pr8].destination =
+	mappings[OpCode_LD_HL_SP_PLUS_r8].destination =
 		mappings[OpCode_LD_HL_d16].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
 }
 
@@ -239,7 +239,7 @@ void populateLoadOpSizes(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_LD_L_d8].sizeBytes =
 		mappings[OpCode_LDH_A_MEM_a8].sizeBytes =
 		mappings[OpCode_LD_MEM_HL_d8].sizeBytes =
-		mappings[OpCode_LD_HL_SP_Pr8].sizeBytes = 2;
+		mappings[OpCode_LD_HL_SP_PLUS_r8].sizeBytes = 2;
 
 	mappings[OpCode_LD_BC_d16].sizeBytes =
 		mappings[OpCode_LD_DE_d16].sizeBytes =

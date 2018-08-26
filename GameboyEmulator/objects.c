@@ -76,7 +76,17 @@ int GBValueToInt(GBValue *value) {
 	return convertedValue;
 }
 
+OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles) {
+	OpCycleCount *cycleCount = malloc(sizeof(OpCycleCount));
+
+	cycleCount->executeCycles = executeCycles;
+	cycleCount->dontExecuteCycles = dontExecuteCycles;
+
+	return cycleCount;
+}
+
 InstructionMapping* createInstructionMappings(int numInstructions) {
 	InstructionMapping *instructions = calloc(numInstructions, sizeof(InstructionMapping));
 	return instructions;
 }
+

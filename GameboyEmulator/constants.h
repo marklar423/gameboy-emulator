@@ -204,7 +204,7 @@ typedef enum _OpCode {
 	OpCode_LD_E_L = 0x5d,
 	OpCode_LD_E_MEM_HL = 0x5e,
 	OpCode_LD_E_d8 = 0x1e,
-	OpCode_LD_HL_SP_Pr8 = 0xf8,
+	OpCode_LD_HL_SP_PLUS_r8 = 0xf8,
 	OpCode_LD_HL_d16 = 0x21,
 	OpCode_LD_H_A = 0x67,
 	OpCode_LD_H_B = 0x60,

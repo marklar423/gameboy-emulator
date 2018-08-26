@@ -6,6 +6,7 @@
 #include "cpu_jump.h"
 #include "cpu_alu.h"
 #include "cpu_ram.h"
+#include "cpu_cycles.h"
 #include "util.h"
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {

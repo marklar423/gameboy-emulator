@@ -98,4 +98,6 @@ int GBValueToInt(GBValue *value);
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);
 
+OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles);
+
 InstructionMapping* createInstructionMappings(int numInstructions);
