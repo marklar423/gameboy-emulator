@@ -16,6 +16,8 @@ typedef struct _GameRom {
 typedef struct _Registers {
 	unsigned char A, B, C, D, E, H, L, F;
 	int SP, PC;
+	bool globalInterruptsEnabled;
+	unsigned char enabledInterrupts, requestedInterrupts;
 } Registers;
 
 typedef struct _GBValue {
@@ -34,14 +36,13 @@ typedef struct _CachedOpValues {
 	int BC, DE, HL;
 	int NextPCAddressPlusImmediateByteSigned;
 	int SPPlusImmediateByteSigned, SPPlusOne, SPPlusTwo, SPMinusOne;
-	unsigned char *stackValue, *stackPlusOneValue, *stackPlusTwoValue;
+	unsigned char *stackValue, *stackPlusOneValue, *stackPlusTwoValue, *stackMinusOneValue;
 	int stackWordValue;
 } CachedOpValues;
 
 typedef struct _CachedOpResults {
 	int xor, add, subtract;
 } CachedOpResults;
-
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;

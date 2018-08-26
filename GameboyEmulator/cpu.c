@@ -7,6 +7,7 @@
 #include "cpu_alu.h"
 #include "cpu_ram.h"
 #include "cpu_cycles.h"
+#include "cpu_interrupts.h"
 #include "util.h"
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
@@ -51,15 +52,16 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 
 void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 	if (hardware->cyclesToWait <= 1) {
+		processInterrupts(hardware);
 		unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
-		processInstruction(hardware, &mappings[*instruction], instruction);
+		processInstruction(hardware, &mappings[*instruction], *instruction);
 	}
 	else {
 		hardware->cyclesToWait--;
 	}
 }
 
-void processInstruction(Hardware *hardware, InstructionMapping *mapping, const unsigned char *instruction) {
+void processInstruction(Hardware *hardware, InstructionMapping *mapping, const unsigned char instruction) {
 	//get the operation size to calculate the next PC address
 	char opSize = mapping->sizeBytes;
 	opSize = opSize < 1 ? 1 : opSize;
@@ -82,9 +84,17 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 
 		GBValue *operand1, *operand2, *destination;
 		
-		switch (*instruction) {
+		switch (instruction) {
 		case OpCode_NOP:
 			//do nothing
+			break;
+
+		case OpCode_DI:
+			hardware->registers->globalInterruptsEnabled = false;
+			break;
+
+		case OpCode_EI:
+			hardware->registers->globalInterruptsEnabled = true;
 			break;
 
 		default:
@@ -118,13 +128,16 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 			processDestination(hardware, &resultValue, destination);
 
 			//special cases
-			if (*instruction == OpCode_LD_A_MEM_HLI || *instruction == OpCode_LD_MEM_HLI_A) {
+			if (instruction == OpCode_LD_A_MEM_HLI || instruction == OpCode_LD_MEM_HLI_A) {
 				hardware->cachedValues->HL++;
 				splitBytes(&(hardware->cachedValues->HL), &(hardware->registers->L), &(hardware->registers->H));
 			}
-			else if (*instruction == OpCode_LD_A_MEM_HLD || *instruction == OpCode_LD_MEM_HLD_A) {
+			else if (instruction == OpCode_LD_A_MEM_HLD || instruction == OpCode_LD_MEM_HLD_A) {
 				hardware->cachedValues->HL--;
 				splitBytes(&(hardware->cachedValues->HL), &(hardware->registers->L), &(hardware->registers->H));
+			}
+			else if (instruction == OpCode_RETI) {
+				hardware->registers->globalInterruptsEnabled = true;
 			}
 
 			/*sprintf_s(log, 50, "Unknown opcode %X\n", *instruction);
@@ -172,6 +185,7 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->stackValue = getRamAddress(hardware, hardware->registers->SP);
 	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);
 	cached->stackPlusTwoValue = getRamAddress(hardware, cached->SPPlusTwo);
+	cached->stackMinusOneValue = getRamAddress(hardware, cached->SPMinusOne);
 }
 
 

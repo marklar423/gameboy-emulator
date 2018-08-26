@@ -10,7 +10,7 @@ InstructionMapping* initInstructionMappings(Hardware *hardware);
 
 void tickCPU(Hardware *hardware, InstructionMapping *mappings);
 
-void processInstruction(Hardware *hardware, InstructionMapping *mappings, unsigned char *instruction);
+void processInstruction(Hardware *hardware, InstructionMapping *mappings, unsigned char instruction);
 
 void getImmediateValue16(Hardware *hardware, int startAddress, int *result);
 

@@ -48,6 +48,9 @@
     <ClCompile Include="cpu_cycles.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpu_interrupts.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cpu.h">
@@ -81,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cpu_cycles.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu_interrupts.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
