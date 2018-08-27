@@ -33,10 +33,13 @@ typedef struct _CachedOpValues {
 	unsigned char *highMemoryImmediateByte, *memoryImmediateWord;
 	unsigned char *highMemoryC;
 	unsigned char *memoryHL, *memoryBC, *memoryDE;
-	int BC, DE, HL;
+	int AF, BC, DE, HL;
 	int NextPCAddressPlusImmediateByteSigned;
-	int SPPlusImmediateByteSigned, SPPlusOne, SPPlusTwo, SPMinusOne;
-	unsigned char *stackValue, *stackPlusOneValue, *stackPlusTwoValue, *stackMinusOneValue;
+	int SPPlusImmediateByteSigned, SPPlusOne, SPMinusOne, SPMinusTwo;
+	unsigned char *stackValue; //value on top of stack
+	unsigned char *stackPlusOneValue; //second-to-top value in stack
+	unsigned char *stackMinusOneValue; //one value beyond top of stack (new value)
+	unsigned char *stackMinusTwoValue; //two values beyond top of stack (new value)
 	int stackWordValue;
 } CachedOpValues;
 

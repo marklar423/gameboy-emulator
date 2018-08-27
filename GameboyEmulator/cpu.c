@@ -199,6 +199,7 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
 	cached->immediateWord = getImmediateWord(hardware, hardware->registers->PC + 1);
 
+	cached->AF = joinBytes(hardware->registers->F, hardware->registers->A);
 	cached->BC = joinBytes(hardware->registers->C, hardware->registers->B);
 	cached->DE = joinBytes(hardware->registers->E, hardware->registers->D);
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
@@ -212,12 +213,14 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
 	cached->SPPlusImmediateByteSigned = hardware->registers->SP + ((char)cached->immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
+	cached->SPMinusTwo = hardware->registers->SP - 2;
 	cached->SPPlusOne = hardware->registers->SP + 1;
 	cached->SPPlusTwo = hardware->registers->SP + 2;
 	cached->stackValue = getRamAddress(hardware, hardware->registers->SP);
 	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);
 	cached->stackPlusTwoValue = getRamAddress(hardware, cached->SPPlusTwo);
 	cached->stackMinusOneValue = getRamAddress(hardware, cached->SPMinusOne);
+	cached->stackMinusTwoValue = getRamAddress(hardware, cached->SPMinusTwo);
 }
 
 

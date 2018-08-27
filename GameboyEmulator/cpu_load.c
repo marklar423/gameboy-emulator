@@ -117,6 +117,17 @@ void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryDE));
 
 	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->cachedValues->SPPlusImmediateByteSigned));
+
+	mappings[OpCode_POP_AF].operand1 =
+		mappings[OpCode_POP_BC].operand1 =
+		mappings[OpCode_POP_DE].operand1 =
+		mappings[OpCode_POP_HL].operand1 = createGBSplitBytePointer(&(hardware->cachedValues->stackPlusOneValue), &(hardware->cachedValues->stackValue));
+
+	mappings[OpCode_PUSH_AF].operand1 = createGBWordValue(&(hardware->cachedValues->AF));
+	mappings[OpCode_PUSH_BC].operand1 = createGBWordValue(&(hardware->cachedValues->BC));
+	mappings[OpCode_PUSH_DE].operand1 = createGBWordValue(&(hardware->cachedValues->DE));
+	mappings[OpCode_PUSH_HL].operand1 = createGBWordValue(&(hardware->cachedValues->HL));
+
 }
 
 void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) {
@@ -226,6 +237,16 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 
 	mappings[OpCode_LD_HL_SP_PLUS_r8].destination =
 		mappings[OpCode_LD_HL_d16].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+
+	mappings[OpCode_POP_AF].destination = createGBSplitByteValue(&(hardware->registers->A), &(hardware->registers->F));
+	mappings[OpCode_POP_BC].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
+	mappings[OpCode_POP_DE].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
+	mappings[OpCode_POP_HL].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+
+	mappings[OpCode_PUSH_AF].destination =
+		mappings[OpCode_PUSH_BC].destination =
+		mappings[OpCode_PUSH_DE].destination =
+		mappings[OpCode_PUSH_HL].destination = createGBSplitBytePointer(&(hardware->cachedValues->stackMinusOneValue), &(hardware->cachedValues->stackMinusTwoValue));
 }
 
 void populateLoadOpSizes(Hardware *hardware, InstructionMapping *mappings) {
