@@ -162,11 +162,11 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 			//special cases
 			if (instruction == OpCode_LD_A_MEM_HLI || instruction == OpCode_LD_MEM_HLI_A) {
 				hardware->cachedValues->HL++;
-				splitBytes(&(hardware->cachedValues->HL), &(hardware->registers->L), &(hardware->registers->H));
+				splitBytes(hardware->cachedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_LD_A_MEM_HLD || instruction == OpCode_LD_MEM_HLD_A) {
 				hardware->cachedValues->HL--;
-				splitBytes(&(hardware->cachedValues->HL), &(hardware->registers->L), &(hardware->registers->H));
+				splitBytes(hardware->cachedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_RETI) {
 				hardware->registers->globalInterruptsEnabled = true;
@@ -196,12 +196,12 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	CachedOpValues *cached = hardware->cachedValues;
 
-	getImmediateByte(hardware, hardware->registers->PC + 1, &(cached->immediateByte));
-	getImmediateWord(hardware, hardware->registers->PC + 1, &(cached->immediateWord));
+	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
+	cached->immediateWord = getImmediateWord(hardware, hardware->registers->PC + 1);
 
-	joinBytes(&(hardware->registers->C), &(hardware->registers->B), &(cached->BC));
-	joinBytes(&(hardware->registers->E), &(hardware->registers->D), &(cached->DE));
-	joinBytes(&(hardware->registers->L), &(hardware->registers->H), &(cached->HL));
+	cached->BC = joinBytes(hardware->registers->C, hardware->registers->B);
+	cached->DE = joinBytes(hardware->registers->E, hardware->registers->D);
+	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
 	
 	cached->memoryImmediateWord = getRamAddress(hardware, cached->immediateWord);
 	cached->highMemoryImmediateByte = getRamAddress(hardware, 0xFF00 + cached->immediateByte);
@@ -244,7 +244,7 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 			**(destination->wordValue) = resultValue;
 		}
 		else if (destination->isSplitValue) {
-			splitBytes(&resultValue, *(destination->byteValue2), *(destination->byteValue));
+			splitBytes(resultValue, *(destination->byteValue2), *(destination->byteValue));
 		}
 		else {
 			**(destination->byteValue) = (unsigned char)resultValue;			
@@ -276,12 +276,12 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 	}
 }
 
-void getImmediateWord(Hardware *hardware, int startAddress, int *result) {
+int getImmediateWord(Hardware *hardware, int startAddress) {
 	unsigned char *value1 = getRamAddress(hardware, startAddress);
 	unsigned char *value2 = getRamAddress(hardware, startAddress + 1);
-	joinBytes(value1, value2, result);
+	return joinBytes(*value1, *value2);
 }
 
-void getImmediateByte(Hardware *hardware, int address, unsigned char *result1) {
-	*result1 = *(getRamAddress(hardware, address));
+unsigned char getImmediateByte(Hardware *hardware, int address) {
+	return *(getRamAddress(hardware, address));
 }

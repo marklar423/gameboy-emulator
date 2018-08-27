@@ -2,9 +2,9 @@
 
 #include <assert.h>
 
-void joinBytes(const unsigned char *leastSignificant, const unsigned char *mostSignificant, int *result);
+int joinBytes(const unsigned char leastSignificant, const unsigned char mostSignificant);
 
-void splitBytes(int *value, const unsigned char *leastSignificant, const unsigned char *mostSignificant);
+void splitBytes(int value, const unsigned char *leastSignificant, const unsigned char *mostSignificant);
 
 #define THROW_ERROR(x) assert(0 && x)
 

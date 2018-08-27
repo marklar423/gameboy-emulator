@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "cpu_ram.h"
+#include "util.h"
 
 unsigned char* getRamAddress(Hardware *hardware, int address) {
 	if (address >= RAM_LOCATION_CART_FIXED && address <= RAM_LOCATION_CART_FIXED_END) {
@@ -20,4 +21,24 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 
 	//assert(false && "Unknown RAM location");
 	return NULL;
+}
+
+void pushByteToStack(Hardware *hardware, unsigned char value) {
+	hardware->registers->SP--;
+	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);
+	*topOfStack = value;
+}
+
+void pushWordToStack(Hardware *hardware, int value) {
+	unsigned char leastSignificant, mostSignificant;
+	splitBytes(value, &leastSignificant, &mostSignificant);
+
+	pushByteToStack(hardware, mostSignificant);
+	pushByteToStack(hardware, leastSignificant);
+}
+
+unsigned char popByteFromStack(Hardware *hardware){
+	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);
+	hardware->registers->SP++;
+	return *topOfStack;
 }

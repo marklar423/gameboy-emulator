@@ -12,9 +12,9 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings);
 
 void processInstruction(Hardware *hardware, InstructionMapping *mappings, unsigned char instruction);
 
-void getImmediateWord(Hardware *hardware, int startAddress, int *result);
+int getImmediateWord(Hardware *hardware, int startAddress);
 
-void getImmediateByte(Hardware *hardware, int address, unsigned char *result1);
+unsigned char getImmediateByte(Hardware *hardware, int address);
 
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue);
 

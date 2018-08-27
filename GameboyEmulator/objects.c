@@ -69,7 +69,7 @@ int GBValueToInt(GBValue *value) {
 
 	if (value != NULL) {
 		if (value->isWordValue) convertedValue = **(value->wordValue);
-		else if (value->isSplitValue) joinBytes(*(value->byteValue2), *(value->byteValue), &convertedValue);
+		else if (value->isSplitValue) convertedValue = joinBytes(**(value->byteValue2), **(value->byteValue));
 		else convertedValue = **(value->byteValue);
 	}
 
