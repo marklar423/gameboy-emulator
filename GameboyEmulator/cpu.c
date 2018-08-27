@@ -224,8 +224,7 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->SPPlusOne = hardware->registers->SP + 1;
 	cached->SPPlusTwo = hardware->registers->SP + 2;
 	cached->stackValue = getRamAddress(hardware, hardware->registers->SP);
-	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);
-	cached->stackPlusTwoValue = getRamAddress(hardware, cached->SPPlusTwo);
+	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);	
 	cached->stackMinusOneValue = getRamAddress(hardware, cached->SPMinusOne);
 	cached->stackMinusTwoValue = getRamAddress(hardware, cached->SPMinusTwo);
 }

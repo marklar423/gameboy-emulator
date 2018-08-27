@@ -8,7 +8,7 @@
 void populateLoadInstructions(Hardware *hardware, InstructionMapping *mappings) {
 	populateLoadOperands1(hardware, mappings);
 	populateLoadDestinations(hardware, mappings);
-	populateLoadOpSizes(hardware, mappings);
+	populateLoadNextSPs(hardware, mappings);
 }
 
 void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings) {
@@ -249,24 +249,16 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_PUSH_HL].destination = createGBSplitBytePointer(&(hardware->cachedValues->stackMinusOneValue), &(hardware->cachedValues->stackMinusTwoValue));
 }
 
-void populateLoadOpSizes(Hardware *hardware, InstructionMapping *mappings) {
-	mappings[OpCode_LDH_MEM_a8_A].sizeBytes =
-		mappings[OpCode_LD_A_d8].sizeBytes =
-		mappings[OpCode_LD_B_d8].sizeBytes =
-		mappings[OpCode_LD_C_d8].sizeBytes =
-		mappings[OpCode_LD_D_d8].sizeBytes =
-		mappings[OpCode_LD_E_d8].sizeBytes =
-		mappings[OpCode_LD_H_d8].sizeBytes =
-		mappings[OpCode_LD_L_d8].sizeBytes =
-		mappings[OpCode_LDH_A_MEM_a8].sizeBytes =
-		mappings[OpCode_LD_MEM_HL_d8].sizeBytes =
-		mappings[OpCode_LD_HL_SP_PLUS_r8].sizeBytes = 2;
+void populateLoadNextSPs(Hardware *hardware, InstructionMapping *mappings) {
 
-	mappings[OpCode_LD_BC_d16].sizeBytes =
-		mappings[OpCode_LD_DE_d16].sizeBytes =
-		mappings[OpCode_LD_HL_d16].sizeBytes =
-		mappings[OpCode_LD_SP_d16].sizeBytes =
-		mappings[OpCode_LD_MEM_a16_SP].sizeBytes =
-		mappings[OpCode_LD_A_MEM_a16].sizeBytes = 3;
+	mappings[OpCode_POP_AF].nextSP =
+		mappings[OpCode_POP_BC].nextSP =
+		mappings[OpCode_POP_DE].nextSP =
+		mappings[OpCode_POP_HL].nextSP = &hardware->cachedValues->SPPlusTwo;
+
+	mappings[OpCode_PUSH_AF].nextSP=
+		mappings[OpCode_PUSH_BC].nextSP=
+		mappings[OpCode_PUSH_DE].nextSP =
+		mappings[OpCode_PUSH_HL].nextSP = &hardware->cachedValues->SPMinusTwo;
 	
 }
