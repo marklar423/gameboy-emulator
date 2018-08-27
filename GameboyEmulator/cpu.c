@@ -94,6 +94,13 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 }
 
 void processInstruction(Hardware *hardware, InstructionMapping *mapping, const unsigned char instruction) {
+	/*
+	Things to test:
+	- push/pop
+	- interrupt execution
+	*/
+
+
 	//get the operation size to calculate the next PC address
 	char opSize = mapping->sizeBytes;
 	opSize = opSize < 1 ? 1 : opSize;
