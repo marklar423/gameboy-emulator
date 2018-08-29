@@ -124,6 +124,11 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		GBValue *operand1, *operand2, *destination;
 		
 		switch (instruction) {
+		case OpCode_PREFIX_CB:
+		case OpCode_DAA:
+			THROW_ERROR("Unsupported instruction");
+			break;
+
 		case OpCode_NOP:
 			//do nothing
 			break;
@@ -179,9 +184,6 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 				hardware->registers->globalInterruptsEnabled = true;
 			}
 
-			/*sprintf_s(log, 50, "Unknown opcode %X\n", *instruction);
-			OutputDebugString(log);
-			THROW_ERROR("Unkown Opcode");*/
 			break;
 		}
 	}
