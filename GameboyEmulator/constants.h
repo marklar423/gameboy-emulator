@@ -310,7 +310,7 @@ typedef enum _OpCode {
 	OpCode_SBC_A_MEM_HL = 0x9e,
 	OpCode_SBC_A_d8 = 0xde,
 	OpCode_SCF = 0x37,
-	OpCode_STOP_0 = 0x10,
+	OpCode_STOP = 0x10,
 	OpCode_SUB_A = 0x97,
 	OpCode_SUB_B = 0x90,
 	OpCode_SUB_C = 0x91,

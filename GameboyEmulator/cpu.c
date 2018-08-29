@@ -106,7 +106,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 	opSize = opSize < 1 ? 1 : opSize;
 
 	int nextPCAddressValue = hardware->registers->PC + opSize;
-	
+	int cyclesToWait = 1;
+
 	populateCachedValues(hardware, nextPCAddressValue);
 
 	//should we process this operation?
@@ -139,6 +140,14 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 
 		case OpCode_EI:
 			hardware->registers->globalInterruptsEnabled = true;
+			break;
+
+		case OpCode_HALT:
+			THROW_ERROR("Unsupported instruction");
+			break;
+
+		case OpCode_STOP:
+			THROW_ERROR("Unsupported instruction");
 			break;
 
 		default:
@@ -192,14 +201,12 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 	hardware->registers->PC = nextPCAddressValue;
 	
 	//how many cycles should this instruction take?
-	hardware->cyclesToWait = 1;
-
 	if (mapping->cycleCount != NULL) {
-		if (shouldExecute) hardware->cyclesToWait = mapping->cycleCount->executeCycles;
-		else hardware->cyclesToWait = mapping->cycleCount->dontExecuteCycles;
+		if (shouldExecute) cyclesToWait = mapping->cycleCount->executeCycles;
+		else cyclesToWait = mapping->cycleCount->dontExecuteCycles;
 	}
-	
-	hardware->cyclesToWait = hardware->cyclesToWait < 1 ? 1 : hardware->cyclesToWait;
+		
+	hardware->cyclesToWait = cyclesToWait < 1 ? 1 : cyclesToWait;
 }
 
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {

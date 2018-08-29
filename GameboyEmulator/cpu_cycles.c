@@ -170,4 +170,6 @@ void populateCPUOpSizes(InstructionMapping *mappings) {
 	mappings[OpCode_SUB_d8].sizeBytes = 2;
 	mappings[OpCode_XOR_d8].sizeBytes = 2;
 	mappings[OpCode_LD_BC_d16].sizeBytes = 3;
+
+	mappings[OpCode_STOP].sizeBytes = 2;
 }
