@@ -165,6 +165,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_HL_DE].result =
 		mappings[OpCode_ADD_HL_HL].result =
 		mappings[OpCode_ADD_HL_SP].result =
+		mappings[OpCode_ADD_SP_r8].result = 
 		mappings[OpCode_INC_A].result =
 		mappings[OpCode_INC_B].result =
 		mappings[OpCode_INC_BC].result =
