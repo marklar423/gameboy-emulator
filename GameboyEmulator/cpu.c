@@ -210,7 +210,9 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->BC = joinBytes(hardware->registers->C, hardware->registers->B);
 	cached->DE = joinBytes(hardware->registers->E, hardware->registers->D);
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
-	
+	cached->APlusCarry = hardware->registers->A + ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
+	cached->AMinusCarry = hardware->registers->A - ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
+
 	cached->memoryImmediateWord = getRamAddress(hardware, cached->immediateWord);
 	cached->highMemoryImmediateByte = getRamAddress(hardware, 0xFF00 + cached->immediateByte);
 	cached->highMemoryC = getRamAddress(hardware, 0xFF00 + hardware->registers->C);
