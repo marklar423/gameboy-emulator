@@ -21,7 +21,7 @@ typedef struct _Registers {
 } Registers;
 
 typedef struct _GBValue {
-	bool isWordValue, isSplitValue;
+	bool isWordValue, isSplitValue, isByteSigned;
 	unsigned char **byteValue;
 	unsigned char **byteValue2; //used with split bytes. byteValue2 is less significant than byteValue
 	int **wordValue;
@@ -35,7 +35,7 @@ typedef struct _CachedOpValues {
 	unsigned char *memoryHL, *memoryBC, *memoryDE;
 	int AF, BC, DE, HL;
 	int NextPCAddressPlusImmediateByteSigned;
-	int SPPlusImmediateByteSigned, SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
+	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
 	unsigned char *stackValue; //value on top of stack
 	unsigned char *stackPlusOneValue; //second-to-top value in stack
 	unsigned char *stackMinusOneValue; //one value beyond top of stack (new value)
@@ -49,6 +49,7 @@ typedef struct _CachedOpResults {
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
+	bool isAddHalfCarry16, isAddCarry16, isSubHalfBorrow16;
 } ResultInfo;
 
 typedef struct _Hardware {
@@ -87,17 +88,18 @@ typedef struct _InstructionMapping {
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
-GBValue* createGBValue(bool is16Bit, bool isSplitValue, char *byteValue, char *byteValue2, int *wordValue);
-GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
+GBValue* createGBValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char *byteValue, char *byteValue2, int *wordValue);
+GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
 int GBValueToInt(GBValue *value);
 
-#define createGBByteValue(byteValue) createGBValue(false, false, byteValue, NULL, NULL)
-#define createGBWordValue(wordValue) createGBValue(true, false, NULL, NULL, wordValue)
-#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(false, true, byteValue, byteValue2, NULL)
+#define createGBByteValue(byteValue) createGBValue(false, false, false, byteValue, NULL, NULL)
+#define createGBByteValueSigned(signedByteValue) createGBValue(false, false, true, signedByteValue, NULL, NULL)
+#define createGBWordValue(wordValue) createGBValue(true, false, false, NULL, NULL, wordValue)
+#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(false, true, false, byteValue, byteValue2, NULL)
 
-#define createGBBytePointer(byteValue) createGBPointerValue(false, false, byteValue, NULL, NULL)
-#define createGBWordPointer(wordValue) createGBPointerValue(true, false, NULL, NULL, wordValue)
-#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(false, true, byteValue, byteValue2, NULL)
+#define createGBBytePointer(byteValue) createGBPointerValue(false, false, false, byteValue, NULL, NULL)
+#define createGBWordPointer(wordValue) createGBPointerValue(true, false, false, NULL, NULL, wordValue)
+#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(false, true, false, byteValue, byteValue2, NULL)
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);

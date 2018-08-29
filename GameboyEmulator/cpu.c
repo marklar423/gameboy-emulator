@@ -218,7 +218,6 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->memoryBC = getRamAddress(hardware, cached->BC);
 	cached->memoryDE = getRamAddress(hardware, cached->DE);	
 	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
-	cached->SPPlusImmediateByteSigned = hardware->registers->SP + ((char)cached->immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
 	cached->SPMinusTwo = hardware->registers->SP - 2;
 	cached->SPPlusOne = hardware->registers->SP + 1;
@@ -267,6 +266,7 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 
 		hardware->resultInfo->isZero = (resultValue == 0);
 		hardware->resultInfo->isAddCarry = (resultValue > 0xFF);
+		hardware->resultInfo->isAddCarry16 = (resultValue > 0xFFFF);		
 		hardware->resultInfo->isSubBorrow = (resultValue < 0);
 		
 		if (flagResult->isZero != NULL)		SET_BIT_IF(flagResult->isZero, FLAGS_Z, hardware->registers->F);
@@ -278,7 +278,9 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 			int operand2Value = GBValueToInt(operand2);
 
 			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) == 0x10;
+			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) == 0x1000;
 			hardware->resultInfo->isSubHalfBorrow = ((operand1Value & 0x0F) - (operand2Value & 0x0F)) < 0;
+			hardware->resultInfo->isSubHalfBorrow16 = ((operand1Value & 0xFFF) - (operand2Value & 0xFFF)) < 0;
 
 			if (flagResult->isHalfCarry != NULL)		SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 		}

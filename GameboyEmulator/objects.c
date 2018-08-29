@@ -9,7 +9,7 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	return rom;
 }
 
-GBValue* createGBValue(bool is16Bit, bool isSplitValue, char *byteValue, char *byteValue2, int *wordValue) {
+GBValue* createGBValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char *byteValue, char *byteValue2, int *wordValue) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;
 
@@ -28,15 +28,16 @@ GBValue* createGBValue(bool is16Bit, bool isSplitValue, char *byteValue, char *b
 		*wordValuePointer = wordValue;
 	}
 
-	return createGBPointerValue(is16Bit, isSplitValue, byteValuePointer, byteValue2Pointer, wordValuePointer);
+	return createGBPointerValue(is16Bit, isSplitValue, isByteSigned, byteValuePointer, byteValue2Pointer, wordValuePointer);
 }
 
 
-GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer) {
+GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer) {
 	GBValue *value = malloc(sizeof(GBValue));
 
 	value->isWordValue = is16Bit;
 	value->isSplitValue = isSplitValue;
+	value->isByteSigned = isByteSigned;
 	value->byteValue = byteValuePointer;
 	value->byteValue2 = byteValue2Pointer;
 	value->wordValue = wordValuePointer;
@@ -70,7 +71,7 @@ int GBValueToInt(GBValue *value) {
 	if (value != NULL) {
 		if (value->isWordValue) convertedValue = **(value->wordValue);
 		else if (value->isSplitValue) convertedValue = joinBytes(**(value->byteValue2), **(value->byteValue));
-		else convertedValue = **(value->byteValue);
+		else convertedValue = (value->isByteSigned) ? (char) **(value->byteValue) : **(value->byteValue);
 	}
 
 	return convertedValue;

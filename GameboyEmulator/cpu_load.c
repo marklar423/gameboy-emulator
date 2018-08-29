@@ -5,13 +5,16 @@
 #include "util.h"
 
 
+static const bool FALSE_VAL = false;
+static const bool TRUE_VAL = true;
+
 void populateLoadInstructions(Hardware *hardware, InstructionMapping *mappings) {
-	populateLoadOperands1(hardware, mappings);
+	populateLoadOperands(hardware, mappings);
 	populateLoadDestinations(hardware, mappings);
 	populateLoadNextSPs(hardware, mappings);
 }
 
-void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings) {
+void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_LDH_MEM_a8_A].operand1 =
 		mappings[OpCode_LD_A_A].operand1 =
 		mappings[OpCode_LD_B_A].operand1 =
@@ -116,7 +119,9 @@ void populateLoadOperands1(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_LD_A_MEM_BC].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryBC));
 	mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryDE));
 
-	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->cachedValues->SPPlusImmediateByteSigned));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = createGBByteValueSigned(&(hardware->cachedValues->immediateByte));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
 
 	mappings[OpCode_POP_AF].operand1 =
 		mappings[OpCode_POP_BC].operand1 =
