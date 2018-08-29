@@ -239,6 +239,8 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 		if (operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
 
+			results->and = operand1Value & operand2Value;
+			results->or = operand1Value | operand2Value;
 			results->xor = operand1Value ^ operand2Value;
 			results->add = operand1Value + operand2Value;
 			results->subtract = operand1Value - operand2Value;
@@ -282,7 +284,6 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) == 0x10;
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) == 0x1000;
 			hardware->resultInfo->isSubHalfBorrow = ((operand1Value & 0x0F) - (operand2Value & 0x0F)) < 0;
-			hardware->resultInfo->isSubHalfBorrow16 = ((operand1Value & 0xFFF) - (operand2Value & 0xFFF)) < 0;
 
 			if (flagResult->isHalfCarry != NULL)		SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 		}

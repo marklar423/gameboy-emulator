@@ -45,12 +45,12 @@ typedef struct _CachedOpValues {
 } CachedOpValues;
 
 typedef struct _CachedOpResults {
-	int xor, add, subtract;
+	int and, or, xor, add, subtract;
 } CachedOpResults;
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
-	bool isAddHalfCarry16, isAddCarry16, isSubHalfBorrow16;
+	bool isAddHalfCarry16, isAddCarry16;
 } ResultInfo;
 
 typedef struct _Hardware {

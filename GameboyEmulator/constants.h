@@ -301,6 +301,7 @@ typedef enum _OpCode {
 	OpCode_RST_30H = 0xf7,
 	OpCode_RST_38H = 0xff,
 	OpCode_SBC_A_A = 0x9f,
+	OpCode_SBC_A_B = 0x98,
 	OpCode_SBC_A_C = 0x99,
 	OpCode_SBC_A_D = 0x9a,
 	OpCode_SBC_A_E = 0x9b,

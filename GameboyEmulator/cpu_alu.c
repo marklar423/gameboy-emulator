@@ -17,7 +17,7 @@ void populateALUInstructions(Hardware *hardware, InstructionMapping *mappings) {
 }
 
 void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
-		mappings[OpCode_ADD_A_A].operand1 =
+	mappings[OpCode_ADD_A_A].operand1 =
 		mappings[OpCode_ADD_A_B].operand1 =
 		mappings[OpCode_ADD_A_C].operand1 =
 		mappings[OpCode_ADD_A_D].operand1 =
@@ -26,6 +26,33 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_A_L].operand1 =
 		mappings[OpCode_ADD_A_MEM_HL].operand1 =
 		mappings[OpCode_ADD_A_d8].operand1 =
+		mappings[OpCode_SUB_A].operand1 =
+		mappings[OpCode_SUB_B].operand1 =
+		mappings[OpCode_SUB_C].operand1 =
+		mappings[OpCode_SUB_D].operand1 =
+		mappings[OpCode_SUB_E].operand1 =
+		mappings[OpCode_SUB_H].operand1 =
+		mappings[OpCode_SUB_L].operand1 =
+		mappings[OpCode_SUB_MEM_HL].operand1 =
+		mappings[OpCode_SUB_d8].operand1 =
+		mappings[OpCode_AND_A].operand1 =
+		mappings[OpCode_AND_B].operand1 =
+		mappings[OpCode_AND_C].operand1 =
+		mappings[OpCode_AND_D].operand1 =
+		mappings[OpCode_AND_E].operand1 =
+		mappings[OpCode_AND_H].operand1 =
+		mappings[OpCode_AND_L].operand1 =
+		mappings[OpCode_AND_MEM_HL].operand1 =
+		mappings[OpCode_AND_d8].operand1 =
+		mappings[OpCode_OR_A].operand1 =
+		mappings[OpCode_OR_B].operand1 =
+		mappings[OpCode_OR_C].operand1 =
+		mappings[OpCode_OR_D].operand1 =
+		mappings[OpCode_OR_E].operand1 =
+		mappings[OpCode_OR_H].operand1 =
+		mappings[OpCode_OR_L].operand1 =
+		mappings[OpCode_OR_MEM_HL].operand1 =
+		mappings[OpCode_OR_d8].operand1 =
 		mappings[OpCode_XOR_A].operand1 =
 		mappings[OpCode_XOR_B].operand1 =
 		mappings[OpCode_XOR_C].operand1 =
@@ -36,15 +63,25 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_XOR_MEM_HL].operand1 =
 		mappings[OpCode_XOR_d8].operand1 = createGBByteValue(&(hardware->registers->A));
 
-		mappings[OpCode_ADC_A_A].operand1 =
-			mappings[OpCode_ADC_A_B].operand1 =
-			mappings[OpCode_ADC_A_C].operand1 =
-			mappings[OpCode_ADC_A_D].operand1 =
-			mappings[OpCode_ADC_A_E].operand1 =
-			mappings[OpCode_ADC_A_H].operand1 =
-			mappings[OpCode_ADC_A_L].operand1 =
-			mappings[OpCode_ADC_A_MEM_HL].operand1 =
-			mappings[OpCode_ADC_A_d8].operand1 = createGBByteValue(&(hardware->cachedValues->APlusCarry));
+	mappings[OpCode_ADC_A_A].operand1 =
+		mappings[OpCode_ADC_A_B].operand1 =
+		mappings[OpCode_ADC_A_C].operand1 =
+		mappings[OpCode_ADC_A_D].operand1 =
+		mappings[OpCode_ADC_A_E].operand1 =
+		mappings[OpCode_ADC_A_H].operand1 =
+		mappings[OpCode_ADC_A_L].operand1 =
+		mappings[OpCode_ADC_A_MEM_HL].operand1 =
+		mappings[OpCode_ADC_A_d8].operand1 = createGBByteValue(&(hardware->cachedValues->APlusCarry));
+
+	mappings[OpCode_SBC_A_A].operand1 =
+		mappings[OpCode_SBC_A_B].operand1 =
+		mappings[OpCode_SBC_A_C].operand1 =
+		mappings[OpCode_SBC_A_D].operand1 =
+		mappings[OpCode_SBC_A_E].operand1 =
+		mappings[OpCode_SBC_A_H].operand1 =
+		mappings[OpCode_SBC_A_L].operand1 =
+		mappings[OpCode_SBC_A_MEM_HL].operand1 =
+		mappings[OpCode_SBC_A_d8].operand1 = createGBByteValue(&(hardware->cachedValues->AMinusCarry));
 
 	mappings[OpCode_INC_A].operand1 =
 		mappings[OpCode_DEC_A].operand1 = createGBByteValue(&(hardware->registers->A));
@@ -74,57 +111,93 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_DEC_L].operand1 = createGBByteValue(&(hardware->registers->L));
 	mappings[OpCode_INC_MEM_HL].operand1 =
 		mappings[OpCode_DEC_MEM_HL].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryHL));
-	
-		mappings[OpCode_INC_SP].operand1 =
+
+	mappings[OpCode_INC_SP].operand1 =
 		mappings[OpCode_DEC_SP].operand1 = createGBWordValue(&(hardware->registers->SP));
-		
-		mappings[OpCode_ADD_SP_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
+
+	mappings[OpCode_ADD_SP_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
 }
 
 void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_ADC_A_A].operand2 =
 		mappings[OpCode_ADD_A_A].operand2 =
+		mappings[OpCode_SBC_A_A].operand2 =
+		mappings[OpCode_SUB_A].operand2 =
+			mappings[OpCode_AND_A].operand2 =
+			mappings[OpCode_OR_A].operand2 =
 		mappings[OpCode_XOR_A].operand2 = createGBByteValue(&(hardware->registers->A));
 
 	mappings[OpCode_ADC_A_B].operand2 =
 		mappings[OpCode_ADD_A_B].operand2 =
+		mappings[OpCode_SBC_A_B].operand2 =
+		mappings[OpCode_SUB_B].operand2 =
+		mappings[OpCode_AND_B].operand2 =
+		mappings[OpCode_OR_B].operand2 =
 		mappings[OpCode_XOR_B].operand2 = createGBByteValue(&(hardware->registers->B));
 
 	mappings[OpCode_ADC_A_C].operand2 =
 		mappings[OpCode_ADD_A_C].operand2 =
+		mappings[OpCode_SBC_A_C].operand2 =
+		mappings[OpCode_SUB_C].operand2 =
+		mappings[OpCode_AND_C].operand2 =
+		mappings[OpCode_OR_C].operand2 =
 		mappings[OpCode_XOR_C].operand2 = createGBByteValue(&(hardware->registers->C));
 
 	mappings[OpCode_ADC_A_D].operand2 =
 		mappings[OpCode_ADD_A_D].operand2 =
+		mappings[OpCode_SBC_A_D].operand2 =
+		mappings[OpCode_SUB_D].operand2 =
+		mappings[OpCode_AND_D].operand2 =
+		mappings[OpCode_OR_D].operand2 =
 		mappings[OpCode_XOR_D].operand2 = createGBByteValue(&(hardware->registers->D));
 
 	mappings[OpCode_ADC_A_E].operand2 =
 		mappings[OpCode_ADD_A_E].operand2 =
+		mappings[OpCode_SBC_A_E].operand2 =
+		mappings[OpCode_SUB_E].operand2 =
+		mappings[OpCode_AND_E].operand2 =
+		mappings[OpCode_OR_E].operand2 =
 		mappings[OpCode_XOR_E].operand2 = createGBByteValue(&(hardware->registers->E));
 
 	mappings[OpCode_ADC_A_H].operand2 =
 		mappings[OpCode_ADD_A_H].operand2 =
+		mappings[OpCode_SBC_A_H].operand2 =
+		mappings[OpCode_SUB_H].operand2 =
+		mappings[OpCode_AND_H].operand2 =
+		mappings[OpCode_OR_H].operand2 =
 		mappings[OpCode_XOR_H].operand2 = createGBByteValue(&(hardware->registers->H));
 
 	mappings[OpCode_ADC_A_L].operand2 =
 		mappings[OpCode_ADD_A_L].operand2 =
+		mappings[OpCode_SBC_A_L].operand2 =
+		mappings[OpCode_SUB_L].operand2 =
+		mappings[OpCode_AND_L].operand2 =
+		mappings[OpCode_OR_L].operand2 =
 		mappings[OpCode_XOR_L].operand2 = createGBByteValue(&(hardware->registers->L));
 
 	mappings[OpCode_ADC_A_MEM_HL].operand2 =
 		mappings[OpCode_ADD_A_MEM_HL].operand2 =
+		mappings[OpCode_SBC_A_MEM_HL].operand2 =
+		mappings[OpCode_SUB_MEM_HL].operand2 =
+		mappings[OpCode_AND_MEM_HL].operand2 =
+		mappings[OpCode_OR_MEM_HL].operand2 =
 		mappings[OpCode_XOR_MEM_HL].operand2 = createGBBytePointer(&(hardware->cachedValues->memoryHL));
 
 	mappings[OpCode_ADC_A_d8].operand2 =
 		mappings[OpCode_ADD_A_d8].operand2 =
+		mappings[OpCode_SBC_A_d8].operand2 =
+		mappings[OpCode_SUB_d8].operand2 =
+		mappings[OpCode_AND_d8].operand2 =
+		mappings[OpCode_OR_d8].operand2 =
 		mappings[OpCode_XOR_d8].operand2 = createGBByteValue(&(hardware->cachedValues->immediateByte));
 
 
 	mappings[OpCode_ADD_HL_BC].operand2 = createGBWordValue(&(hardware->cachedValues->BC));
-		mappings[OpCode_ADD_HL_DE].operand2 = createGBWordValue(&(hardware->cachedValues->DE));
-		mappings[OpCode_ADD_HL_HL].operand2 = createGBWordValue(&(hardware->cachedValues->HL));
-		mappings[OpCode_ADD_HL_SP].operand2 = createGBWordValue(&(hardware->registers->SP));
+	mappings[OpCode_ADD_HL_DE].operand2 = createGBWordValue(&(hardware->cachedValues->DE));
+	mappings[OpCode_ADD_HL_HL].operand2 = createGBWordValue(&(hardware->cachedValues->HL));
+	mappings[OpCode_ADD_HL_SP].operand2 = createGBWordValue(&(hardware->registers->SP));
 
-		mappings[OpCode_DEC_A].operand2 =
+	mappings[OpCode_DEC_A].operand2 =
 		mappings[OpCode_DEC_B].operand2 =
 		mappings[OpCode_DEC_BC].operand2 =
 		mappings[OpCode_DEC_C].operand2 =
@@ -150,7 +223,7 @@ void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_INC_SP].operand2 = createGBByteValue(&(ONE));
 
 
-		mappings[OpCode_ADD_SP_r8].operand2 = createGBByteValueSigned(&(hardware->cachedValues->immediateByte));
+	mappings[OpCode_ADD_SP_r8].operand2 = createGBByteValueSigned(&(hardware->cachedValues->immediateByte));
 }
 
 void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
@@ -199,7 +272,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_HL_DE].result =
 		mappings[OpCode_ADD_HL_HL].result =
 		mappings[OpCode_ADD_HL_SP].result =
-		mappings[OpCode_ADD_SP_r8].result = 
+		mappings[OpCode_ADD_SP_r8].result =
 		mappings[OpCode_INC_A].result =
 		mappings[OpCode_INC_B].result =
 		mappings[OpCode_INC_BC].result =
@@ -212,6 +285,45 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_INC_L].result =
 		mappings[OpCode_INC_MEM_HL].result =
 		mappings[OpCode_INC_SP].result = &(hardware->cachedResults->add);
+
+	mappings[OpCode_SBC_A_A].result =
+		mappings[OpCode_SBC_A_B].result =
+		mappings[OpCode_SBC_A_C].result =
+		mappings[OpCode_SBC_A_D].result =
+		mappings[OpCode_SBC_A_E].result =
+		mappings[OpCode_SBC_A_H].result =
+		mappings[OpCode_SBC_A_L].result =
+		mappings[OpCode_SBC_A_MEM_HL].result =
+		mappings[OpCode_SBC_A_d8].result =
+		mappings[OpCode_SUB_A].result =
+		mappings[OpCode_SUB_B].result =
+		mappings[OpCode_SUB_C].result =
+		mappings[OpCode_SUB_D].result =
+		mappings[OpCode_SUB_E].result =
+		mappings[OpCode_SUB_H].result =
+		mappings[OpCode_SUB_L].result =
+		mappings[OpCode_SUB_MEM_HL].result =
+		mappings[OpCode_SUB_d8].result = &(hardware->cachedResults->subtract);
+
+	mappings[OpCode_AND_A].result =
+		mappings[OpCode_AND_B].result =
+		mappings[OpCode_AND_C].result =
+		mappings[OpCode_AND_D].result =
+		mappings[OpCode_AND_E].result =
+		mappings[OpCode_AND_H].result =
+		mappings[OpCode_AND_L].result =
+		mappings[OpCode_AND_MEM_HL].result =
+		mappings[OpCode_AND_d8].result = &(hardware->cachedResults->and);
+
+	mappings[OpCode_OR_A].result =
+		mappings[OpCode_OR_B].result =
+		mappings[OpCode_OR_C].result =
+		mappings[OpCode_OR_D].result =
+		mappings[OpCode_OR_E].result =
+		mappings[OpCode_OR_H].result =
+		mappings[OpCode_OR_L].result =
+		mappings[OpCode_OR_MEM_HL].result =
+		mappings[OpCode_OR_d8].result = &(hardware->cachedResults-> or );
 }
 
 void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
@@ -233,6 +345,42 @@ void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_A_L].destination =
 		mappings[OpCode_ADD_A_MEM_HL].destination =
 		mappings[OpCode_ADD_A_d8].destination =
+		mappings[OpCode_SBC_A_A].destination =
+		mappings[OpCode_SBC_A_B].destination =
+		mappings[OpCode_SBC_A_C].destination =
+		mappings[OpCode_SBC_A_D].destination =
+		mappings[OpCode_SBC_A_E].destination =
+		mappings[OpCode_SBC_A_H].destination =
+		mappings[OpCode_SBC_A_L].destination =
+		mappings[OpCode_SBC_A_MEM_HL].destination =
+		mappings[OpCode_SBC_A_d8].destination =
+		mappings[OpCode_SUB_A].destination =
+		mappings[OpCode_SUB_B].destination =
+		mappings[OpCode_SUB_C].destination =
+		mappings[OpCode_SUB_D].destination =
+		mappings[OpCode_SUB_E].destination =
+		mappings[OpCode_SUB_H].destination =
+		mappings[OpCode_SUB_L].destination =
+		mappings[OpCode_SUB_MEM_HL].destination =
+		mappings[OpCode_SUB_d8].destination =
+		mappings[OpCode_AND_A].destination =
+		mappings[OpCode_AND_B].destination =
+		mappings[OpCode_AND_C].destination =
+		mappings[OpCode_AND_D].destination =
+		mappings[OpCode_AND_E].destination =
+		mappings[OpCode_AND_H].destination =
+		mappings[OpCode_AND_L].destination =
+		mappings[OpCode_AND_MEM_HL].destination =
+		mappings[OpCode_AND_d8].destination =
+		mappings[OpCode_OR_A].destination =
+		mappings[OpCode_OR_B].destination =
+		mappings[OpCode_OR_C].destination =
+		mappings[OpCode_OR_D].destination =
+		mappings[OpCode_OR_E].destination =
+		mappings[OpCode_OR_H].destination =
+		mappings[OpCode_OR_L].destination =
+		mappings[OpCode_OR_MEM_HL].destination =
+		mappings[OpCode_OR_d8].destination =
 		mappings[OpCode_XOR_A].destination =
 		mappings[OpCode_XOR_B].destination =
 		mappings[OpCode_XOR_C].destination =
@@ -281,7 +429,26 @@ void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
 }
 
 void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
-	mappings[OpCode_XOR_A].flagResult =
+	mappings[OpCode_AND_A].flagResult =
+		mappings[OpCode_AND_B].flagResult =
+		mappings[OpCode_AND_C].flagResult =
+		mappings[OpCode_AND_D].flagResult =
+		mappings[OpCode_AND_E].flagResult =
+		mappings[OpCode_AND_H].flagResult =
+		mappings[OpCode_AND_L].flagResult =
+		mappings[OpCode_AND_MEM_HL].flagResult =
+		mappings[OpCode_AND_d8].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &TRUE_VAL, &FALSE_VAL);
+
+	mappings[OpCode_OR_A].flagResult =
+		mappings[OpCode_OR_B].flagResult =
+		mappings[OpCode_OR_C].flagResult =
+		mappings[OpCode_OR_D].flagResult =
+		mappings[OpCode_OR_E].flagResult =
+		mappings[OpCode_OR_H].flagResult =
+		mappings[OpCode_OR_L].flagResult =
+		mappings[OpCode_OR_MEM_HL].flagResult =
+		mappings[OpCode_OR_d8].flagResult =
+		mappings[OpCode_XOR_A].flagResult =
 		mappings[OpCode_XOR_B].flagResult =
 		mappings[OpCode_XOR_C].flagResult =
 		mappings[OpCode_XOR_D].flagResult =
@@ -337,10 +504,29 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_A_MEM_HL].flagResult =
 		mappings[OpCode_ADD_A_d8].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), &(hardware->resultInfo->isAddCarry));
 
-		mappings[OpCode_ADD_HL_BC].flagResult =
+	mappings[OpCode_ADD_HL_BC].flagResult =
 		mappings[OpCode_ADD_HL_DE].flagResult =
 		mappings[OpCode_ADD_HL_HL].flagResult =
 		mappings[OpCode_ADD_HL_SP].flagResult = createFlagResult(NULL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
 
-		mappings[OpCode_ADD_SP_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
+	mappings[OpCode_ADD_SP_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
+
+	mappings[OpCode_SBC_A_A].operand2 =
+		mappings[OpCode_SBC_A_B].flagResult =
+		mappings[OpCode_SBC_A_C].flagResult =
+		mappings[OpCode_SBC_A_D].flagResult =
+		mappings[OpCode_SBC_A_E].flagResult =
+		mappings[OpCode_SBC_A_H].flagResult =
+		mappings[OpCode_SBC_A_L].flagResult =
+		mappings[OpCode_SBC_A_MEM_HL].flagResult =
+		mappings[OpCode_SBC_A_d8].flagResult =
+		mappings[OpCode_SUB_A].flagResult =
+		mappings[OpCode_SUB_B].flagResult =
+		mappings[OpCode_SUB_C].flagResult =
+		mappings[OpCode_SUB_D].flagResult =
+		mappings[OpCode_SUB_E].flagResult =
+		mappings[OpCode_SUB_H].flagResult =
+		mappings[OpCode_SUB_L].flagResult =
+		mappings[OpCode_SUB_MEM_HL].flagResult =
+		mappings[OpCode_SUB_d8].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &TRUE_VAL, &(hardware->resultInfo->isSubHalfBorrow), &(hardware->resultInfo->isSubBorrow));
 }
