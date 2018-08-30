@@ -47,17 +47,17 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		*(getRamAddress(hardware, 0xFF23)) = 0xBF; //NR30
 		*(getRamAddress(hardware, 0xFF24)) = 0x77; //NR50
 		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51
-		*(getRamAddress(hardware, 0xFF26)) = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
-		*(getRamAddress(hardware, 0xFF40)) = 0x91; //LCDC
-		*(getRamAddress(hardware, 0xFF42)) = 0x00; //SCY
-		*(getRamAddress(hardware, 0xFF43)) = 0x00; //SCX
-		*(getRamAddress(hardware, 0xFF45)) = 0x00; //LYC
-		*(getRamAddress(hardware, 0xFF47)) = 0xFC; //BGP
-		*(getRamAddress(hardware, 0xFF48)) = 0xFF; //OBP0
-		*(getRamAddress(hardware, 0xFF49)) = 0xFF; //OBP1
-		*(getRamAddress(hardware, 0xFF4A)) = 0x00; //WY
-		*(getRamAddress(hardware, 0xFF4B)) = 0x00; //WX*/
-		*(getRamAddress(hardware, 0xFFFF)) = 0x00; //IE
+		*(getRamAddress(hardware, 0xFF26)) = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52 */
+		hardware->videoData->lcdControl = 0x91;
+		hardware->videoData->scrollY = 0x00;
+		hardware->videoData->scrollX = 0x00;
+		hardware->videoData->lcdYCompare = 0x00;
+		hardware->videoData->bgPalette = 0xFC;
+		hardware->videoData->objPalette0 = 0xFF; 
+		hardware->videoData->objPalette1 = 0xFF;
+		hardware->videoData->windowY = 0x00;
+		hardware->videoData->windowX = 0x00;
+		hardware->registers->enabledInterrupts = 0x00;
 	}
 
 	return hardware;
