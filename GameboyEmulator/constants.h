@@ -14,7 +14,7 @@ typedef enum _RomLocation {
 } RomLocation;
 
 
-typedef enum RomLocation {
+typedef enum _RamLocation {
 	RAM_LOCATION_CART_FIXED = 0x0,
 	RAM_LOCATION_CART_FIXED_END = 0x3fff,
 	RAM_LOCATION_CART_SWITCHABLE = 0x4000,
