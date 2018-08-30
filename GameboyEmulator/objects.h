@@ -20,6 +20,16 @@ typedef struct _Registers {
 	unsigned char enabledInterrupts, requestedInterrupts;
 } Registers;
 
+typedef struct _VideoData {
+	unsigned char lcdControl, lcdStatus, lcdYCoord, lcdYCompare;
+	unsigned char scrollY, scrollX, windowY, windowX;
+	unsigned char dmaTransfer, bgPalette, objPalette0, objPalette1;
+} VideoData;
+
+typedef struct _IOData {
+	unsigned char joypadInput, serialTransferData, serialTransferControl;
+} IOData;
+
 typedef struct _GBValue {
 	bool isWordValue, isSplitValue, isByteSigned;
 	unsigned char **byteValue;
@@ -56,10 +66,12 @@ typedef struct _ResultInfo {
 typedef struct _Hardware {
 	GameRom *rom;
 	Registers *registers;
+	VideoData *videoData;
+	IOData *ioData;
 	CachedOpValues *cachedValues;
 	CachedOpResults *cachedResults;
 	ResultInfo *resultInfo;
-	unsigned char *workRam;
+	unsigned char *workRam, *highRam;
 	int cyclesToWait;
 } Hardware;
 
@@ -108,3 +120,5 @@ FlagCondition* createFlagCondition(char condition, bool negate);
 OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles);
 
 InstructionMapping* createInstructionMappings(int numInstructions);
+
+Hardware* createHardware();

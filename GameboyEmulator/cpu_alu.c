@@ -304,7 +304,16 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_INC_MEM_HL].result =
 		mappings[OpCode_INC_SP].result = &(hardware->cachedResults->add);
 
-	mappings[OpCode_SBC_A_A].result =
+	mappings[OpCode_CP_A].result =
+		mappings[OpCode_CP_B].result =
+		mappings[OpCode_CP_C].result =
+		mappings[OpCode_CP_D].result =
+		mappings[OpCode_CP_E].result =
+		mappings[OpCode_CP_H].result =
+		mappings[OpCode_CP_L].result =
+		mappings[OpCode_CP_MEM_HL].result =
+		mappings[OpCode_CP_d8].result =
+		mappings[OpCode_SBC_A_A].result =
 		mappings[OpCode_SBC_A_B].result =
 		mappings[OpCode_SBC_A_C].result =
 		mappings[OpCode_SBC_A_D].result =

@@ -91,3 +91,24 @@ InstructionMapping* createInstructionMappings(int numInstructions) {
 	return instructions;
 }
 
+
+Hardware* createHardware() {
+	Hardware *hardware = calloc(1, sizeof(Hardware));
+
+	hardware->registers = calloc(1, sizeof(Registers));
+	hardware->registers->PC = ROM_LOCATION_EXEC_START;
+	hardware->cachedValues = calloc(1, sizeof(CachedOpValues));
+	hardware->cachedResults = calloc(1, sizeof(CachedOpResults));
+	hardware->resultInfo = calloc(1, sizeof(ResultInfo));
+	hardware->ioData = calloc(1, sizeof(IOData));
+
+	int workRamSize = RAM_LOCATION_WORK_RAM_SWITCHABLE_END - RAM_LOCATION_WORK_RAM_FIXED + 1;
+	hardware->workRam = calloc(workRamSize, sizeof(unsigned char));
+
+	int highRamSize = RAM_LOCATION_HRAM_END - RAM_LOCATION_HRAM + 1;
+	hardware->highRam = calloc(highRamSize, sizeof(unsigned char));
+	
+	hardware->videoData = calloc(1, sizeof(VideoData));
+
+	return hardware;
+}

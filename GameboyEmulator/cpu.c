@@ -11,17 +11,10 @@
 #include "util.h"
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
-	Hardware *hardware = calloc(1, sizeof(Hardware));
+	Hardware *hardware = createHardware();
 
-	hardware->rom = rom;
-	hardware->registers = calloc(1, sizeof(Registers));
 	hardware->registers->PC = ROM_LOCATION_EXEC_START;
-	hardware->cachedValues = calloc(1, sizeof(CachedOpValues));
-	hardware->cachedResults = calloc(1, sizeof(CachedOpResults));
-	hardware->resultInfo = calloc(1, sizeof(ResultInfo));
-
-	int ramSize = RAM_LOCATION_WORK_RAM_SWITCHABLE_END - RAM_LOCATION_WORK_RAM_FIXED + 1;
-	hardware->workRam = calloc(ramSize, sizeof(unsigned char));
+	hardware->rom = rom;
 
 	if (populateDefaultValues == true) {
 		hardware->registers->A = 0x1; // GBC = 0x11
