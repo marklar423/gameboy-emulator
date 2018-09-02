@@ -24,6 +24,8 @@ typedef struct _VideoData {
 	unsigned char lcdControl, lcdStatus, lcdYCoord, lcdYCompare;
 	unsigned char scrollY, scrollX, windowY, windowX;
 	unsigned char dmaTransfer, bgPalette, objPalette0, objPalette1;
+	unsigned char *vRam, *oamTable;
+	unsigned char *lineVisibleSprites;
 } VideoData;
 
 typedef struct _IOData {
@@ -72,7 +74,7 @@ typedef struct _Hardware {
 	CachedOpResults *cachedResults;
 	ResultInfo *resultInfo;
 	unsigned char *workRam, *highRam;
-	int cyclesToWait;
+	int cpuCyclesToWait, ppuCyclesToWait;
 } Hardware;
 
 typedef struct _FlagResult {

@@ -133,7 +133,7 @@
     <ClCompile Include="cpu_interrupts.c" />
     <ClCompile Include="cpu_jump.c" />
     <ClCompile Include="cpu_load.c" />
-    <ClCompile Include="cpu_ram.c" />
+    <ClCompile Include="ram.c" />
     <ClCompile Include="game_rom.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="objects.c" />
@@ -148,7 +148,7 @@
     <ClInclude Include="cpu_interrupts.h" />
     <ClInclude Include="cpu_jump.h" />
     <ClInclude Include="cpu_load.h" />
-    <ClInclude Include="cpu_ram.h" />
+    <ClInclude Include="ram.h" />
     <ClInclude Include="game_rom.h" />
     <ClInclude Include="objects.h" />
     <ClInclude Include="ppu.h" />

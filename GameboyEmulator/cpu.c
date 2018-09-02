@@ -5,7 +5,7 @@
 #include "cpu_load.h"
 #include "cpu_jump.h"
 #include "cpu_alu.h"
-#include "cpu_ram.h"
+#include "ram.h"
 #include "cpu_cycles.h"
 #include "cpu_interrupts.h"
 #include "util.h"
@@ -76,13 +76,13 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 }
 
 void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
-	if (hardware->cyclesToWait <= 1) {
+	if (hardware->cpuCyclesToWait <= 1) {
 		processInterrupts(hardware);
 		unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
 		processInstruction(hardware, &mappings[*instruction], *instruction);
 	}
 	else {
-		hardware->cyclesToWait--;
+		hardware->cpuCyclesToWait--;
 	}
 }
 
@@ -199,7 +199,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		else cyclesToWait = mapping->cycleCount->dontExecuteCycles;
 	}
 		
-	hardware->cyclesToWait = cyclesToWait < 1 ? 1 : cyclesToWait;
+	hardware->cpuCyclesToWait = cyclesToWait < 1 ? 1 : cyclesToWait;
 }
 
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {

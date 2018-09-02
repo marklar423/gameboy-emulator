@@ -1,6 +1,6 @@
 
 #include "cpu_interrupts.h"
-#include "cpu_ram.h"
+#include "ram.h"
 
 void processInterrupts(Hardware *hardware) {
 	if (hardware->registers->globalInterruptsEnabled) {

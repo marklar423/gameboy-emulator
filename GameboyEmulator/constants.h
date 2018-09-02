@@ -74,6 +74,21 @@ typedef enum _InterruptFlag {
 	INTERRUPT_FLAG_BUTTON_PRESS = 16
 } InterruptFlag;
 
+typedef enum _PPUFlag {
+	PPU_FLAG_MODE_HBLANK = 0,
+	PPU_FLAG_MODE_VBLANK = 1,
+	PPU_FLAG_MODE_OAM_SEARCH = 2,
+	PPU_FLAG_MODE_PIXEL_TRANSFER = 3,
+	PPU_FLAG_MODE_MASK = 3
+} PPUFlag;
+
+typedef enum _PPUCycles {
+	PPU_CYCLES_OAM_SEARCH = 20,
+	PPU_CYCLES_PIXEL_TRANSFER = 43,
+	PPU_CYCLES_HBLANK = 51,
+	PPU_CYCLES_LINE_TOTAL = 114
+} PPUCycles;
+
 static const int NUM_OPCODES = 512;
 
 /*
@@ -94,8 +109,11 @@ static const int NUM_OPCODES = 512;
 
 static const float TARGET_FPS = 59.7;
 static const float TARGET_MILLSECONDS_PER_FRAME = 16.75;
-static const float TARGET_TICKS_FRAME = 17556;
-
+static const int TARGET_TICKS_FRAME = 17556;
+static const int SCREEN_VISIBLE_LINES = 144;
+static const int VBLANK_LINES = 10;
+static const int SCREEN_TOTAL_LINES = 154;
+static const int VISIBLE_SPRITES_PER_LINE = 11;
 
 typedef enum _OpCode {
 	OpCode_ADC_A_A = 0x8f,

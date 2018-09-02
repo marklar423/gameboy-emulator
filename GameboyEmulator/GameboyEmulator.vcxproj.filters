@@ -24,9 +24,6 @@
     <ClCompile Include="cpu_load.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cpu_ram.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="util.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,6 +48,9 @@
     <ClCompile Include="cpu_interrupts.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ram.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cpu.h">
@@ -63,9 +63,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="objects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="cpu_ram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="util.h">
@@ -87,6 +84,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cpu_interrupts.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ram.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
