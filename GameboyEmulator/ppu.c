@@ -4,6 +4,7 @@
 
 
 void setLCDLine(Hardware *hardware, unsigned char line);
+void setLCDMode(Hardware *hardware, PPUFlag mode);
 void populateVisibleSprites(Hardware *hardware);
 void drawLine(Hardware *hardware);
 
@@ -21,8 +22,8 @@ void tickPPU(Hardware *hardware) {
 	 */
 
 	if (hardware->ppuCyclesToWait <= 1) {
-		int prevMode = *(getRamAddress(hardware, RAM_LOCATION_LCD_STATUS)) & PPU_FLAG_MODE_MASK;
-		int currentLine = *(getRamAddress(hardware, RAM_LOCATION_LCD_Y_COORD));
+		int prevMode = hardware->videoData->lcdStatus & PPU_FLAG_MODE_MASK;
+		int currentLine = hardware->videoData->lcdYCoord;
 
 		switch (prevMode) {
 			case PPU_FLAG_MODE_VBLANK:
@@ -70,7 +71,24 @@ void tickPPU(Hardware *hardware) {
 }
 
 void populateVisibleSprites(Hardware *hardware) {
+	int currentLine = hardware->videoData->lcdYCoord;
+	int numVisible = 0, numSprites = RAM_LOCATION_OAM_END - RAM_LOCATION_OAM + 1;
+	
+	for (int i = 0; i < numSprites && numVisible < VISIBLE_SPRITES_PER_LINE; i++) {
+		int yPos = hardware->videoData->oamTable[i + OAM_INDEX_POS_Y];
+		int xPos = hardware->videoData->oamTable[i + OAM_INDEX_POS_X];
 
+		//todo: handle double height sprites
+		if (xPos > 0 && xPos < SCREEN_WIDTH + TILE_SIZE) {
+			if (currentLine < (yPos - TILE_SIZE) && currentLine >= yPos - (TILE_SIZE * 2)) {
+				hardware->videoData->lineVisibleSprites[numVisible++] = &(hardware->videoData->oamTable[i]);
+			}			
+		}
+	}
+
+	for (int i = numVisible; i < VISIBLE_SPRITES_PER_LINE; i++) {
+		hardware->videoData->lineVisibleSprites[i] = NULL;
+	}
 }
 
 void drawLine(Hardware *hardware) {
@@ -78,15 +96,16 @@ void drawLine(Hardware *hardware) {
 }
 
 void setLCDMode(Hardware *hardware, PPUFlag mode) {
-	unsigned char *currentMode = getRamAddress(hardware, RAM_LOCATION_LCD_STATUS);
-	int prevMode = (*currentMode) & PPU_FLAG_MODE_MASK;
+	unsigned char currentMode = hardware->videoData->lcdStatus;
+	int prevMode = currentMode & PPU_FLAG_MODE_MASK;
 
 	if (prevMode != mode) {
+		hardware->videoData->lcdStatus = (hardware->videoData->lcdStatus & (~PPU_FLAG_MODE_MASK)) | mode;
 		//todo: handle mode change interrupt and V blank interrupt
 	}
 }
 
 void setLCDLine(Hardware *hardware, unsigned char line) {
-	*(getRamAddress(hardware, RAM_LOCATION_LCD_Y_COORD)) = line;
+	hardware->videoData->lcdYCoord = line;
 	//todo: handle LCD Y interrupt
 }

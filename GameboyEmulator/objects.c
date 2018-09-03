@@ -115,7 +115,9 @@ Hardware* createHardware() {
 
 	int oamSize = RAM_LOCATION_OAM_END - RAM_LOCATION_OAM + 1;
 	hardware->videoData->oamTable = calloc(oamSize, sizeof(unsigned char));
-	hardware->videoData->lineVisibleSprites = calloc(VISIBLE_SPRITES_PER_LINE, sizeof(unsigned char));
+	hardware->videoData->lineVisibleSprites = calloc(VISIBLE_SPRITES_PER_LINE, sizeof(unsigned char*));
+
+	hardware->soundData = calloc(1, sizeof(SoundData));
 
 	return hardware;
 }

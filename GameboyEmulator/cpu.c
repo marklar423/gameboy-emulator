@@ -46,8 +46,8 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		*(getRamAddress(hardware, 0xFF22)) = 0x00; //NR43
 		*(getRamAddress(hardware, 0xFF23)) = 0xBF; //NR30
 		*(getRamAddress(hardware, 0xFF24)) = 0x77; //NR50
-		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51
-		*(getRamAddress(hardware, 0xFF26)) = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52 */
+		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51 */
+		hardware->soundData->soundOnOff = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
 		hardware->videoData->lcdControl = 0x91;
 		hardware->videoData->scrollY = 0x00;
 		hardware->videoData->scrollX = 0x00;

@@ -38,6 +38,29 @@ typedef enum _RamLocation {
 	RAM_LOCATION_JOYPAD_INPUT = 0xFF00,
 	RAM_LOCATION_SERIAL_TRANSFER_DATA = 0xFF01,
 	RAM_LOCATION_SERIAL_TRANSFER_CONTROL = 0xFF02,
+	RAM_LOCATION_SOUND_CHANNEL_1_Sweep_register = 0xFF10, //NR10 - Channel 1 Sweep register
+	RAM_LOCATION_SOUND_CHANNEL_1_Sound_length_Wave_pattern_duty = 0xFF11, //NR11 - Channel 1 Sound_Length/Wave pattern duty
+	RAM_LOCATION_SOUND_CHANNEL_1_Volume_Envelope = 0xFF12, //NR12 - Channel 1 Volume_Envelope
+	RAM_LOCATION_SOUND_CHANNEL_1_Frequency_lo = 0xFF13, //NR13 - Channel 1 Frequency_lo 
+	RAM_LOCATION_SOUND_CHANNEL_1_Frequency_hi = 0xFF14, //NR14 - Channel 1 Frequency_hi
+	RAM_LOCATION_SOUND_CHANNEL_2_Sound_Length_Wave_Pattern_Duty = 0xFF16, //NR21 - Channel 2 Sound_Length/Wave Pattern Duty
+	RAM_LOCATION_SOUND_CHANNEL_2_Volume_Envelope = 0xFF17, //NR22 - Channel 2 Volume_Envelope
+	RAM_LOCATION_SOUND_CHANNEL_2_Frequency_lo_data = 0xFF18, //NR23 - Channel 2 Frequency_lo data 
+	RAM_LOCATION_SOUND_CHANNEL_2_Frequency_hi_data = 0xFF19, //NR24 - Channel 2 Frequency_hi data
+	RAM_LOCATION_SOUND_CHANNEL_3_Sound_on_off = 0xFF1A, //NR30 - Channel 3 Sound on/off
+	RAM_LOCATION_SOUND_CHANNEL_3_Sound_Length = 0xFF1B, //NR31 - Channel 3 Sound_Length
+	RAM_LOCATION_SOUND_CHANNEL_3_Select_output_level = 0xFF1C, //NR32 - Channel 3 Select output level
+	RAM_LOCATION_SOUND_CHANNEL_3_Frequency_lower_data  = 0xFF1D, //NR33 - Channel 3 Frequency's lower data
+	RAM_LOCATION_SOUND_CHANNEL_3_Frequency_higher_data = 0xFF1E, //NR34 - Channel 3 Frequency's higher data
+	RAM_LOCATION_SOUND_WAVE_PATTERN = 0xFF30,
+	RAM_LOCATION_SOUND_WAVE_PATTERN_END = 0xFF3F,
+	RAM_LOCATION_SOUND_CHANNEL_4_Sound_Length = 0xFF20, //NR41 - Channel 4 Sound_Length
+	RAM_LOCATION_SOUND_CHANNEL_4_Volume_Envelope = 0xFF21, //NR42 - Channel 4 Volume_Envelope
+	RAM_LOCATION_SOUND_CHANNEL_4_Polynomial_Counter = 0xFF22, //NR43 - Channel 4 Polynomial Counter
+	RAM_LOCATION_SOUND_CHANNEL_4_Counter_consecutive_Inital = 0xFF23, //NR44 - Channel 4 Counter/consecutive, Inital
+	RAM_LOCATION_SOUND_CHANNEL_control_ON_OFF_Volume = 0xFF24, //NR50 - Channel control / ON-OFF / Volume
+	RAM_LOCATION_SOUND_Selection_of_Sound_output_terminal = 0xFF25, //NR51 - Selection of Sound output terminal
+	RAM_LOCATION_SOUND_ON_OFF = 0xFF26,
 	RAM_LOCATION_LCD_CONTROL = 0xFF40,
 	RAM_LOCATION_LCD_STATUS = 0xFF41,
 	RAM_LOCATION_SCROLL_Y = 0xFF42,
@@ -79,7 +102,16 @@ typedef enum _PPUFlag {
 	PPU_FLAG_MODE_VBLANK = 1,
 	PPU_FLAG_MODE_OAM_SEARCH = 2,
 	PPU_FLAG_MODE_PIXEL_TRANSFER = 3,
-	PPU_FLAG_MODE_MASK = 3
+	PPU_FLAG_MODE_MASK = 3,
+
+	PPU_FLAG_LCD_ENABLE = 128, //0 = Off, 1 = On
+	PPU_FLAG_WINDOW_TILE_MAP_SELECT = 61, //0 = 9800 - 9BFF, 1 = 9C00 - 9FFF
+	PPU_FLAG_WINDOW_ENABLE = 32, //0 = Off, 1 = On
+	PPU_FLAG_BG_TILE_ADDRESS_MODE = 16, //0 = 8800 - 97FF, 1 = 8000 - 8FFF
+	PPU_FLAG_BG_TILE_MAP_SELECT = 8, //0 = 9800 - 9BFF, 1 = 9C00 - 9FFF
+	PPU_FLAG_OBJ_SIZE_MASK = 4, //0 = 8x8, 1 = 8x16
+	PPU_FLAG_OBJ_ENABLE = 2, //0 = Off, 1 = On
+	PPU_FLAG_BG_ENABLE = 1 //0 = Off, 1 = On
 } PPUFlag;
 
 typedef enum _PPUCycles {
@@ -88,6 +120,13 @@ typedef enum _PPUCycles {
 	PPU_CYCLES_HBLANK = 51,
 	PPU_CYCLES_LINE_TOTAL = 114
 } PPUCycles;
+
+typedef enum _OAMIndex {
+	OAM_INDEX_POS_Y = 0,
+	OAM_INDEX_POS_X = 1,
+	OAM_INDEX_TILE_NUM = 2,
+	OAM_INDEX_FLAGS = 3
+} OAMIndex;
 
 static const int NUM_OPCODES = 512;
 
@@ -113,7 +152,10 @@ static const int TARGET_TICKS_FRAME = 17556;
 static const int SCREEN_VISIBLE_LINES = 144;
 static const int VBLANK_LINES = 10;
 static const int SCREEN_TOTAL_LINES = 154;
-static const int VISIBLE_SPRITES_PER_LINE = 11;
+static const int VISIBLE_SPRITES_PER_LINE = 10;
+static const int SCREEN_WIDTH = 160;
+static const int SCREEN_HEIGHT = 144;
+static const int TILE_SIZE = 8;
 
 typedef enum _OpCode {
 	OpCode_ADC_A_A = 0x8f,

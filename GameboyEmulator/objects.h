@@ -25,8 +25,12 @@ typedef struct _VideoData {
 	unsigned char scrollY, scrollX, windowY, windowX;
 	unsigned char dmaTransfer, bgPalette, objPalette0, objPalette1;
 	unsigned char *vRam, *oamTable;
-	unsigned char *lineVisibleSprites;
+	unsigned char **lineVisibleSprites;
 } VideoData;
+
+typedef struct _SoundData {
+	unsigned char soundOnOff;
+} SoundData;
 
 typedef struct _IOData {
 	unsigned char joypadInput, serialTransferData, serialTransferControl;
@@ -69,6 +73,7 @@ typedef struct _Hardware {
 	GameRom *rom;
 	Registers *registers;
 	VideoData *videoData;
+	SoundData *soundData;
 	IOData *ioData;
 	CachedOpValues *cachedValues;
 	CachedOpResults *cachedResults;
