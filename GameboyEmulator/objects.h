@@ -24,8 +24,9 @@ typedef struct _VideoData {
 	unsigned char lcdControl, lcdStatus, lcdYCoord, lcdYCompare;
 	unsigned char scrollY, scrollX, windowY, windowX;
 	unsigned char dmaTransfer, bgPalette, objPalette0, objPalette1;
-	unsigned char *vRam, *oamTable;
-	unsigned char **lineVisibleSprites;
+	unsigned char vRam[VRAM_SIZE], oamTable[OAM_SIZE];
+	unsigned char * lineVisibleSprites[VISIBLE_SPRITES_PER_LINE];
+	unsigned char framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]; //2D array, framePixels[y][x], size is framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]
 } VideoData;
 
 typedef struct _SoundData {
@@ -78,7 +79,7 @@ typedef struct _Hardware {
 	CachedOpValues *cachedValues;
 	CachedOpResults *cachedResults;
 	ResultInfo *resultInfo;
-	unsigned char *workRam, *highRam;
+	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
 } Hardware;
 

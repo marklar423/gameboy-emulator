@@ -38,7 +38,7 @@ void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_LD_E_B].operand1 =
 		mappings[OpCode_LD_H_B].operand1 =
 		mappings[OpCode_LD_L_B].operand1 =
-		mappings[OpCode_LD_MEM_HL_B].operand1 = createGBByteValue(false, &(hardware->registers->B));
+		mappings[OpCode_LD_MEM_HL_B].operand1 = createGBByteValue(&(hardware->registers->B));
 
 	mappings[OpCode_LD_A_C].operand1 =
 		mappings[OpCode_LD_B_C].operand1 =
@@ -47,7 +47,7 @@ void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_LD_E_C].operand1 =
 		mappings[OpCode_LD_H_C].operand1 =
 		mappings[OpCode_LD_L_C].operand1 =
-		mappings[OpCode_LD_MEM_HL_C].operand1 = createGBByteValue(false, &(hardware->registers->C));
+		mappings[OpCode_LD_MEM_HL_C].operand1 = createGBByteValue(&(hardware->registers->C));
 
 	mappings[OpCode_LD_A_D].operand1 =
 		mappings[OpCode_LD_B_D].operand1 =

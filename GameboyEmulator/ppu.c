@@ -7,7 +7,9 @@ void setLCDLine(Hardware *hardware, unsigned char line);
 void setLCDMode(Hardware *hardware, PPUFlag mode);
 void populateVisibleSprites(Hardware *hardware);
 void drawLine(Hardware *hardware);
-
+void drawBackground(Hardware *hardware, int x, int y);
+void drawWindow(Hardware *hardware, int x, int y);
+void drawSprites(Hardware *hardware, int x, int y);
 
 void tickPPU(Hardware *hardware) {
 	/*	
@@ -92,6 +94,24 @@ void populateVisibleSprites(Hardware *hardware) {
 }
 
 void drawLine(Hardware *hardware) {
+	int currentLine = hardware->videoData->lcdYCoord;
+
+	for (int i = 0; i < SCREEN_WIDTH; i++) {
+		drawBackground(hardware, i, currentLine);
+		drawWindow(hardware, i, currentLine);
+		drawSprites(hardware, i, currentLine);
+	}
+}
+
+void drawBackground(Hardware *hardware, int x, int y) {
+
+}
+
+void drawWindow(Hardware *hardware, int x, int y) {
+
+}
+
+void drawSprites(Hardware *hardware, int x, int y) {
 
 }
 

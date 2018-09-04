@@ -128,7 +128,11 @@ typedef enum _OAMIndex {
 	OAM_INDEX_FLAGS = 3
 } OAMIndex;
 
-static const int NUM_OPCODES = 512;
+#define NUM_OPCODES 512
+#define VRAM_SIZE 0x2000
+#define OAM_SIZE 0xA0
+#define WORK_RAM_SIZE 0x1000
+#define HRAM_SIZE 0x7F
 
 /*
  Some notes:
@@ -146,16 +150,16 @@ static const int NUM_OPCODES = 512;
  - So total clocks per gameboy frame = 114 x (144 + 10) = 17,556 clocks per gameboy frame
 */
 
-static const float TARGET_FPS = 59.7;
-static const float TARGET_MILLSECONDS_PER_FRAME = 16.75;
-static const int TARGET_TICKS_FRAME = 17556;
-static const int SCREEN_VISIBLE_LINES = 144;
-static const int VBLANK_LINES = 10;
-static const int SCREEN_TOTAL_LINES = 154;
-static const int VISIBLE_SPRITES_PER_LINE = 10;
-static const int SCREEN_WIDTH = 160;
-static const int SCREEN_HEIGHT = 144;
-static const int TILE_SIZE = 8;
+#define TARGET_FPS 59.7f
+#define TARGET_MILLSECONDS_PER_FRAME 16.75f
+#define TARGET_TICKS_FRAME 17556
+#define SCREEN_VISIBLE_LINES 144
+#define VBLANK_LINES 10
+#define SCREEN_TOTAL_LINES 154
+#define VISIBLE_SPRITES_PER_LINE 10
+#define SCREEN_WIDTH 160
+#define SCREEN_HEIGHT 144
+#define TILE_SIZE 8
 
 typedef enum _OpCode {
 	OpCode_ADC_A_A = 0x8f,
