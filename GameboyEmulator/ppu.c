@@ -104,11 +104,20 @@ void drawLine(Hardware *hardware) {
 }
 
 void drawBackground(Hardware *hardware, int x, int y) {
+	//is BG enabled?
+	if ((hardware->videoData->lcdControl & PPU_FLAG_BG_ENABLE) == PPU_FLAG_BG_ENABLE) {
+		//get the right tile map
+		bool isTiles1Addressing = (hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_ADDRESS_MODE) == PPU_FLAG_BG_TILE_ADDRESS_MODE;
 
+		//get the relevant tile
+	}
 }
 
 void drawWindow(Hardware *hardware, int x, int y) {
+	//is window enabled?
+	if ((hardware->videoData->lcdControl & PPU_FLAG_WINDOW_ENABLE) == PPU_FLAG_WINDOW_ENABLE) {
 
+	}
 }
 
 void drawSprites(Hardware *hardware, int x, int y) {
