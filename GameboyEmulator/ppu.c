@@ -106,10 +106,47 @@ void drawLine(Hardware *hardware) {
 void drawBackground(Hardware *hardware, int x, int y) {
 	//is BG enabled?
 	if ((hardware->videoData->lcdControl & PPU_FLAG_BG_ENABLE) == PPU_FLAG_BG_ENABLE) {
-		//get the right tile map
-		bool isTiles1Addressing = (hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_ADDRESS_MODE) == PPU_FLAG_BG_TILE_ADDRESS_MODE;
 
-		//get the relevant tile
+		//get the relevant tile number
+		int tileX, tileY;
+		tileX = (hardware->videoData->scrollX + x) / TILE_SIZE;
+		tileY = (hardware->videoData->scrollY + y) / TILE_SIZE;
+
+		//get the row and column of the pixel in the tile
+		int tilePixelRow, tilePixelCol;
+		tilePixelRow = (hardware->videoData->scrollX + x) - (tileX * TILE_SIZE);
+		tilePixelCol = (hardware->videoData->scrollX + y) - (tileY * TILE_SIZE);
+
+		//get the right tile map
+		unsigned char* bgTileMap;
+
+		if ((hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_MAP_SELECT) == PPU_FLAG_BG_TILE_MAP_SELECT) {
+			bgTileMap = hardware->videoData->bgMap2;
+		}
+		else {
+			bgTileMap = hardware->videoData->bgMap1;
+		}
+
+		unsigned char tileAddress = bgTileMap[(tileY * BG_MAP_TILES_WIDTH) + tileX];
+
+		unsigned char *tileRowPixels;
+
+		//which address mode are we in?
+		if ((hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) == PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) {
+			tileRowPixels = (hardware->videoData->tileData + tileAddress + (tilePixelRow * 2));
+		}
+		else {
+			char tileAddressSigned = tileAddress;
+			tileRowPixels = (hardware->videoData->tileData + tileAddressSigned + (tilePixelRow * 2));
+		}
+
+		int pixelColor = 0;
+		if ((tileRowPixels[0] & (1 << tilePixelCol)) == (1 << tilePixelCol)) pixelColor |= 1;
+		if ((tileRowPixels[1] & (1 << tilePixelCol)) == (1 << tilePixelCol)) pixelColor |= 2;
+
+		//todo: get proper pallete data
+
+		hardware->videoData->framePixels[y][x] = pixelColor;
 	}
 }
 

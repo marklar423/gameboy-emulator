@@ -112,7 +112,7 @@ typedef enum _PPUFlag {
 	PPU_FLAG_LCD_ENABLE = 128, //0 = Off, 1 = On
 	PPU_FLAG_WINDOW_TILE_MAP_SELECT = 61, //0 = 9800 - 9BFF, 1 = 9C00 - 9FFF
 	PPU_FLAG_WINDOW_ENABLE = 32, //0 = Off, 1 = On
-	PPU_FLAG_BG_TILE_ADDRESS_MODE = 16, //0 = 8800 - 97FF, 1 = 8000 - 8FFF
+	PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE = 16, //0 = 8800 - 97FF, 1 = 8000 - 8FFF
 	PPU_FLAG_BG_TILE_MAP_SELECT = 8, //0 = 9800 - 9BFF, 1 = 9C00 - 9FFF
 	PPU_FLAG_OBJ_SIZE_MASK = 4, //0 = 8x8, 1 = 8x16
 	PPU_FLAG_OBJ_ENABLE = 2, //0 = Off, 1 = On
@@ -134,8 +134,16 @@ typedef enum _OAMIndex {
 } OAMIndex;
 
 #define NUM_OPCODES 512
-#define VRAM_SIZE 0x2000
+
+#define VRAM_TOTAL_SIZE 0x2000
+#define VRAM_TOTAL_TILES_SIZE 0x1200
+#define VRAM_TILES_1_SIZE 0x800
+#define VRAM_TILES_2_SIZE 0x200
+#define VRAM_TILES_3_SIZE 0x800
+#define VRAM_BG_MAP_1_SIZE 0x400
+#define VRAM_BG_MAP_2_SIZE 0x400
 #define OAM_SIZE 0xA0
+
 #define WORK_RAM_SIZE 0x1000
 #define HRAM_SIZE 0x7F
 
@@ -165,6 +173,11 @@ typedef enum _OAMIndex {
 #define SCREEN_WIDTH 160
 #define SCREEN_HEIGHT 144
 #define TILE_SIZE 8
+#define SCREEN_TILES_WIDTH 20
+#define SCREEN_TILES_HEIGHT 18
+#define BG_MAP_TILES_WIDTH 32
+#define BG_MAP_TILES_HEIGHT 32
+
 
 typedef enum _OpCode {
 	OpCode_ADC_A_A = 0x8f,

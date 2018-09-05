@@ -24,7 +24,8 @@ typedef struct _VideoData {
 	unsigned char lcdControl, lcdStatus, lcdYCoord, lcdYCompare;
 	unsigned char scrollY, scrollX, windowY, windowX;
 	unsigned char dmaTransfer, bgPalette, objPalette0, objPalette1;
-	unsigned char vRam[VRAM_SIZE], oamTable[OAM_SIZE];
+	unsigned char tileData[VRAM_TOTAL_TILES_SIZE], bgMap1[VRAM_BG_MAP_1_SIZE], bgMap2[VRAM_BG_MAP_2_SIZE];
+	unsigned char oamTable[OAM_SIZE];
 	unsigned char * lineVisibleSprites[VISIBLE_SPRITES_PER_LINE];
 	unsigned char framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]; //2D array, framePixels[y][x], size is framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]
 } VideoData;
