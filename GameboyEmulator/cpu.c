@@ -274,6 +274,11 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 	if (operand1 != NULL) {
 		int operand1Value = GBValueToInt(operand1);
 
+		int operand1High = operand1Value & 0xF0;
+		int operand1Low = operand1Value & 0x0F;
+
+		results->swapNibbles = (operand1High >> 4) | (operand1Low << 4);
+
 		if (operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
 

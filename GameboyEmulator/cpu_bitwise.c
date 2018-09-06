@@ -75,14 +75,6 @@ void populateBitwiseOperands1(Hardware *hardware, InstructionMapping *mappings) 
 	OpCode_SRA_L
 	OpCode_SRA_MEM_HL
 	OpCode_SRA_A
-	OpCode_SWAP_B
-	OpCode_SWAP_C
-	OpCode_SWAP_D
-	OpCode_SWAP_E
-	OpCode_SWAP_H
-	OpCode_SWAP_L
-	OpCode_SWAP_MEM_HL
-	OpCode_SWAP_A
 	OpCode_SRL_B
 	OpCode_SRL_C
 	OpCode_SRL_D
@@ -298,6 +290,15 @@ void populateBitwiseOperands1(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_SET_7_L].operand1 =
 		mappings[OpCode_SET_7_MEM_HL].operand1 =
 		mappings[OpCode_SET_7_A].operand1 = createGBByteValue(&SEVEN);
+
+	mappings[OpCode_SWAP_A].operand1 = createGBByteValue(&hardware->registers->A);
+	mappings[OpCode_SWAP_B].operand1 = createGBByteValue(&hardware->registers->B);
+	mappings[OpCode_SWAP_C].operand1 = createGBByteValue(&hardware->registers->C);
+	mappings[OpCode_SWAP_D].operand1 = createGBByteValue(&hardware->registers->D);
+	mappings[OpCode_SWAP_E].operand1 = createGBByteValue(&hardware->registers->E);
+	mappings[OpCode_SWAP_H].operand1 = createGBByteValue(&hardware->registers->H);
+	mappings[OpCode_SWAP_L].operand1 = createGBByteValue(&hardware->registers->L);
+	mappings[OpCode_SWAP_MEM_HL].operand1 = createGBBytePointer(&hardware->cachedValues->memoryHL);
 }
 
 void populateBitwiseOperands2Destinations(Hardware *hardware, InstructionMapping *mappings) {
@@ -628,6 +629,15 @@ void populateBitwiseOperands2Destinations(Hardware *hardware, InstructionMapping
 		mappings[OpCode_SET_6_MEM_HL].operand2 =
 		mappings[OpCode_SET_7_MEM_HL].destination =
 		mappings[OpCode_SET_7_MEM_HL].operand2 = createGBBytePointer(&hardware->cachedValues->memoryHL);
+
+		mappings[OpCode_SWAP_A].destination = createGBByteValue(&hardware->registers->A);
+		mappings[OpCode_SWAP_B].destination = createGBByteValue(&hardware->registers->B);
+		mappings[OpCode_SWAP_C].destination = createGBByteValue(&hardware->registers->C);
+		mappings[OpCode_SWAP_D].destination = createGBByteValue(&hardware->registers->D);
+		mappings[OpCode_SWAP_E].destination = createGBByteValue(&hardware->registers->E);
+		mappings[OpCode_SWAP_H].destination = createGBByteValue(&hardware->registers->H);
+		mappings[OpCode_SWAP_L].destination = createGBByteValue(&hardware->registers->L);
+		mappings[OpCode_SWAP_MEM_HL].destination = createGBBytePointer(&hardware->cachedValues->memoryHL);
 }
 
 void populateBitwiseOperandsResults(Hardware *hardware, InstructionMapping *mappings) {
@@ -825,6 +835,16 @@ void populateBitwiseOperandsResults(Hardware *hardware, InstructionMapping *mapp
 		mappings[OpCode_SET_7_L].result =
 		mappings[OpCode_SET_7_MEM_HL].result =
 		mappings[OpCode_SET_7_A].result == &hardware->cachedResults->setBit;
+
+
+	mappings[OpCode_SWAP_A].result =
+		mappings[OpCode_SWAP_B].result =
+		mappings[OpCode_SWAP_C].result =
+		mappings[OpCode_SWAP_D].result =
+		mappings[OpCode_SWAP_E].result =
+		mappings[OpCode_SWAP_H].result =
+		mappings[OpCode_SWAP_L].result =
+		mappings[OpCode_SWAP_MEM_HL].result = &hardware->cachedResults->swapNibbles;
 }
 
 void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMapping *mappings) {
@@ -892,4 +912,14 @@ void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMapping *mappin
 		mappings[OpCode_BIT_7_L].flagResult =
 		mappings[OpCode_BIT_7_MEM_HL].flagResult =
 		mappings[OpCode_BIT_7_A].flagResult = createFlagResult(&hardware->resultInfo->isZero, &FALSE_VAL, &TRUE_VAL, NULL);
+
+
+	mappings[OpCode_SWAP_A].flagResult =
+		mappings[OpCode_SWAP_B].flagResult =
+		mappings[OpCode_SWAP_C].flagResult =
+		mappings[OpCode_SWAP_D].flagResult =
+		mappings[OpCode_SWAP_E].flagResult =
+		mappings[OpCode_SWAP_H].flagResult =
+		mappings[OpCode_SWAP_L].flagResult =
+		mappings[OpCode_SWAP_MEM_HL].flagResult = createFlagResult(&hardware->resultInfo->isZero, &FALSE_VAL, &FALSE_VAL, &FALSE_VAL);
 }
