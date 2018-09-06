@@ -12,13 +12,13 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 		return &hardware->rom->romBytes[address];
 
 	else if (address >= RAM_LOCATION_VRAM_TILES_1 && address < RAM_LOCATION_VRAM_BG_MAP_1)
-		return &hardware->videoData->tileData[address - RAM_LOCATION_VRAM_BG_MAP_1 - 1];
+		return &hardware->videoData->tileData[address - RAM_LOCATION_VRAM_TILES_1];
 
 	else if (address >= RAM_LOCATION_VRAM_BG_MAP_1 && address < RAM_LOCATION_VRAM_BG_MAP_2)
-		return &hardware->videoData->bgMap1[address - RAM_LOCATION_VRAM_BG_MAP_2 - 1];
+		return &hardware->videoData->bgMap1[address - RAM_LOCATION_VRAM_BG_MAP_1];
 
 	else if (address >= RAM_LOCATION_VRAM_BG_MAP_2 && address <= RAM_LOCATION_VRAM_END)
-		return &hardware->videoData->bgMap2[address - RAM_LOCATION_VRAM_END];
+		return &hardware->videoData->bgMap2[address - RAM_LOCATION_VRAM_BG_MAP_2];
 
 	else if (address >= RAM_LOCATION_OAM && address <= RAM_LOCATION_OAM_END)
 		return &hardware->videoData->oamTable[address - RAM_LOCATION_OAM];
