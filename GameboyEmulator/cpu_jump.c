@@ -24,36 +24,8 @@ void populateJumpCalculations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_RST_20H].operand1 =
 		mappings[OpCode_RST_28H].operand1 =
 		mappings[OpCode_RST_30H].operand1 =
-		mappings[OpCode_RST_38H].operand1 = createGBWordValue(&(hardware->registers->PC));
+		mappings[OpCode_RST_38H].operand1 = createGBWordValue(&(hardware->cachedValues->NextPCAddress));
 	
-	mappings[OpCode_CALL_C_a16].operand2 =
-		mappings[OpCode_CALL_NC_a16].operand2 =
-		mappings[OpCode_CALL_NZ_a16].operand2 =
-		mappings[OpCode_CALL_Z_a16].operand2 =
-		mappings[OpCode_CALL_a16].operand2 =
-		mappings[OpCode_RST_00H].operand2 =
-		mappings[OpCode_RST_08H].operand2 =
-		mappings[OpCode_RST_10H].operand2 =
-		mappings[OpCode_RST_18H].operand2 =
-		mappings[OpCode_RST_20H].operand2 =
-		mappings[OpCode_RST_28H].operand2 =
-		mappings[OpCode_RST_30H].operand2 =
-		mappings[OpCode_RST_38H].operand2 = createGBWordValue(&(ONE));
-	
-	mappings[OpCode_CALL_C_a16].result =
-		mappings[OpCode_CALL_NC_a16].result =
-		mappings[OpCode_CALL_NZ_a16].result =
-		mappings[OpCode_CALL_Z_a16].result =
-		mappings[OpCode_CALL_a16].result =
-		mappings[OpCode_RST_00H].result =
-		mappings[OpCode_RST_08H].result =
-		mappings[OpCode_RST_10H].result =
-		mappings[OpCode_RST_18H].result =
-		mappings[OpCode_RST_20H].result =
-		mappings[OpCode_RST_28H].result =
-		mappings[OpCode_RST_30H].result =
-		mappings[OpCode_RST_38H].result = &hardware->cachedResults->add;
-
 	mappings[OpCode_CALL_C_a16].destination =
 		mappings[OpCode_CALL_NC_a16].destination =
 		mappings[OpCode_CALL_NZ_a16].destination =
@@ -115,16 +87,16 @@ void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_RET_C].nextPC =
 		mappings[OpCode_RET_NC].nextPC =
 		mappings[OpCode_RET_NZ].nextPC =
-		mappings[OpCode_RET_Z].nextPC = createGBSplitBytePointer(&(hardware->cachedValues->stackPlusOneValue), &(hardware->cachedValues->stackValue));
+		mappings[OpCode_RET_Z].nextPC = &hardware->cachedValues->stackWordValue;
 
-	mappings[OpCode_RST_00H].nextSP = createGBWordValue(&HEX_00);
-	mappings[OpCode_RST_08H].nextSP = createGBWordValue(&HEX_08);
-	mappings[OpCode_RST_10H].nextSP = createGBWordValue(&HEX_10);
-	mappings[OpCode_RST_18H].nextSP = createGBWordValue(&HEX_18);
-	mappings[OpCode_RST_20H].nextSP = createGBWordValue(&HEX_20);
-	mappings[OpCode_RST_28H].nextSP = createGBWordValue(&HEX_28);
-	mappings[OpCode_RST_30H].nextSP = createGBWordValue(&HEX_30);
-	mappings[OpCode_RST_38H].nextSP = createGBWordValue(&HEX_38);
+	mappings[OpCode_RST_00H].nextPC = &HEX_00;
+	mappings[OpCode_RST_08H].nextPC = &HEX_08;
+	mappings[OpCode_RST_10H].nextPC = &HEX_10;
+	mappings[OpCode_RST_18H].nextPC = &HEX_18;
+	mappings[OpCode_RST_20H].nextPC = &HEX_20;
+	mappings[OpCode_RST_28H].nextPC = &HEX_28;
+	mappings[OpCode_RST_30H].nextPC = &HEX_30;
+	mappings[OpCode_RST_38H].nextPC = &HEX_38;
 }
 
 void populateJumpFlagConditions(Hardware *hardware, InstructionMapping *mappings) {	

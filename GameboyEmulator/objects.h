@@ -53,7 +53,7 @@ typedef struct _CachedOpValues {
 	unsigned char *memoryHL, *memoryBC, *memoryDE;
 	int AF, BC, DE, HL;
 	unsigned char APlusCarry, AMinusCarry;
-	int NextPCAddressPlusImmediateByteSigned;
+	int NextPCAddress, NextPCAddressPlusImmediateByteSigned;
 	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
 	unsigned char *stackValue; //value on top of stack
 	unsigned char *stackPlusOneValue; //second-to-top value in stack

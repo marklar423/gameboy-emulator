@@ -119,8 +119,11 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		
 		switch (instruction) {
 		case OpCode_PREFIX_CB:
+			THROW_ERROR("Unsupported instruction CB");
+			break;
+
 		case OpCode_DAA:
-			THROW_ERROR("Unsupported instruction");
+			THROW_ERROR("Unsupported instruction DAA");
 			break;
 
 		case OpCode_NOP:
@@ -136,11 +139,11 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 			break;
 
 		case OpCode_HALT:
-			THROW_ERROR("Unsupported instruction");
+			THROW_ERROR("Unsupported instruction HALT");
 			break;
 
 		case OpCode_STOP:
-			THROW_ERROR("Unsupported instruction");
+			THROW_ERROR("Unsupported instruction STOP");
 			break;
 
 		default:
@@ -221,6 +224,7 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->memoryHL = getRamAddress(hardware, cached->HL);
 	cached->memoryBC = getRamAddress(hardware, cached->BC);
 	cached->memoryDE = getRamAddress(hardware, cached->DE);	
+	cached->NextPCAddress = nextPCAddressValue;
 	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
 	cached->SPMinusTwo = hardware->registers->SP - 2;
@@ -230,6 +234,11 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);	
 	cached->stackMinusOneValue = getRamAddress(hardware, cached->SPMinusOne);
 	cached->stackMinusTwoValue = getRamAddress(hardware, cached->SPMinusTwo);
+
+	if (cached->stackValue != NULL && cached->stackPlusOneValue != NULL)
+		cached->stackWordValue = joinBytes(*cached->stackValue, *cached->stackPlusOneValue);
+	else
+		cached->stackWordValue = NULL;
 }
 
 

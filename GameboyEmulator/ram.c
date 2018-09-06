@@ -11,6 +11,10 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	if (address >= RAM_LOCATION_CART_FIXED && address <= RAM_LOCATION_CART_FIXED_END)
 		return &hardware->rom->romBytes[address];
 
+	if (address >= RAM_LOCATION_CART_SWITCHABLE && address <= RAM_LOCATION_CART_SWITCHABLE_END)
+		//todo: implement memory bank switching
+		return &hardware->rom->romBytes[address];
+
 	else if (address >= RAM_LOCATION_VRAM_TILES_1 && address < RAM_LOCATION_VRAM_BG_MAP_1)
 		return &hardware->videoData->tileData[address - RAM_LOCATION_VRAM_TILES_1];
 
