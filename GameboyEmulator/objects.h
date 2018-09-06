@@ -27,7 +27,7 @@ typedef struct _VideoData {
 	unsigned char tileData[VRAM_TOTAL_TILES_SIZE], bgMap1[VRAM_BG_MAP_1_SIZE], bgMap2[VRAM_BG_MAP_2_SIZE];
 	unsigned char oamTable[OAM_SIZE];
 	unsigned char * lineVisibleSprites[VISIBLE_SPRITES_PER_LINE];
-	unsigned char framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]; //2D array, framePixels[y][x], size is framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]
+	PixelColor framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]; //2D array, framePixels[y][x], size is framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]
 } VideoData;
 
 typedef struct _SoundData {

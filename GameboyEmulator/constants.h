@@ -119,19 +119,19 @@ typedef enum _PPUFlag {
 	PPU_FLAG_BG_ENABLE = 1 //0 = Off, 1 = On
 } PPUFlag;
 
-typedef enum _PPUCycles {
-	PPU_CYCLES_OAM_SEARCH = 20,
-	PPU_CYCLES_PIXEL_TRANSFER = 43,
-	PPU_CYCLES_HBLANK = 51,
-	PPU_CYCLES_LINE_TOTAL = 114
-} PPUCycles;
-
 typedef enum _OAMIndex {
 	OAM_INDEX_POS_Y = 0,
 	OAM_INDEX_POS_X = 1,
 	OAM_INDEX_TILE_NUM = 2,
 	OAM_INDEX_FLAGS = 3
 } OAMIndex;
+
+typedef enum _PixelColor {
+	PixelColor_White = 0,
+	PixelColor_LightGray = 1,
+	PixelColor_DarkGray = 2,
+	PixelColor_Black = 3
+} PixelColor;
 
 #define NUM_OPCODES 512
 
@@ -142,10 +142,16 @@ typedef enum _OAMIndex {
 #define VRAM_TILES_3_SIZE 0x800
 #define VRAM_BG_MAP_1_SIZE 0x400
 #define VRAM_BG_MAP_2_SIZE 0x400
+#define BYTES_PER_TILE 16
 #define OAM_SIZE 0xA0
 
 #define WORK_RAM_SIZE 0x1000
 #define HRAM_SIZE 0x7F
+
+#define PPU_CYCLES_OAM_SEARCH 20
+#define PPU_CYCLES_PIXEL_TRANSFER 43
+#define PPU_CYCLES_HBLANK 51
+#define PPU_CYCLES_LINE_TOTAL 114
 
 /*
  Some notes:
