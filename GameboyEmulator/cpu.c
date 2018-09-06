@@ -282,6 +282,17 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 			results->xor = operand1Value ^ operand2Value;
 			results->add = operand1Value + operand2Value;
 			results->subtract = operand1Value - operand2Value;
+
+			if (operand2Value >= 0 && operand2Value <= 7) {
+				int operand1Mask = (1 << operand1Value);
+
+				results->getBit = operand2Value & operand1Mask;
+				results->setBit = operand2Value | operand1Mask;
+				results->resetBit = operand2Value & ~operand1Mask;
+			}
+			else {
+				results->getBit = results->setBit = results->resetBit = NULL;
+			}
 		}		
 	}
 }

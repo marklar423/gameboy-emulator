@@ -64,6 +64,7 @@ typedef struct _CachedOpValues {
 
 typedef struct _CachedOpResults {
 	int and, or, xor, add, subtract;
+	int getBit, setBit, resetBit;
 } CachedOpResults;
 
 typedef struct _ResultInfo {
