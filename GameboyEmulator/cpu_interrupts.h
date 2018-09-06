@@ -7,4 +7,4 @@
 
 void processInterrupts(Hardware *hardware);
 
-void setRequestedInterrupt(Hardware *hardware, bool requested);
+void setRequestedInterrupt(Hardware *hardware, InterruptFlag flag, bool requested);

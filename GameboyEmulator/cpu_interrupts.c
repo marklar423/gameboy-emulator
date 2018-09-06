@@ -2,6 +2,12 @@
 #include "cpu_interrupts.h"
 #include "ram.h"
 
+void setRequestedInterrupt(Hardware *hardware, InterruptFlag flag, bool requested) {
+	hardware->registers->requestedInterrupts = (requested) ?
+		hardware->registers->requestedInterrupts | flag :
+		hardware->registers->requestedInterrupts & ~flag;
+}
+
 void processInterrupts(Hardware *hardware) {
 	if (hardware->registers->globalInterruptsEnabled) {
 		unsigned char requestedEnabledInterrupt = (hardware->registers->requestedInterrupts & hardware->registers->enabledInterrupts);

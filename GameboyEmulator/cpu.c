@@ -121,7 +121,6 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		case OpCode_PREFIX_CB:
 			THROW_ERROR("Unsupported instruction CB");
 			break;
-
 		case OpCode_DAA:
 			THROW_ERROR("Unsupported instruction DAA");
 			break;

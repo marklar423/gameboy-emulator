@@ -1,6 +1,7 @@
 
 #include "ppu.h"
 #include "ram.h"
+#include "cpu_interrupts.h"
 
 
 void setLCDLine(Hardware *hardware, unsigned char line);
@@ -24,44 +25,44 @@ void tickPPU(Hardware *hardware) {
 	 */
 
 	if (hardware->ppuCyclesToWait <= 1) {
-		int prevMode = hardware->videoData->lcdStatus & PPU_FLAG_MODE_MASK;
+		int prevMode = hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK;
 		int currentLine = hardware->videoData->lcdYCoord;
 
 		switch (prevMode) {
-			case PPU_FLAG_MODE_VBLANK:
+			case LCD_STAT_MODE_VBLANK:
 				if (currentLine <  SCREEN_TOTAL_LINES - 1) {
 					setLCDLine(hardware, ++currentLine);
 					hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
 				}
 				else {
 					setLCDLine(hardware, 0);
-					setLCDMode(hardware, PPU_FLAG_MODE_OAM_SEARCH);
+					setLCDMode(hardware, LCD_STAT_MODE_OAM_SEARCH);
 					populateVisibleSprites(hardware);
 					hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
 				}
 			break;
 
-			case PPU_FLAG_MODE_OAM_SEARCH:
-				setLCDMode(hardware, PPU_FLAG_MODE_PIXEL_TRANSFER);
+			case LCD_STAT_MODE_OAM_SEARCH:
+				setLCDMode(hardware, LCD_STAT_MODE_PIXEL_TRANSFER);
 				drawLine(hardware);
 				hardware->ppuCyclesToWait = PPU_CYCLES_PIXEL_TRANSFER;
 				break;
 
-			case PPU_FLAG_MODE_PIXEL_TRANSFER:
-				setLCDMode(hardware, PPU_FLAG_MODE_HBLANK);
+			case LCD_STAT_MODE_PIXEL_TRANSFER:
+				setLCDMode(hardware, LCD_STAT_MODE_HBLANK);
 				hardware->ppuCyclesToWait = PPU_CYCLES_HBLANK;
 				break;
 
-			case PPU_FLAG_MODE_HBLANK:
+			case LCD_STAT_MODE_HBLANK:
 				setLCDLine(hardware, ++currentLine);
 
 				if (currentLine < SCREEN_VISIBLE_LINES) {
-					setLCDMode(hardware, PPU_FLAG_MODE_OAM_SEARCH);
+					setLCDMode(hardware, LCD_STAT_MODE_OAM_SEARCH);
 					populateVisibleSprites(hardware);
 					hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
 				}
 				else {
-					setLCDMode(hardware, PPU_FLAG_MODE_VBLANK);
+					setLCDMode(hardware, LCD_STAT_MODE_VBLANK);
 					hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
 				}
 				break;
@@ -197,20 +198,58 @@ void drawWindow(Hardware *hardware, int x, int y) {
 }
 
 void drawSprites(Hardware *hardware, int x, int y) {
+	//are sprites enabled?
+	if ((hardware->videoData->lcdControl & PPU_FLAG_OBJ_ENABLE) == PPU_FLAG_OBJ_ENABLE) {
 
+	}
 }
 
 void setLCDMode(Hardware *hardware, PPUFlag mode) {
 	unsigned char currentMode = hardware->videoData->lcdStatus;
-	int prevMode = currentMode & PPU_FLAG_MODE_MASK;
+	PPUFlag prevMode = currentMode & LCD_STAT_MODE_MASK;
 
 	if (prevMode != mode) {
-		hardware->videoData->lcdStatus = (hardware->videoData->lcdStatus & (~PPU_FLAG_MODE_MASK)) | mode;
-		//todo: handle mode change interrupt and V blank interrupt
+		hardware->videoData->lcdStatus = (hardware->videoData->lcdStatus & (~LCD_STAT_MODE_MASK)) | mode;
+
+		//handle mode change interrupt and V blank interrupt
+		PPUFlag intEnabledMask;
+		bool requestInterrupt = false;
+		
+		switch (mode) {
+		case LCD_STAT_MODE_HBLANK:
+			requestInterrupt = true;
+			intEnabledMask = LCD_STAT_HBLANK_INT_ENABLE_MASK;
+			break;
+		case LCD_STAT_MODE_VBLANK:
+			requestInterrupt = true;
+			intEnabledMask = LCD_STAT_VBLANK_INT_ENABLE_MASK;
+			setRequestedInterrupt(hardware, INTERRUPT_FLAG_VBLANK, true);
+			break;
+		case LCD_STAT_MODE_OAM_SEARCH:
+			requestInterrupt = true;
+			intEnabledMask = LCD_STAT_OAM_INT_ENABLE_MASK;
+			break;
+		}
+
+		if (requestInterrupt && (hardware->videoData->lcdStatus & intEnabledMask) == intEnabledMask) {
+			setRequestedInterrupt(hardware, INTERRUPT_FLAG_LCD_STAT, true);
+		}
 	}
 }
 
 void setLCDLine(Hardware *hardware, unsigned char line) {
 	hardware->videoData->lcdYCoord = line;
-	//todo: handle LCD Y interrupt
+
+	if (line == hardware->videoData->lcdYCompare) {
+		hardware->videoData->lcdStatus |= LCD_STAT_COMPARE_MASK;
+
+		//handle LCD Y interrupt
+		if ((hardware->videoData->lcdStatus & LCD_STAT_COMPARE_INT_ENABLE_MASK) == LCD_STAT_COMPARE_INT_ENABLE_MASK) {
+			setRequestedInterrupt(hardware, INTERRUPT_FLAG_LCD_STAT, true);
+		}
+	}
+	else {
+		hardware->videoData->lcdStatus &=  ~LCD_STAT_COMPARE_MASK;
+	}
+
 }
