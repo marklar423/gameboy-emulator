@@ -125,6 +125,18 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		case OpCode_DAA:
 			THROW_ERROR("Unsupported instruction DAA");
 			break;
+		case OpCode_RLCA:
+			THROW_ERROR("Unsupported instruction RLCA");
+			break;
+		case OpCode_RLA:
+			THROW_ERROR("Unsupported instruction RLA");
+			break;
+		case OpCode_RRCA:
+			THROW_ERROR("Unsupported instruction RRCA");
+			break;
+		case OpCode_RRA:
+			THROW_ERROR("Unsupported instruction RRA");
+			break;
 
 		case OpCode_NOP:
 			//do nothing
