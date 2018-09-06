@@ -30,7 +30,7 @@ void tickPPU(Hardware *hardware) {
 		switch (prevMode) {
 			case PPU_FLAG_MODE_VBLANK:
 				if (currentLine <  SCREEN_TOTAL_LINES - 1) {
-					setLCDLine(hardware, currentLine + 1);
+					setLCDLine(hardware, ++currentLine);
 					hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
 				}
 				else {
@@ -53,9 +53,9 @@ void tickPPU(Hardware *hardware) {
 				break;
 
 			case PPU_FLAG_MODE_HBLANK:
-				setLCDLine(hardware, currentLine + 1);
+				setLCDLine(hardware, ++currentLine);
 
-				if (currentLine < SCREEN_VISIBLE_LINES - 1) {
+				if (currentLine < SCREEN_VISIBLE_LINES) {
 					setLCDMode(hardware, PPU_FLAG_MODE_OAM_SEARCH);
 					populateVisibleSprites(hardware);
 					hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
@@ -184,7 +184,6 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 			if ((tileRowPixels[0] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 1;
 			if ((tileRowPixels[1] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 2;
 
-			//todo: get proper pallete data
 			hardware->videoData->framePixels[y][x] = palleteColors[pixelPalleteColor];
 		}
 	}

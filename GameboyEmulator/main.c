@@ -44,8 +44,8 @@ void display(void) {
 			}
 
 			glBegin(GL_POINTS);
-			glColor3f(red, green, blue);			
-			glVertex2f(x, y);
+			glColor3f(red, green, blue);						
+			glVertex2i(x, y);
 			glEnd();
 		}
 	}
