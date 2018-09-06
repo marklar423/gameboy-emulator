@@ -6,9 +6,12 @@
 #include "cpu_jump.h"
 #include "cpu_alu.h"
 #include "ram.h"
+#include "cpu_bitwise.h"
 #include "cpu_cycles.h"
 #include "cpu_interrupts.h"
 #include "util.h"
+
+#include <intrin.h>
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = createHardware();
@@ -69,6 +72,7 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 	populateJumpInstructions(hardware, mappings);
 	populateLoadInstructions(hardware, mappings);
 	populateALUInstructions(hardware, mappings);
+	populateBitwiseInstructions(hardware, mappings);
 	populateCPUCycleCounts(mappings);
 	populateCPUOpSizes(mappings);
 
@@ -86,7 +90,7 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 	}
 }
 
-void processInstruction(Hardware *hardware, InstructionMapping *mapping, const unsigned char instruction) {
+void processInstruction(Hardware *hardware, InstructionMapping *mapping, int instruction) {
 	/*
 	Things to test:
 	- push/pop
@@ -102,6 +106,16 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 	int cyclesToWait = 1;
 
 	populateCachedValues(hardware, nextPCAddressValue);
+	
+	//this ensures "CB xx" instructions get properly executed
+	if (hardware->opCodePrefix != NULL) {
+		instruction |= hardware->opCodePrefix;
+		hardware->opCodePrefix = NULL;
+	}
+
+	/*if (hardware->registers->PC == 0x349) {
+		__debugbreak();
+	}*/
 
 	//should we process this operation?
 	bool shouldExecute = true;
@@ -118,9 +132,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 		GBValue *operand1, *operand2, *destination;
 		
 		switch (instruction) {
-		case OpCode_PREFIX_CB:
-			THROW_ERROR("Unsupported instruction CB");
-			break;
+
 		case OpCode_DAA:
 			THROW_ERROR("Unsupported instruction DAA");
 			break;
@@ -139,6 +151,10 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, const u
 
 		case OpCode_NOP:
 			//do nothing
+			break;
+
+		case OpCode_PREFIX_CB:
+			hardware->opCodePrefix = OPCODE_PREFIX_CB;
 			break;
 
 		case OpCode_DI:

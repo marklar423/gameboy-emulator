@@ -82,6 +82,7 @@ typedef struct _Hardware {
 	ResultInfo *resultInfo;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
+	OpCode opCodePrefix;
 } Hardware;
 
 typedef struct _FlagResult {

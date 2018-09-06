@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="cpu.c" />
     <ClCompile Include="cpu_alu.c" />
+    <ClCompile Include="cpu_bitwise.c" />
     <ClCompile Include="cpu_cycles.c" />
     <ClCompile Include="cpu_interrupts.c" />
     <ClCompile Include="cpu_jump.c" />
@@ -144,6 +145,7 @@
     <ClInclude Include="cpu.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="cpu_alu.h" />
+    <ClInclude Include="cpu_bitwise.h" />
     <ClInclude Include="cpu_cycles.h" />
     <ClInclude Include="cpu_interrupts.h" />
     <ClInclude Include="cpu_jump.h" />

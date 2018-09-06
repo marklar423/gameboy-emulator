@@ -51,6 +51,9 @@
     <ClCompile Include="ram.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cpu_bitwise.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cpu.h">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cpu_bitwise.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
