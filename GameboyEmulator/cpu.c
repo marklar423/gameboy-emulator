@@ -11,7 +11,6 @@
 #include "cpu_interrupts.h"
 #include "util.h"
 
-#include <intrin.h>
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = createHardware();
@@ -52,8 +51,10 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51 */
 		hardware->soundData->soundOnOff = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
 		hardware->videoData->lcdControl = 0x91;
+		hardware->videoData->lcdStatus = 0x1;
 		hardware->videoData->scrollY = 0x00;
 		hardware->videoData->scrollX = 0x00;
+		hardware->videoData->lcdYCoord = SCREEN_TOTAL_LINES - 1;
 		hardware->videoData->lcdYCompare = 0x00;
 		hardware->videoData->bgPalette = 0xFC;
 		hardware->videoData->objPalette0 = 0xFF; 

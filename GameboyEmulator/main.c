@@ -6,7 +6,7 @@
 #include "cpu.h"
 #include "ppu.h"
 
-static int count = 0;
+static int numFrames = 0;
 
 static Hardware *hardware;
 static InstructionMapping *mappings;
@@ -50,7 +50,8 @@ void display(void) {
 		}
 	}
 
-	glFlush();
+	//glFlush();
+	glutSwapBuffers();
 
 	/*char log[50];
 	sprintf_s(log, 50, "Redisplay %d\n", ++count);
@@ -62,12 +63,13 @@ void timer(int value) {
 
 	clearFramePixels(hardware);
 
-	for (int i = 0; i <= TARGET_TICKS_FRAME; i++) {
+	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(hardware, mappings);
 		tickPPU(hardware);
 	}
 
 	glutPostRedisplay();
+	numFrames++;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) 
@@ -80,7 +82,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int argc = 0;
 	glutInit(&argc, NULL);
 
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
 	glutInitWindowSize(500, 500);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Gameboy Emulator");
