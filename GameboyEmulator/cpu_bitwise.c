@@ -83,14 +83,8 @@ void populateBitwiseOperands1(Hardware *hardware, InstructionMapping *mappings) 
 	OpCode_SRL_L
 	OpCode_SRL_MEM_HL
 	OpCode_SRL_A
-	
-
-	 OpCode_RLCA
-	 OpCode_RLA
-	 OpCode_RRCA
-	 OpCode_RRA
 	*/
-
+		
 	mappings[OpCode_BIT_0_B].operand1 =
 		mappings[OpCode_BIT_0_C].operand1 =
 		mappings[OpCode_BIT_0_D].operand1 =
@@ -291,7 +285,12 @@ void populateBitwiseOperands1(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_SET_7_MEM_HL].operand1 =
 		mappings[OpCode_SET_7_A].operand1 = createGBByteValue(&SEVEN);
 
-	mappings[OpCode_SWAP_A].operand1 = createGBByteValue(&hardware->registers->A);
+	mappings[OpCode_RLCA].operand1 =
+		mappings[OpCode_RLA].operand1 =
+		mappings[OpCode_RRCA].operand1 =
+		mappings[OpCode_RRA].operand1 =
+		mappings[OpCode_SWAP_A].operand1 = createGBByteValue(&hardware->registers->A);
+
 	mappings[OpCode_SWAP_B].operand1 = createGBByteValue(&hardware->registers->B);
 	mappings[OpCode_SWAP_C].operand1 = createGBByteValue(&hardware->registers->C);
 	mappings[OpCode_SWAP_D].operand1 = createGBByteValue(&hardware->registers->D);
@@ -310,6 +309,10 @@ void populateBitwiseOperands2Destinations(Hardware *hardware, InstructionMapping
 		mappings[OpCode_BIT_5_A].operand2 =
 		mappings[OpCode_BIT_6_A].operand2 =
 		mappings[OpCode_BIT_7_A].operand2 =
+		mappings[OpCode_RLCA].destination =
+		mappings[OpCode_RLA].destination =
+		mappings[OpCode_RRCA].destination =
+		mappings[OpCode_RRA].destination =
 		mappings[OpCode_RES_0_A].destination =
 		mappings[OpCode_RES_0_A].operand2 =
 		mappings[OpCode_RES_1_A].destination =
@@ -845,6 +848,11 @@ void populateBitwiseOperandsResults(Hardware *hardware, InstructionMapping *mapp
 		mappings[OpCode_SWAP_H].result =
 		mappings[OpCode_SWAP_L].result =
 		mappings[OpCode_SWAP_MEM_HL].result = &hardware->cachedResults->swapNibbles;
+
+	mappings[OpCode_RLCA].result = &hardware->cachedResults->rotateRight;
+	mappings[OpCode_RLA].result = &hardware->cachedResults->rotateLeftCarry;
+	mappings[OpCode_RRCA].result = &hardware->cachedResults->rotateRight;
+	mappings[OpCode_RRA].result = &hardware->cachedResults->rotateRightCarry;
 }
 
 void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMapping *mappings) {
@@ -922,4 +930,10 @@ void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMapping *mappin
 		mappings[OpCode_SWAP_H].flagResult =
 		mappings[OpCode_SWAP_L].flagResult =
 		mappings[OpCode_SWAP_MEM_HL].flagResult = createFlagResult(&hardware->resultInfo->isZero, &FALSE_VAL, &FALSE_VAL, &FALSE_VAL);
+	
+	mappings[OpCode_RLCA].flagResult =
+		mappings[OpCode_RLA].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &FALSE_VAL, &hardware->resultInfo->isOperand1Bit7Set);
+
+	mappings[OpCode_RRCA].flagResult =
+		mappings[OpCode_RRA].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &FALSE_VAL, &hardware->resultInfo->isOperand1Bit0Set);
 }

@@ -65,11 +65,14 @@ typedef struct _CachedOpValues {
 typedef struct _CachedOpResults {
 	int and, or, xor, add, subtract;
 	int getBit, setBit, resetBit, swapNibbles;
+	int rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
+	int shiftLeft, shiftRight, shiftRightArithmetic;
 } CachedOpResults;
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
 	bool isAddHalfCarry16, isAddCarry16;
+	bool isOperand1Bit0Set, isOperand1Bit7Set;
 } ResultInfo;
 
 typedef struct _Hardware {

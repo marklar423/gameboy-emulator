@@ -136,19 +136,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 		case OpCode_DAA:
 			THROW_ERROR("Unsupported instruction DAA");
 			break;
-		case OpCode_RLCA:
-			THROW_ERROR("Unsupported instruction RLCA");
-			break;
-		case OpCode_RLA:
-			THROW_ERROR("Unsupported instruction RLA");
-			break;
-		case OpCode_RRCA:
-			THROW_ERROR("Unsupported instruction RRCA");
-			break;
-		case OpCode_RRA:
-			THROW_ERROR("Unsupported instruction RRA");
-			break;
-
+			
 		case OpCode_NOP:
 			//do nothing
 			break;
@@ -182,7 +170,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			int resultValue;
 			int *result = mapping->result;
 			if (result != NULL) {
-				populateCachedResults(hardware->cachedResults, operand1, operand2);
+				populateCachedResults(hardware->cachedResults, operand1, operand2, hardware->registers->F);
 				resultValue = *result;
 			}
 			else resultValue = GBValueToInt(operand1);
@@ -269,15 +257,37 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 }
 
 
-void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue *operand2) {
+void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
 	
 	if (operand1 != NULL) {
 		int operand1Value = GBValueToInt(operand1);
 
+		//swap nibbles
 		int operand1High = operand1Value & 0xF0;
 		int operand1Low = operand1Value & 0x0F;
 
 		results->swapNibbles = (operand1High >> 4) | (operand1Low << 4);
+		
+		//shifts and rotates
+		//start with the base shifts
+		results->rotateLeft = results->rotateLeftCarry = 
+			results->shiftLeft = (unsigned char) operand1Value << 1;
+
+		results->rotateRight = results->rotateRightCarry = 
+			results->shiftRight = results->shiftRightArithmetic = (unsigned char) operand1Value >> 1;
+		
+		//loop the ending bits around, for rotates
+		results->rotateLeft |= ((operand1Value & 128) >> 7);
+		results->rotateRight |= ((operand1Value & 1) << 7);
+
+		//loop the carry bits around, for rotates through carry
+		int carryBitRight = (previousFlags & FLAGS_CY) >> 4;
+		int carryBitLeft = (previousFlags & FLAGS_CY) << 3;
+		results->rotateLeftCarry |= carryBitRight;
+		results->rotateRightCarry |= carryBitLeft;
+
+		//change the sign if needed, for arithmetic shift
+		results->shiftRightArithmetic |= (operand1Value & 128);
 
 		if (operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
@@ -321,18 +331,20 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult) {
 	if (flagResult != NULL && result != NULL) {
 		int resultValue = *result;
+		int operand1Value = GBValueToInt(operand1);
 
 		hardware->resultInfo->isZero = (resultValue == 0);
 		hardware->resultInfo->isAddCarry = (resultValue > 0xFF);
 		hardware->resultInfo->isAddCarry16 = (resultValue > 0xFFFF);		
 		hardware->resultInfo->isSubBorrow = (resultValue < 0);
-		
+		hardware->resultInfo->isOperand1Bit0Set = (operand1Value & 1) == 1;
+		hardware->resultInfo->isOperand1Bit7Set = (operand1Value & 128) == 1;
+
 		if (flagResult->isZero != NULL)		SET_BIT_IF(flagResult->isZero, FLAGS_Z, hardware->registers->F);
 		if (flagResult->isSubtract != NULL)	SET_BIT_IF(flagResult->isSubtract, FLAGS_N, hardware->registers->F);
 		if (flagResult->isCarry != NULL)	SET_BIT_IF(flagResult->isCarry, FLAGS_CY, hardware->registers->F);
 
 		if (operand1 != NULL && operand2 != NULL) {
-			int operand1Value = GBValueToInt(operand1);
 			int operand2Value = GBValueToInt(operand2);
 
 			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) == 0x10;
