@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include "constants.h"
 
+#include <assert.h>
+#include <intrin.h>
 
 typedef struct _GameRom {
 	unsigned char *romBytes;

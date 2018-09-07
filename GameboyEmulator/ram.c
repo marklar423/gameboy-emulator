@@ -67,6 +67,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		//bits 0-2 are read only
 		*location = (value & 248) | (*location & 7);
 	}
+	else if (location == &hardware->videoData->lcdYCoord) {
+		//writing should reset?
+		//*location = value;
+	}
 	else {
 		*location = value;
 	}

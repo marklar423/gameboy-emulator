@@ -60,14 +60,16 @@ void display(void) {
 
 void timer(int value) {
 	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
-
+		
 	clearFramePixels(hardware);
 
 	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(hardware, mappings);
-		tickPPU(hardware);
+		tickPPU(hardware, i);
 	}
 
+	resetFrameStatus(hardware);
+	
 	glutPostRedisplay();
 	numFrames++;
 }

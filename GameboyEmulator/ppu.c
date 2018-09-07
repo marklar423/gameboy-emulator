@@ -12,7 +12,10 @@ void drawBackgroundLine(Hardware *hardware, int y);
 void drawWindow(Hardware *hardware, int x, int y);
 void drawSprites(Hardware *hardware, int x, int y);
 
-void tickPPU(Hardware *hardware) {
+int nextLine, nextMode;
+bool started = false;
+
+void tickPPU(Hardware *hardware, int tick) {
 	/*	
 	 - For PPU, each line of pixels takes:
 		- 20 clocks OAM search
@@ -27,6 +30,12 @@ void tickPPU(Hardware *hardware) {
 	if (hardware->ppuCyclesToWait <= 1) {
 		int prevMode = hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK;
 		int currentLine = hardware->videoData->lcdYCoord;
+		
+		if (started) {
+			assert(prevMode == nextMode);
+			assert(currentLine == nextLine);
+		}
+		started = true;
 
 		switch (prevMode) {
 			case LCD_STAT_MODE_VBLANK:
@@ -55,6 +64,8 @@ void tickPPU(Hardware *hardware) {
 
 			case LCD_STAT_MODE_HBLANK:
 				setLCDLine(hardware, ++currentLine);
+				assert((tick % 114) == 0);
+				assert((tick / 114) == currentLine);
 
 				if (currentLine < SCREEN_VISIBLE_LINES) {
 					setLCDMode(hardware, LCD_STAT_MODE_OAM_SEARCH);
@@ -71,6 +82,12 @@ void tickPPU(Hardware *hardware) {
 	else {
 		hardware->ppuCyclesToWait--;
 	}
+}
+
+void resetFrameStatus(Hardware *hardware) {
+	hardware->ppuCyclesToWait = 1;
+	hardware->videoData->lcdStatus = (hardware->videoData->lcdStatus & (~LCD_STAT_MODE_MASK)) | LCD_STAT_MODE_VBLANK;
+	hardware->videoData->lcdYCoord = SCREEN_TOTAL_LINES;
 }
 
 void clearFramePixels(Hardware *hardware) {
@@ -205,6 +222,8 @@ void drawSprites(Hardware *hardware, int x, int y) {
 }
 
 void setLCDMode(Hardware *hardware, PPUFlag mode) {
+	nextMode = mode;
+
 	unsigned char currentMode = hardware->videoData->lcdStatus;
 	PPUFlag prevMode = currentMode & LCD_STAT_MODE_MASK;
 
@@ -238,6 +257,7 @@ void setLCDMode(Hardware *hardware, PPUFlag mode) {
 }
 
 void setLCDLine(Hardware *hardware, unsigned char line) {
+	nextLine = line;
 	hardware->videoData->lcdYCoord = line;
 
 	if (line == hardware->videoData->lcdYCompare) {
