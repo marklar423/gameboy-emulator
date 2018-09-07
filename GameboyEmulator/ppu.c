@@ -180,7 +180,7 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 			int tilePixelColumnNumber = (hardware->videoData->scrollX + x) - (mapX * TILE_SIZE);
 			
 			unsigned char pixelPalleteColor = 0;
-			unsigned char tilePixelColumnMask = 1 << tilePixelColumnNumber;
+			unsigned char tilePixelColumnMask = 128 >> tilePixelColumnNumber;
 
 			if ((tileRowPixels[0] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 1;
 			if ((tileRowPixels[1] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 2;
