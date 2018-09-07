@@ -61,6 +61,18 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	return NULL;
 }
 
+void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
+		
+	if (location == &hardware->videoData->lcdStatus) {
+		//bits 0-2 are read only
+		*location = (value & 248) | (*location & 7);
+	}
+	else {
+		*location = value;
+	}
+
+}
+
 void pushByteToStack(Hardware *hardware, unsigned char value) {
 	hardware->registers->SP--;
 	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);

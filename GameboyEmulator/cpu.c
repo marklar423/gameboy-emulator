@@ -315,10 +315,14 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 			**(destination->wordValue) = resultValue;
 		}
 		else if (destination->isSplitValue) {
-			splitBytes(resultValue, *(destination->byteValue2), *(destination->byteValue));
+			unsigned char leastSignificant, mostSignificant;
+			splitBytes(resultValue, &leastSignificant, &mostSignificant);
+			
+			writeRamLocation(hardware, *(destination->byteValue2), leastSignificant);
+			writeRamLocation(hardware, *(destination->byteValue), mostSignificant);
 		}
 		else {
-			**(destination->byteValue) = (unsigned char)resultValue;			
+			writeRamLocation(hardware, *(destination->byteValue), (unsigned char)resultValue);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 unsigned char* getRamAddress(Hardware *hardware, int address);
 
 // Use this function when writing to RAM might be denied or have other effects, like with MBC
-//void writeRamAddress(Hardware *hardware, int address, unsigned char value); TODO
+void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char value);
 
 void pushByteToStack(Hardware *hardware, unsigned char value);
 
