@@ -66,7 +66,7 @@ typedef struct _CachedOpResults {
 	int and, or, xor, add, subtract;
 	int getBit, setBit, resetBit, swapNibbles;
 	int rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
-	int shiftLeft, shiftRight, shiftRightArithmetic;
+	int shiftLeft, shiftRightLogical, shiftRightArithmetic;
 } CachedOpResults;
 
 typedef struct _ResultInfo {

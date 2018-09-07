@@ -274,7 +274,7 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 			results->shiftLeft = (unsigned char) operand1Value << 1;
 
 		results->rotateRight = results->rotateRightCarry = 
-			results->shiftRight = results->shiftRightArithmetic = (unsigned char) operand1Value >> 1;
+			results->shiftRightLogical = results->shiftRightArithmetic = (unsigned char) operand1Value >> 1;
 		
 		//loop the ending bits around, for rotates
 		results->rotateLeft |= ((operand1Value & 128) >> 7);
