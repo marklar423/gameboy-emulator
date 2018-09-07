@@ -80,10 +80,21 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 }
 
 void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
+
 	if (hardware->cpuCyclesToWait <= 1) {
+
 		processInterrupts(hardware);
-		unsigned char* instruction = getRamAddress(hardware, hardware->registers->PC);
-		processInstruction(hardware, &mappings[*instruction], *instruction);
+
+		int instruction = *getRamAddress(hardware, hardware->registers->PC);
+		
+		//this ensures "CB xx" instructions get properly executed
+		if (hardware->opCodePrefix != 0) {
+			//__debugbreak();
+			instruction |= hardware->opCodePrefix;
+			hardware->opCodePrefix = 0;
+		}
+
+		processInstruction(hardware, &mappings[instruction], instruction);
 	}
 	else {
 		hardware->cpuCyclesToWait--;
@@ -91,13 +102,6 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 }
 
 void processInstruction(Hardware *hardware, InstructionMapping *mapping, int instruction) {
-	/*
-	Things to test:
-	- push/pop
-	- interrupt execution
-	*/
-
-
 	//get the operation size to calculate the next PC address
 	char opSize = mapping->sizeBytes;
 	opSize = opSize < 1 ? 1 : opSize;
@@ -106,17 +110,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 	int cyclesToWait = 1;
 
 	populateCachedValues(hardware, nextPCAddressValue);
-	
-	//this ensures "CB xx" instructions get properly executed
-	if (hardware->opCodePrefix != NULL) {
-		instruction |= hardware->opCodePrefix;
-		hardware->opCodePrefix = NULL;
-	}
-
-	/*if (hardware->registers->PC == 0x349) {
-		__debugbreak();
-	}*/
-
+		
 	//should we process this operation?
 	bool shouldExecute = true;
 

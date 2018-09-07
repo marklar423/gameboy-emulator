@@ -387,7 +387,7 @@ typedef enum _OpCode {
 	OpCode_POP_BC = 0xc1,
 	OpCode_POP_DE = 0xd1,
 	OpCode_POP_HL = 0xe1,
-	OpCode_PREFIX_CB = 0x01,
+	OpCode_PREFIX_CB = 0xCB,
 	OpCode_PUSH_AF = 0xf5,
 	OpCode_PUSH_BC = 0xc5,
 	OpCode_PUSH_DE = 0xd5,
