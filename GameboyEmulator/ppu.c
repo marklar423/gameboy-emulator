@@ -87,7 +87,7 @@ void tickPPU(Hardware *hardware, int tick) {
 void resetFrameStatus(Hardware *hardware) {
 	hardware->ppuCyclesToWait = 1;
 	hardware->videoData->lcdStatus = (hardware->videoData->lcdStatus & (~LCD_STAT_MODE_MASK)) | LCD_STAT_MODE_VBLANK;
-	hardware->videoData->lcdYCoord = SCREEN_TOTAL_LINES;
+	hardware->videoData->lcdYCoord = SCREEN_TOTAL_LINES - 1;
 }
 
 void clearFramePixels(Hardware *hardware) {
