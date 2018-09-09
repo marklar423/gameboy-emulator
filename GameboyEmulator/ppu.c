@@ -2,7 +2,10 @@
 #include "ppu.h"
 #include "ram.h"
 #include "cpu_interrupts.h"
+#include "util.h"
 
+PPUFlag getNextMode(PPUFlag prevMode, int currentLine);
+int getNextLine(int currentLine);
 
 void setLCDLine(Hardware *hardware, unsigned char line);
 void setLCDMode(Hardware *hardware, PPUFlag mode);
@@ -12,8 +15,6 @@ void drawBackgroundLine(Hardware *hardware, int y);
 void drawWindow(Hardware *hardware, int x, int y);
 void drawSprites(Hardware *hardware, int x, int y);
 
-int nextLine, nextMode;
-bool started = false;
 
 void tickPPU(Hardware *hardware, int tick) {
 	/*	
@@ -27,61 +28,61 @@ void tickPPU(Hardware *hardware, int tick) {
 	 - So total clocks per gameboy frame = 114 x (144 + 10) = 17,556 clocks per gameboy frame
 	 */
 
-	if (hardware->ppuCyclesToWait <= 1) {
-		int prevMode = hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK;
+	if (hardware->ppuCyclesToWait <= 1) {	
+		PPUFlag prevMode = hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK;
 		int currentLine = hardware->videoData->lcdYCoord;
+
+		PPUFlag mode = getNextMode(prevMode, currentLine);
+		setLCDMode(hardware, mode);
 		
-		if (started) {
-			assert(prevMode == nextMode);
-			assert(currentLine == nextLine);
-		}
-		started = true;
-
-		switch (prevMode) {
-			case LCD_STAT_MODE_VBLANK:
-				if (currentLine <  SCREEN_TOTAL_LINES - 1) {
-					setLCDLine(hardware, ++currentLine);
-					hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
-				}
-				else {
-					setLCDLine(hardware, 0);
-					setLCDMode(hardware, LCD_STAT_MODE_OAM_SEARCH);
-					populateVisibleSprites(hardware);
-					hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
-				}
-			break;
-
+		switch (mode) {
 			case LCD_STAT_MODE_OAM_SEARCH:
-				setLCDMode(hardware, LCD_STAT_MODE_PIXEL_TRANSFER);
-				drawLine(hardware);
-				hardware->ppuCyclesToWait = PPU_CYCLES_PIXEL_TRANSFER;
+				hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
+				setLCDLine(hardware, getNextLine(currentLine));
+				populateVisibleSprites(hardware);
 				break;
 
 			case LCD_STAT_MODE_PIXEL_TRANSFER:
-				setLCDMode(hardware, LCD_STAT_MODE_HBLANK);
+				hardware->ppuCyclesToWait = PPU_CYCLES_PIXEL_TRANSFER;
+				drawLine(hardware);
+				break;
+			
+			case LCD_STAT_MODE_HBLANK:
 				hardware->ppuCyclesToWait = PPU_CYCLES_HBLANK;
 				break;
-
-			case LCD_STAT_MODE_HBLANK:
-				setLCDLine(hardware, ++currentLine);
-				assert((tick % 114) == 0);
-				assert((tick / 114) == currentLine);
-
-				if (currentLine < SCREEN_VISIBLE_LINES) {
-					setLCDMode(hardware, LCD_STAT_MODE_OAM_SEARCH);
-					populateVisibleSprites(hardware);
-					hardware->ppuCyclesToWait = PPU_CYCLES_OAM_SEARCH;
-				}
-				else {
-					setLCDMode(hardware, LCD_STAT_MODE_VBLANK);
-					hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
-				}
+			
+			case LCD_STAT_MODE_VBLANK:
+				hardware->ppuCyclesToWait = PPU_CYCLES_LINE_TOTAL;
+				setLCDLine(hardware, getNextLine(currentLine));
 				break;
-		}		
+		}
+
+
+		char buffer[40];
+		sprintf_s(buffer, sizeof(buffer), "Mode, %d, line, %d, waiting, %d\n", mode, hardware->videoData->lcdYCoord, hardware->ppuCyclesToWait);
+		printDebugLine(buffer);
 	}
 	else {
 		hardware->ppuCyclesToWait--;
 	}
+}
+
+PPUFlag getNextMode(PPUFlag prevMode, int currentLine) {
+
+	switch (prevMode) {
+		case LCD_STAT_MODE_OAM_SEARCH: 
+			return LCD_STAT_MODE_PIXEL_TRANSFER;
+		case LCD_STAT_MODE_PIXEL_TRANSFER: 
+			return LCD_STAT_MODE_HBLANK;
+		case LCD_STAT_MODE_HBLANK:
+			return (currentLine < SCREEN_VISIBLE_LINES - 1) ? LCD_STAT_MODE_OAM_SEARCH : LCD_STAT_MODE_VBLANK;
+		case LCD_STAT_MODE_VBLANK:
+			return (currentLine < SCREEN_TOTAL_LINES - 1) ? LCD_STAT_MODE_VBLANK : LCD_STAT_MODE_OAM_SEARCH;
+	}
+}
+
+int getNextLine(int currentLine) {
+	return currentLine == SCREEN_TOTAL_LINES - 1 ? 0 : currentLine + 1;
 }
 
 void resetFrameStatus(Hardware *hardware) {
@@ -99,8 +100,8 @@ void clearFramePixels(Hardware *hardware) {
 }
 
 void populateVisibleSprites(Hardware *hardware) {
-	int currentLine = hardware->videoData->lcdYCoord;
 	int numVisible = 0, numSprites = RAM_LOCATION_OAM_END - RAM_LOCATION_OAM + 1;
+	int currentLine = hardware->videoData->lcdYCoord;
 	
 	for (int i = 0; i < numSprites && numVisible < VISIBLE_SPRITES_PER_LINE; i++) {
 		int yPos = hardware->videoData->oamTable[i + OAM_INDEX_POS_Y];
@@ -222,8 +223,6 @@ void drawSprites(Hardware *hardware, int x, int y) {
 }
 
 void setLCDMode(Hardware *hardware, PPUFlag mode) {
-	nextMode = mode;
-
 	unsigned char currentMode = hardware->videoData->lcdStatus;
 	PPUFlag prevMode = currentMode & LCD_STAT_MODE_MASK;
 
@@ -257,7 +256,6 @@ void setLCDMode(Hardware *hardware, PPUFlag mode) {
 }
 
 void setLCDLine(Hardware *hardware, unsigned char line) {
-	nextLine = line;
 	hardware->videoData->lcdYCoord = line;
 
 	if (line == hardware->videoData->lcdYCompare) {
@@ -269,7 +267,7 @@ void setLCDLine(Hardware *hardware, unsigned char line) {
 		}
 	}
 	else {
-		hardware->videoData->lcdStatus &=  ~LCD_STAT_COMPARE_MASK;
+		hardware->videoData->lcdStatus &= (~LCD_STAT_COMPARE_MASK);
 	}
 
 }
