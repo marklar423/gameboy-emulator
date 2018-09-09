@@ -142,7 +142,7 @@ typedef enum _PixelColor {
 
 
 #define VRAM_TOTAL_SIZE 0x2000
-#define VRAM_TOTAL_TILES_SIZE 0x1200
+#define VRAM_TOTAL_TILES_SIZE 0x1800
 #define VRAM_TILES_1_SIZE 0x800
 #define VRAM_TILES_2_SIZE 0x200
 #define VRAM_TILES_3_SIZE 0x800
@@ -151,7 +151,7 @@ typedef enum _PixelColor {
 #define BYTES_PER_TILE 16
 #define OAM_SIZE 0xA0
 
-#define WORK_RAM_SIZE 0x1000
+#define WORK_RAM_SIZE 0x2000
 #define HRAM_SIZE 0x7F
 
 #define PPU_CYCLES_OAM_SEARCH 20

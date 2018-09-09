@@ -27,7 +27,11 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address >= RAM_LOCATION_OAM && address <= RAM_LOCATION_OAM_END)
 		return &hardware->videoData->oamTable[address - RAM_LOCATION_OAM];
 
-	else if (address >= RAM_LOCATION_WORK_RAM_FIXED && address <= RAM_LOCATION_WORK_RAM_SWITCHABLE_END)
+	else if (address >= RAM_LOCATION_WORK_RAM_FIXED && address <= RAM_LOCATION_WORK_RAM_FIXED_END)
+		return &hardware->workRam[address - RAM_LOCATION_WORK_RAM_FIXED];
+
+	else if (address >= RAM_LOCATION_WORK_RAM_SWITCHABLE && address <= RAM_LOCATION_WORK_RAM_SWITCHABLE_END)
+		//todo: implement memory bank switching for CGB
 		return &hardware->workRam[address - RAM_LOCATION_WORK_RAM_FIXED];
 
 	else if (address >= RAM_LOCATION_HRAM && address <= RAM_LOCATION_HRAM_END)

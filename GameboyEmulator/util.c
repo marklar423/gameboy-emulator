@@ -20,7 +20,7 @@ void splitBytes(const int value, unsigned char *leastSignificant, unsigned char 
 FILE *debugFile = NULL;
 
 void printDebugLine(char *line) {
-	if (debugFile == NULL) fopen_s(&debugFile, "debug.txt", "a");
+	if (debugFile == NULL) fopen_s(&debugFile, "debug.txt", "w");
 
 	if (debugFile == NULL)
 	{
@@ -29,4 +29,5 @@ void printDebugLine(char *line) {
 	}
 
 	fprintf(debugFile, line);
+	fflush(debugFile);
 }
