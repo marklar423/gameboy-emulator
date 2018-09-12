@@ -58,17 +58,22 @@ void display(void) {
 	OutputDebugString(log);*/
 }
 
+
 void timer(int value) {
 	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
 		
 	clearFramePixels(hardware);
-
-	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
+	
+	int i = 0;
+	for (; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(hardware, mappings);
 		tickPPU(hardware, i);
 	}
 
-	resetFrameStatus(hardware);
+	assert(i == TARGET_TICKS_FRAME);
+	assert(hardware->videoData->lcdYCoord == 153);
+	
+	//resetFrameStatus(hardware);
 	
 	glutPostRedisplay();
 	numFrames++;

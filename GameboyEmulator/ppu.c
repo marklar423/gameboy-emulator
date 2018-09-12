@@ -58,8 +58,8 @@ void tickPPU(Hardware *hardware, int tick) {
 		}
 
 
-		char buffer[40];
-		sprintf_s(buffer, sizeof(buffer), "Mode, %d, line, %d, waiting, %d\n", mode, hardware->videoData->lcdYCoord, hardware->ppuCyclesToWait);
+		char buffer[70];
+		sprintf_s(buffer, sizeof(buffer), "Tick, %d, Mode, %d, line, %d, waiting, %d\n", tick, mode, hardware->videoData->lcdYCoord, hardware->ppuCyclesToWait);
 		printDebugLine(buffer);
 	}
 	else {
