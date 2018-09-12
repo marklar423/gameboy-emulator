@@ -78,7 +78,7 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 
 	if (location == &hardware->videoData->lcdStatus) {
 		//bits 0-2 are read only
-		*location = (value & 248) | (*location & 7);
+		*location = (value & 0xF8) | (*location & 0x7);
 	}
 	else if (location == &hardware->videoData->lcdYCoord) {
 		//writing should reset?
@@ -111,6 +111,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 	else if (location == &hardware->videoData->dmaTransfer) {
 		//todo: start DMA transfer
 		*location = value;
+	}
+	else if (location == &hardware->ioData->joypadInput) {
+		//only bits 4-7 can be written (only 4 & 5 are used)
+		*location = (value & 0xF0) | (*location & 0x0F);
 	}
 	else {
 		*location = value;

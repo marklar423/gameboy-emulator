@@ -62,6 +62,7 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->videoData->windowY = 0x00;
 		hardware->videoData->windowX = 0x00;
 		hardware->registers->enabledInterrupts = 0x00;
+		hardware->ioData->joypadInput = 0xCF;
 	}
 
 	return hardware;
