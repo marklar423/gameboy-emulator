@@ -82,7 +82,7 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 	}
 	else if (location == &hardware->videoData->lcdYCoord) {
 		//writing should reset?
-		//*location = value;
+		*location = 0;
 	}
 	else if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER && lcdMode != LCD_STAT_MODE_OAM_SEARCH) {

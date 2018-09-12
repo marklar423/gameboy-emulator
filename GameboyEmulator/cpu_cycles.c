@@ -180,7 +180,7 @@ void populateCPUOpSizes(InstructionMapping *mappings) {
 	mappings[OpCode_JR_r8].sizeBytes = 2;
 	mappings[OpCode_LDH_A_MEM_a8].sizeBytes = 2;
 	mappings[OpCode_LDH_MEM_a8_A].sizeBytes = 2;
-	mappings[OpCode_LD_A_MEM_C].sizeBytes = 2;
+	//mappings[OpCode_LD_A_MEM_C].sizeBytes = 2;
 	mappings[OpCode_LD_A_MEM_a16].sizeBytes = 3;
 	mappings[OpCode_LD_A_d8].sizeBytes = 2;
 	mappings[OpCode_LD_B_d8].sizeBytes = 2;
@@ -192,7 +192,7 @@ void populateCPUOpSizes(InstructionMapping *mappings) {
 	mappings[OpCode_LD_HL_d16].sizeBytes = 3;
 	mappings[OpCode_LD_H_d8].sizeBytes = 2;
 	mappings[OpCode_LD_L_d8].sizeBytes = 2;
-	mappings[OpCode_LD_MEM_C_A].sizeBytes = 2;
+	//mappings[OpCode_LD_MEM_C_A].sizeBytes = 2;
 	mappings[OpCode_LD_MEM_HL_d8].sizeBytes = 2;
 	mappings[OpCode_LD_MEM_a16_A].sizeBytes = 3;
 	mappings[OpCode_LD_MEM_a16_SP].sizeBytes = 3;
