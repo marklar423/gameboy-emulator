@@ -84,6 +84,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		//writing should reset?
 		*location = 0;
 	}
+	else if (location >= hardware->rom->romBytes && location <= &hardware->rom->romBytes[hardware->rom->romLength - 1]) {
+		//no writing allowed
+		//todo: implement MBC switching
+	}
 	else if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER && lcdMode != LCD_STAT_MODE_OAM_SEARCH) {
 			//can't write to OAM during pixel transfer and OAM search

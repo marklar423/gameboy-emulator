@@ -69,8 +69,6 @@ void timer(int value) {
 		tickCPU(hardware, mappings);
 		tickPPU(hardware, i);
 	}
-
-	assert(i == TARGET_TICKS_FRAME);
 	assert(hardware->videoData->lcdYCoord == 153);
 	
 	//resetFrameStatus(hardware);
