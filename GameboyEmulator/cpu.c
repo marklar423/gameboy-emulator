@@ -12,6 +12,15 @@
 #include "util.h"
 
 
+void processInstruction(Hardware *hardware, InstructionMapping *mappings, int instruction);
+int getImmediateWord(Hardware *hardware, int startAddress);
+unsigned char getImmediateByte(Hardware *hardware, int address);
+void populateCachedValues(Hardware *hardware, int nextPCAddressValue);
+void populateCachedResults(CachedOpResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
+void processDestination(Hardware *hardware, int *result, GBValue *destination);
+void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
+void decimalAdjustValue(unsigned char *value, unsigned char *flags);
+
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = createHardware();
 
@@ -130,7 +139,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 		switch (instruction) {
 
 		case OpCode_DAA:
-			THROW_ERROR("Unsupported instruction DAA");
+			decimalAdjustValue(&hardware->registers->A, &hardware->registers->F);
 			break;
 			
 		case OpCode_NOP:
@@ -364,4 +373,31 @@ int getImmediateWord(Hardware *hardware, int startAddress) {
 
 unsigned char getImmediateByte(Hardware *hardware, int address) {
 	return *(getRamAddress(hardware, address));
+}
+
+void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
+	unsigned char correction = 0;
+
+	unsigned char carryFlag = 0;
+
+	bool isFlagN = (*flags & FLAGS_N) == FLAGS_N,
+		isFlagH = (*flags & FLAGS_H) == FLAGS_H,
+		isFlagCY = (*flags & FLAGS_CY) == FLAGS_CY;
+
+	if (isFlagH || (!isFlagN && (*value & 0xf) > 9)) {
+		correction |= 0x6;
+	}
+
+	if (isFlagCY || (!isFlagN && *value > 0x99)) {
+		correction |= 0x60;
+		carryFlag = FLAGS_CY;
+	}
+
+	int result = (isFlagN) ? *value - correction : *value + correction;
+	*value = result;
+	
+	unsigned char zeroFlagZ = (*value == 0) ? FLAGS_Z : 0;
+
+	*flags  &= ~(FLAGS_H | FLAGS_Z | FLAGS_CY);
+	*flags |= carryFlag | zeroFlagZ;
 }
