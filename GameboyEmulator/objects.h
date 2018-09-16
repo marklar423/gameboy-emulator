@@ -89,6 +89,7 @@ typedef struct _Hardware {
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;
+	bool isOAMDMATriggered;
 } Hardware;
 
 typedef struct _FlagResult {

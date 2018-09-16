@@ -173,6 +173,8 @@ typedef enum _PixelColor {
  - There are 144 "drawing" lines, and 10 additional idle lines for v-blank
 
  - So total clocks per gameboy frame = 114 x (144 + 10) = 17,556 clocks per gameboy frame
+
+ - OAM transfer takes 160(?) clocks @ 4 MHz (40 ticks @ 1 MHz)
 */
 
 #define TARGET_FPS 59.7f

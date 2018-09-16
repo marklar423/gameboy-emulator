@@ -113,8 +113,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		}
 	}
 	else if (location == &hardware->videoData->dmaTransfer) {
-		//todo: start DMA transfer
 		*location = value;
+
+		//start DMA transfer
+		hardware->isOAMDMATriggered = true;
 	}
 	else if (location == &hardware->ioData->joypadInput) {
 		//only bits 4-7 can be written (only 4 & 5 are used)

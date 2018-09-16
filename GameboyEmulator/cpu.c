@@ -20,6 +20,7 @@ void populateCachedResults(CachedOpResults *results, GBValue *operands1, GBValue
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
 void decimalAdjustValue(unsigned char *value, unsigned char *flags);
+void transferOAM(Hardware *hardware, int startAddress, unsigned char* oamTable);
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = createHardware();
@@ -95,6 +96,12 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 	if (hardware->cpuCyclesToWait <= 1) {
 
 		processInterrupts(hardware);
+
+		if (hardware->isOAMDMATriggered) {
+			int dmaStartAddress = hardware->videoData->dmaTransfer << 8;
+			transferOAM(hardware, dmaStartAddress, hardware->videoData->oamTable);
+			hardware->isOAMDMATriggered = false;
+		}
 
 		int instruction = *getRamAddress(hardware, hardware->registers->PC);
 		
@@ -400,4 +407,11 @@ void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
 
 	*flags  &= ~(FLAGS_H | FLAGS_Z | FLAGS_CY);
 	*flags |= carryFlag | zeroFlagZ;
+}
+
+void transferOAM(Hardware *hardware, int startAddress, unsigned char* oamTable) {
+	for (int i = 0; i < OAM_SIZE; i++) {
+		oamTable[i] = *getRamAddress(hardware, startAddress);
+		startAddress++;
+	}
 }
