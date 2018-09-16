@@ -13,8 +13,10 @@ void populateVisibleSprites(Hardware *hardware);
 void drawLine(Hardware *hardware);
 void drawBackgroundLine(Hardware *hardware, int y);
 void drawWindow(Hardware *hardware, int x, int y);
-void drawSprites(Hardware *hardware, int x, int y);
-
+void drawSprites(Hardware *hardware, int y);
+void populatePaletteColors(PixelColor *colors, unsigned char palleteMapping);
+unsigned char* getTileBytes(unsigned char *tileData, int tileRow, unsigned char tileNumber, bool useSignedTileNumber);
+unsigned char getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn);
 
 void tickPPU(Hardware *hardware, int tick) {
 	/*	
@@ -58,9 +60,9 @@ void tickPPU(Hardware *hardware, int tick) {
 		}
 
 
-		char buffer[70];
+		/*char buffer[70];
 		sprintf_s(buffer, sizeof(buffer), "Tick, %d, Mode, %d, line, %d, waiting, %d\n", tick, mode, hardware->videoData->lcdYCoord, hardware->ppuCyclesToWait);
-		printDebugLine(buffer);
+		printDebugLine(buffer);*/
 	}
 	else {
 		hardware->ppuCyclesToWait--;
@@ -100,17 +102,18 @@ void clearFramePixels(Hardware *hardware) {
 }
 
 void populateVisibleSprites(Hardware *hardware) {
-	int numVisible = 0, numSprites = RAM_LOCATION_OAM_END - RAM_LOCATION_OAM + 1;
+	int numVisible = 0;
 	int currentLine = hardware->videoData->lcdYCoord;
 	
-	for (int i = 0; i < numSprites && numVisible < VISIBLE_SPRITES_PER_LINE; i++) {
-		int yPos = hardware->videoData->oamTable[i + OAM_INDEX_POS_Y];
-		int xPos = hardware->videoData->oamTable[i + OAM_INDEX_POS_X];
+	for (int i = 0; i < TOTAL_SPRITES && numVisible < VISIBLE_SPRITES_PER_LINE; i++) {
+		int spriteStartIndex = i * BYTES_PER_SPRITE;
+		int yPos = hardware->videoData->oamTable[spriteStartIndex + OAM_INDEX_POS_Y];
+		int xPos = hardware->videoData->oamTable[spriteStartIndex + OAM_INDEX_POS_X];
 
 		//todo: handle double height sprites
 		if (xPos > 0 && xPos < SCREEN_WIDTH + TILE_SIZE) {
 			if (currentLine < (yPos - TILE_SIZE) && currentLine >= yPos - (TILE_SIZE * 2)) {
-				hardware->videoData->lineVisibleSprites[numVisible++] = &(hardware->videoData->oamTable[i]);
+				hardware->videoData->lineVisibleSprites[numVisible++] = &(hardware->videoData->oamTable[spriteStartIndex]);
 			}			
 		}
 	}
@@ -124,10 +127,10 @@ void drawLine(Hardware *hardware) {
 	int currentLine = hardware->videoData->lcdYCoord;
 	
 	drawBackgroundLine(hardware, currentLine);
+	drawSprites(hardware, currentLine);
 
 	for (int i = 0; i < SCREEN_WIDTH; i++) {
 		drawWindow(hardware, i, currentLine);
-		drawSprites(hardware, i, currentLine);
 	}
 }
 
@@ -136,11 +139,8 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 	if ((hardware->videoData->lcdControl & PPU_FLAG_BG_ENABLE) == PPU_FLAG_BG_ENABLE) {
 
 		//map the pallete colors
-		PixelColor palleteColors[4];
-		palleteColors[0] = hardware->videoData->bgPalette & 3;
-		palleteColors[1] = (hardware->videoData->bgPalette & 12) >> 2;
-		palleteColors[2] = (hardware->videoData->bgPalette & 48) >> 4;
-		palleteColors[3] = (hardware->videoData->bgPalette & 192) >> 6;
+		PixelColor paletteColors[4];
+		populatePaletteColors(&paletteColors, hardware->videoData->bgPalette);
 
 		//get the right tile map
 		unsigned char* bgTileMap;
@@ -179,31 +179,14 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 
 				tileNumber = bgTileMap[(mapY * BG_MAP_TILES_WIDTH) + mapX];
 				
-				//which address mode are we in?
-				int baseTileAddress = 0, tileAddress;
-
-				if ((hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) == PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) {
-					tileAddress = tileNumber * BYTES_PER_TILE;
-				}
-				else {
-					baseTileAddress = VRAM_TILES_1_SIZE + VRAM_TILES_2_SIZE;
-					char tileNumberSigned = tileNumber;
-					tileAddress = tileNumberSigned * BYTES_PER_TILE;
-				}
-
-				tileRowPixels = (hardware->videoData->tileData + tileAddress + (tilePixelsRowNumber * 2));
+				bool useSignedTileNumber = (hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) != PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE;
+				tileRowPixels = getTileBytes(hardware->videoData->tileData, tilePixelsRowNumber, tileNumber, useSignedTileNumber);
 			}
 
 			//get the column of the pixel in the tile to draw
 			int tilePixelColumnNumber = (hardware->videoData->scrollX + x) - (mapX * TILE_SIZE);
 			
-			unsigned char pixelPalleteColor = 0;
-			unsigned char tilePixelColumnMask = 128 >> tilePixelColumnNumber;
-
-			if ((tileRowPixels[0] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 1;
-			if ((tileRowPixels[1] & tilePixelColumnMask) == tilePixelColumnMask) pixelPalleteColor |= 2;
-
-			hardware->videoData->framePixels[y][x] = palleteColors[pixelPalleteColor];
+			hardware->videoData->framePixels[y][x] = getTilePixelColor(paletteColors, tileRowPixels, tilePixelColumnNumber);
 		}
 	}
 }
@@ -215,11 +198,47 @@ void drawWindow(Hardware *hardware, int x, int y) {
 	}
 }
 
-void drawSprites(Hardware *hardware, int x, int y) {
+void drawSprites(Hardware *hardware, int y) {
 	//are sprites enabled?
 	if ((hardware->videoData->lcdControl & PPU_FLAG_OBJ_ENABLE) == PPU_FLAG_OBJ_ENABLE) {
 
+		for (int i = 0; i < VISIBLE_SPRITES_PER_LINE && hardware->videoData->lineVisibleSprites[i] != NULL; i++) {
+			unsigned char *sprite = hardware->videoData->lineVisibleSprites[i];
+		}
 	}
+}
+
+void populatePaletteColors(PixelColor *colors, unsigned char paletteMapping) {
+	colors[0] = paletteMapping & 3;
+	colors[1] = (paletteMapping & 12) >> 2;
+	colors[2] = (paletteMapping & 48) >> 4;
+	colors[3] = (paletteMapping & 192) >> 6;
+}
+
+unsigned char getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn) {
+	unsigned char pixelPaletteColor = 0;
+	unsigned char tilePixelColumnMask = 128 >> tileColumn;
+
+	if ((tileRowPixels[0] & tilePixelColumnMask) == tilePixelColumnMask) pixelPaletteColor |= 1;
+	if ((tileRowPixels[1] & tilePixelColumnMask) == tilePixelColumnMask) pixelPaletteColor |= 2;
+	return colors[pixelPaletteColor];
+}
+
+unsigned char* getTileBytes(unsigned char *tileData, int tileRow, unsigned char tileNumber, bool useSignedTileNumber) {
+	//which address mode are we in?
+	int baseTileAddress = 0, tileAddress;
+
+	if (useSignedTileNumber) {
+		baseTileAddress = VRAM_TILES_1_SIZE + VRAM_TILES_2_SIZE;
+		char tileNumberSigned = tileNumber;
+		tileAddress = tileNumberSigned * BYTES_PER_TILE;		
+	}
+	else {
+		tileAddress = tileNumber * BYTES_PER_TILE;
+	}
+
+	unsigned char *tileRowPixels = (tileData + tileAddress + (tileRow * 2));
+	return tileRowPixels;
 }
 
 void setLCDMode(Hardware *hardware, PPUFlag mode) {
