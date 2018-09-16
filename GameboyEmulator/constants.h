@@ -130,7 +130,9 @@ typedef enum _OAMIndex {
 	OAM_INDEX_POS_Y = 0,
 	OAM_INDEX_POS_X = 1,
 	OAM_INDEX_TILE_NUM = 2,
-	OAM_INDEX_FLAGS = 3
+	OAM_INDEX_FLAGS = 3,
+
+	OAM_FLAG_PALETTE_NUM_MASK = 16
 } OAMIndex;
 
 typedef enum _PixelColor {

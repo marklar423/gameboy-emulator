@@ -204,6 +204,30 @@ void drawSprites(Hardware *hardware, int y) {
 
 		for (int i = 0; i < VISIBLE_SPRITES_PER_LINE && hardware->videoData->lineVisibleSprites[i] != NULL; i++) {
 			unsigned char *sprite = hardware->videoData->lineVisibleSprites[i];
+
+			int yPos = sprite[OAM_INDEX_POS_Y];
+			int xPos = sprite[OAM_INDEX_POS_X];
+			unsigned char tileNumber = sprite[OAM_INDEX_TILE_NUM];
+			unsigned char flags = sprite[OAM_INDEX_FLAGS];
+
+			PixelColor paletteColors[4];
+			unsigned char paletteData = (flags & OAM_FLAG_PALETTE_NUM_MASK) == OAM_FLAG_PALETTE_NUM_MASK ?
+											hardware->videoData->objPalette1 : hardware->videoData->objPalette0;
+			populatePaletteColors(&paletteColors, paletteData);
+
+			int tileRow = y - (yPos - (TILE_SIZE * 2));
+
+			unsigned char* tileRowPixels = getTileBytes(hardware->videoData->tileData, tileRow, tileNumber, false);
+
+			int startX = xPos - TILE_SIZE;
+			startX = startX < 0 ? 0 : startX;
+
+			int endX = xPos < SCREEN_WIDTH ? xPos : SCREEN_WIDTH - 1;
+
+			for (int x = startX; x <= endX; x++) {
+				int tileCol = x - (xPos - TILE_SIZE);
+				hardware->videoData->framePixels[y][x] = getTilePixelColor(paletteColors, tileRowPixels, tileCol);
+			}
 		}
 	}
 }
