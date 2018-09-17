@@ -135,6 +135,7 @@
     <ClCompile Include="cpu_interrupts.c" />
     <ClCompile Include="cpu_jump.c" />
     <ClCompile Include="cpu_load.c" />
+    <ClCompile Include="gui.c" />
     <ClCompile Include="ini.c" />
     <ClCompile Include="ram.c" />
     <ClCompile Include="game_rom.c" />
@@ -153,6 +154,7 @@
     <ClInclude Include="cpu_interrupts.h" />
     <ClInclude Include="cpu_jump.h" />
     <ClInclude Include="cpu_load.h" />
+    <ClInclude Include="gui.h" />
     <ClInclude Include="ini.h" />
     <ClInclude Include="ram.h" />
     <ClInclude Include="game_rom.h" />

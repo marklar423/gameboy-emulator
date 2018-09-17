@@ -2,6 +2,7 @@
 #include <windows.h>
 
 #include "constants.h"
+#include "gui.h"
 #include "config.h"
 #include "game_rom.h"
 #include "cpu.h"
@@ -9,20 +10,12 @@
 
 static int numFrames = 0;
 
-static Hardware *hardware;
-static InstructionMapping *mappings;
-static Config *config;
+static Hardware *g_hardware;
+static InstructionMapping *g_mappings;
+static Config *g_config;
 
-void display(void) {
+void drawFrame() {
 	glClear(GL_COLOR_BUFFER_BIT);
-	/*glBegin(GL_POLYGON);
-	
-	glColor3f(0.0f, 0.0f, 0.9f);
-	glVertex3f(-0.5, -0.5, 0.0);
-	glVertex3f(-0.5, 0.5, 0.0);
-	glVertex3f(0.5, 0.5, 0.0);
-	glVertex3f(0.5, -0.5, 0.0);
-	glEnd();*/
 
 	GLfloat xStart = -1.0f, yStart = -1.0f;
 
@@ -30,7 +23,7 @@ void display(void) {
 		for (int x = 0; x < SCREEN_WIDTH; x++) {
 			GLfloat red, green, blue;
 
-			switch (hardware->videoData->framePixels[y][x]) {
+			switch (g_hardware->videoData->framePixels[y][x]) {
 			case PixelColor_White:
 				red = green = blue = 1.0f;
 				break;
@@ -51,57 +44,35 @@ void display(void) {
 			glEnd();
 		}
 	}
-
-	//glFlush();
-	glutSwapBuffers();
-
-	/*char log[50];
-	sprintf_s(log, 50, "Redisplay %d\n", ++count);
-	OutputDebugString(log);*/
 }
 
 
-void timer(int value) {
-	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
-		
-	clearFramePixels(hardware);
+void updateFrame() {		
+	clearFramePixels(g_hardware);
 	
 	int i = 0;
 	for (; i < TARGET_TICKS_FRAME; i++) {		
-		tickCPU(hardware, mappings);
-		tickPPU(hardware, i);
+		tickCPU(g_hardware, g_mappings);
+		tickPPU(g_hardware, i);
 	}
-	assert(hardware->videoData->lcdYCoord == 153);
+	assert(g_hardware->videoData->lcdYCoord == 153);
 	
 	//resetFrameStatus(hardware);
 	
-	glutPostRedisplay();
 	numFrames++;
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) 
 {
-	config = readConfigFile("config.ini");
-	GameRom *gameRom = readGameRom(config->romPath);
+	g_config = readConfigFile("config.ini");
+	GameRom *gameRom = readGameRom(g_config->romPath);
 
-	hardware = initCPU(gameRom, true);
-	mappings = initInstructionMappings(hardware);
+	g_hardware = initCPU(gameRom, true);
+	g_mappings = initInstructionMappings(g_hardware);
 
-	int argc = 0;
-	glutInit(&argc, NULL);
-
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(500, 500);
-	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Gameboy Emulator");
-	
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluOrtho2D(0.0, 500.0, 500.0, 0.0);
-	glMatrixMode(GL_MODELVIEW);
-	glutDisplayFunc(display);		
-	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, timer, 0);
-	glutMainLoop();
+	createGUIWindow();
+	setGUICallbacks(updateFrame, drawFrame);
+	runMainLoop();
 
 	return 0;
 }
