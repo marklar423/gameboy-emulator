@@ -1,5 +1,10 @@
-#include <GL/glut.h>
+
+
 #include <windows.h>
+
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+
 
 #include "constants.h"
 #include "gui.h"
@@ -50,8 +55,7 @@ void drawFrame() {
 void updateFrame() {		
 	clearFramePixels(g_hardware);
 	
-	int i = 0;
-	for (; i < TARGET_TICKS_FRAME; i++) {		
+	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(g_hardware, g_mappings);
 		tickPPU(g_hardware, i);
 	}
@@ -72,7 +76,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	createGUIWindow();
 	setGUICallbacks(updateFrame, drawFrame);
-	runMainLoop();
+	runMainLoop(TARGET_FPS);
 
 	return 0;
 }

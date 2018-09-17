@@ -1,34 +1,35 @@
 
+#include <windows.h>
+
+#define GLFW_DLL
+#include <GLFW/glfw3.h>
+
 #include "gui.h"
-#include <GL/glut.h>
+#include "util.h"
 
 static guiCallback g_updateLoopCallback, g_drawFrameCallback;
-
-void glutTimerCallback(int value) {
-	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, glutTimerCallback, 0);
-
-	g_updateLoopCallback();
-
-	glutPostRedisplay();
-}
-
-void glutRedisplayCallback() {
-	g_drawFrameCallback();
-	glutSwapBuffers();	
-}
+static GLFWwindow *g_window;
 
 void createGUIWindow() {
-	int argc = 0;
-	glutInit(&argc, NULL);
+	/* Initialize the library */
+	if (!glfwInit()) THROW_ERROR("ERROR INITIALIZING GLFW");
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
-	glutInitWindowSize(500, 500);
-	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Gameboy Emulator");
+	/* Create a windowed mode window and its OpenGL context */
+	g_window = glfwCreateWindow(500, 500, "Gameboy Emulator", NULL, NULL);
+	if (!g_window)
+	{
+		glfwTerminate();
+		THROW_ERROR("ERROR CREATING WINDOW");
+	}
+
+	glfwSetWindowPos(g_window, 100, 100);
+
+	/* Make the window's context current */
+	glfwMakeContextCurrent(g_window);
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluOrtho2D(0.0, 500.0, 500.0, 0.0);
+	glOrtho(0.0, 500.0, 500.0, 0.0, 0.0, 1.0);
 	glMatrixMode(GL_MODELVIEW);
 }
 
@@ -37,8 +38,53 @@ void setGUICallbacks(guiCallback updateLoopCallback, guiCallback drawFrameCallba
 	g_drawFrameCallback = drawFrameCallback;
 }
 
-void runMainLoop() {
-	glutDisplayFunc(glutRedisplayCallback);
-	glutTimerFunc(TARGET_MILLSECONDS_PER_FRAME, glutTimerCallback, 0);
-	glutMainLoop();
+void runMainLoop(float targetFPS) {
+	double limitFPS = 1.0f / targetFPS;
+
+	double lastTime = glfwGetTime();
+	double deltaTime = 0, nowTime = 0;
+
+	//for logging purposes
+	double timer = lastTime;
+	int frames = 0, updates = 0;
+
+	// Loop until the user closes the window
+	while (!glfwWindowShouldClose(g_window))
+	{
+		//Measure time
+		nowTime = glfwGetTime();
+		deltaTime += (nowTime - lastTime) / limitFPS;
+		lastTime = nowTime;
+
+		//Only update at 60 frames
+		while (deltaTime >= 1.0) {
+			g_updateLoopCallback();   // - Update function
+			updates++;
+			deltaTime--;
+		}
+
+		g_drawFrameCallback();
+		frames++;
+
+		//Swap front and back buffers
+		glfwSwapBuffers(g_window);
+
+		//Poll for and process events
+		glfwPollEvents();
+
+		/*
+		// Logging
+		if (glfwGetTime() - timer > 1.0) {
+			timer++;
+
+			char buffer[70];
+			sprintf_s(buffer, sizeof(buffer), "FPS: %d, Updates:, %d\n", frames, updates);
+			OutputDebugString(buffer);
+
+			updates = 0, frames = 0;
+		}*/
+		
+	}
+
+	glfwTerminate();
 }

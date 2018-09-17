@@ -8,4 +8,4 @@ typedef void(*guiCallback)();
 
 void createGUIWindow();
 void setGUICallbacks(guiCallback updateLoopCallback, guiCallback drawFrameCallback);
-void runMainLoop();
+void runMainLoop(float targetFPS);
