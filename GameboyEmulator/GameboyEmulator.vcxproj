@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="config.c" />
     <ClCompile Include="cpu.c" />
     <ClCompile Include="cpu_alu.c" />
     <ClCompile Include="cpu_bitwise.c" />
@@ -143,6 +144,7 @@
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="config.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="constants.h" />
     <ClInclude Include="cpu_alu.h" />

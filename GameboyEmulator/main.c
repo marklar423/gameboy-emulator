@@ -2,6 +2,7 @@
 #include <windows.h>
 
 #include "constants.h"
+#include "config.h"
 #include "game_rom.h"
 #include "cpu.h"
 #include "ppu.h"
@@ -10,6 +11,7 @@ static int numFrames = 0;
 
 static Hardware *hardware;
 static InstructionMapping *mappings;
+static Config *config;
 
 void display(void) {
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -79,7 +81,8 @@ void timer(int value) {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) 
 {
-	GameRom *gameRom = readGameRom(lpCmdLine);
+	config = readConfigFile("config.ini");
+	GameRom *gameRom = readGameRom(config->romPath);
 
 	hardware = initCPU(gameRom, true);
 	mappings = initInstructionMappings(hardware);

@@ -14,6 +14,10 @@ typedef struct _GameRom {
 	char gameName[15];
 } GameRom;
 
+typedef struct _Config {
+	char *romPath;
+} Config;
+
 
 typedef struct _Registers {
 	unsigned char A, B, C, D, E, H, L, F;
