@@ -8,7 +8,6 @@
 
 static unsigned char TODO = 0;
 
-void setJoypadDataState(Hardware *hardware);
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize);
 
 unsigned char* getRamAddress(Hardware *hardware, int address) {
