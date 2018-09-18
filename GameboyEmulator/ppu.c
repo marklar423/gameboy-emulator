@@ -16,7 +16,7 @@ void drawWindow(Hardware *hardware, int x, int y);
 void drawSprites(Hardware *hardware, int y);
 void populatePaletteColors(PixelColor *colors, unsigned char palleteMapping);
 unsigned char* getTileBytes(unsigned char *tileData, int tileRow, unsigned char tileNumber, bool useSignedTileNumber);
-unsigned char getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn);
+PixelColor getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn);
 
 void tickPPU(Hardware *hardware, int tick) {
 	/*	
@@ -226,7 +226,12 @@ void drawSprites(Hardware *hardware, int y) {
 
 			for (int x = startX; x < endX; x++) {
 				int tileCol = x - (xPos - TILE_SIZE);
-				hardware->videoData->framePixels[y][x] = getTilePixelColor(paletteColors, tileRowPixels, tileCol);
+				PixelColor finalColor = getTilePixelColor(paletteColors, tileRowPixels, tileCol);
+				
+				//color zero is considered transparent and not rendered
+				if (finalColor != paletteColors[0]) {
+					hardware->videoData->framePixels[y][x] = finalColor;
+				}
 			}
 		}
 	}
@@ -239,7 +244,7 @@ void populatePaletteColors(PixelColor *colors, unsigned char paletteMapping) {
 	colors[3] = (paletteMapping & 192) >> 6;
 }
 
-unsigned char getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn) {
+PixelColor getTilePixelColor(PixelColor *colors, unsigned char *tileRowPixels, int tileColumn) {
 	unsigned char pixelPaletteColor = 0;
 	unsigned char tilePixelColumnMask = 128 >> tileColumn;
 

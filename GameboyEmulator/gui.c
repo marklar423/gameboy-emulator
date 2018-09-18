@@ -45,10 +45,6 @@ void runMainLoop(float targetFPS) {
 	double lastTime = glfwGetTime();
 	double deltaTime = 0, nowTime = 0;
 
-	//for logging purposes
-	double timer = lastTime;
-	int frames = 0, updates = 0;
-
 	// Loop until the user closes the window
 	while (!glfwWindowShouldClose(g_window))
 	{
@@ -57,15 +53,13 @@ void runMainLoop(float targetFPS) {
 		deltaTime += (nowTime - lastTime) / limitFPS;
 		lastTime = nowTime;
 
-		//Only update at 60 frames
+		//Only update at targetFPS frames
 		while (deltaTime >= 1.0) {
-			g_updateLoopCallback();   // - Update function
-			updates++;
+			g_updateLoopCallback();
 			deltaTime--;
 		}
 
 		g_drawFrameCallback();
-		frames++;
 
 		//Swap front and back buffers
 		glfwSwapBuffers(g_window);
@@ -73,18 +67,6 @@ void runMainLoop(float targetFPS) {
 		//Poll for and process events
 		glfwPollEvents();
 
-		/*
-		// Logging
-		if (glfwGetTime() - timer > 1.0) {
-			timer++;
-
-			char buffer[70];
-			sprintf_s(buffer, sizeof(buffer), "FPS: %d, Updates:, %d\n", frames, updates);
-			OutputDebugString(buffer);
-
-			updates = 0, frames = 0;
-		}*/
-		
 	}
 
 	glfwTerminate();

@@ -41,7 +41,9 @@ typedef struct _SoundData {
 } SoundData;
 
 typedef struct _IOData {
-	unsigned char joypadInput, serialTransferData, serialTransferControl;
+	unsigned char joypadData, serialTransferData, serialTransferControl;
+	bool isUpPressed, isDownPressed, isRightPressed, isLeftPressed;
+	bool isAPressed, isBPressed, isStartPressed, isSelectPressed;
 } IOData;
 
 typedef struct _GBValue {
