@@ -7,6 +7,7 @@
 
 static unsigned char TODO = 0;
 
+void setJoypadDataState(Hardware *hardware);
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize);
 
 unsigned char* getRamAddress(Hardware *hardware, int address) {
@@ -39,7 +40,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address >= RAM_LOCATION_HRAM && address <= RAM_LOCATION_HRAM_END)
 		return getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE);
 
-	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadInput;
+	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return &hardware->ioData->serialTransferData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_CONTROL) return &hardware->ioData->serialTransferControl;
 	else if (address == RAM_LOCATION_SOUND_ON_OFF) return &hardware->soundData->soundOnOff;
@@ -118,9 +119,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		//start DMA transfer
 		hardware->isOAMDMATriggered = true;
 	}
-	else if (location == &hardware->ioData->joypadInput) {
+	else if (location == &hardware->ioData->joypadData) {
 		//only bits 4-7 can be written (only 4 & 5 are used)
 		*location = (value & 0xF0) | (*location & 0x0F);
+		setJoypadDataState(hardware);
 	}
 	else {
 		*location = value;
@@ -146,4 +148,23 @@ unsigned char popByteFromStack(Hardware *hardware){
 	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);
 	hardware->registers->SP++;
 	return *topOfStack;
+}
+
+void setJoypadDataState(Hardware *hardware) {
+	//zero means button pressed/selected, one means not pressed/selected	
+	if ((hardware->ioData->joypadData & IO_FLAG_SELECT_BUTTON) == 0) {		
+		SET_BIT_IF(!hardware->inputState->isAPressed, IO_FLAG_RIGHT_A_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isBPressed, IO_FLAG_LEFT_B_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isSelectPressed, IO_FLAG_UP_SELECT_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isStartPressed, IO_FLAG_DOWN_START_PRESSED, hardware->ioData->joypadData);
+	}
+	else if ((hardware->ioData->joypadData & IO_FLAG_SELECT_DIRECTION) == 0) {
+		SET_BIT_IF(!hardware->inputState->isRightPressed, IO_FLAG_RIGHT_A_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isLeftPressed, IO_FLAG_LEFT_B_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isUpPressed, IO_FLAG_UP_SELECT_PRESSED, hardware->ioData->joypadData);
+		SET_BIT_IF(!hardware->inputState->isDownPressed, IO_FLAG_DOWN_START_PRESSED, hardware->ioData->joypadData);
+	}
+	else {
+		hardware->ioData->joypadData |= 0x0F;
+	}
 }

@@ -42,9 +42,12 @@ typedef struct _SoundData {
 
 typedef struct _IOData {
 	unsigned char joypadData, serialTransferData, serialTransferControl;
+} IOData;
+
+typedef struct _InputState {
 	bool isUpPressed, isDownPressed, isRightPressed, isLeftPressed;
 	bool isAPressed, isBPressed, isStartPressed, isSelectPressed;
-} IOData;
+} InputState;
 
 typedef struct _GBValue {
 	bool isWordValue, isSplitValue, isByteSigned;
@@ -92,6 +95,7 @@ typedef struct _Hardware {
 	CachedOpValues *cachedValues;
 	CachedOpResults *cachedResults;
 	ResultInfo *resultInfo;
+	InputState *inputState;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;

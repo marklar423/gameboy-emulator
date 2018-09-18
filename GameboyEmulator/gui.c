@@ -32,6 +32,9 @@ void createGUIWindow() {
 	glViewport(0, 0, 480, 432);
 	glOrtho(0.0, 160.0, 144.0, 0.0, 0.0, 1.0);	
 	glMatrixMode(GL_MODELVIEW);
+
+	//since we're polling for input, this ensures we don't miss input events
+	glfwSetInputMode(g_window, GLFW_STICKY_KEYS, 1);
 }
 
 void setGUICallbacks(guiCallback updateLoopCallback, guiCallback drawFrameCallback) {
@@ -70,4 +73,15 @@ void runMainLoop(float targetFPS) {
 	}
 
 	glfwTerminate();
+}
+
+void getInputState(InputState *inputState) {	
+	inputState->isBPressed = (glfwGetKey(g_window, GLFW_KEY_Z) == GLFW_PRESS);
+	inputState->isAPressed = (glfwGetKey(g_window, GLFW_KEY_X) == GLFW_PRESS);
+	inputState->isStartPressed = (glfwGetKey(g_window, GLFW_KEY_ENTER) == GLFW_PRESS);
+	inputState->isSelectPressed = (glfwGetKey(g_window, GLFW_KEY_RIGHT_SHIFT) == GLFW_PRESS);
+	inputState->isUpPressed = (glfwGetKey(g_window, GLFW_KEY_UP) == GLFW_PRESS);
+	inputState->isDownPressed = (glfwGetKey(g_window, GLFW_KEY_DOWN) == GLFW_PRESS);
+	inputState->isRightPressed = (glfwGetKey(g_window, GLFW_KEY_RIGHT) == GLFW_PRESS);
+	inputState->isLeftPressed = (glfwGetKey(g_window, GLFW_KEY_LEFT) == GLFW_PRESS);
 }

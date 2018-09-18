@@ -103,6 +103,7 @@ Hardware* createHardware() {
 	hardware->ioData = calloc(1, sizeof(IOData));	
 	hardware->videoData = calloc(1, sizeof(VideoData));	
 	hardware->soundData = calloc(1, sizeof(SoundData));
+	hardware->inputState = calloc(1, sizeof(InputState));
 
 	return hardware;
 }

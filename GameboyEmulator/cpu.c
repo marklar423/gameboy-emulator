@@ -356,9 +356,9 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		hardware->resultInfo->isOperand1Bit0Set = (operand1Value & 1) == 1;
 		hardware->resultInfo->isOperand1Bit7Set = (operand1Value & 128) == 1;
 
-		if (flagResult->isZero != NULL)		SET_BIT_IF(flagResult->isZero, FLAGS_Z, hardware->registers->F);
-		if (flagResult->isSubtract != NULL)	SET_BIT_IF(flagResult->isSubtract, FLAGS_N, hardware->registers->F);
-		if (flagResult->isCarry != NULL)	SET_BIT_IF(flagResult->isCarry, FLAGS_CY, hardware->registers->F);
+		if (flagResult->isZero != NULL)		P_SET_BIT_IF(flagResult->isZero, FLAGS_Z, hardware->registers->F);
+		if (flagResult->isSubtract != NULL)	P_SET_BIT_IF(flagResult->isSubtract, FLAGS_N, hardware->registers->F);
+		if (flagResult->isCarry != NULL)	P_SET_BIT_IF(flagResult->isCarry, FLAGS_CY, hardware->registers->F);
 
 		if (operand1 != NULL && operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
@@ -367,7 +367,7 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) == 0x1000;
 			hardware->resultInfo->isSubHalfBorrow = ((operand1Value & 0x0F) - (operand2Value & 0x0F)) < 0;
 
-			if (flagResult->isHalfCarry != NULL)		SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
+			if (flagResult->isHalfCarry != NULL)		P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 		}
 	}
 }

@@ -142,6 +142,14 @@ typedef enum _PixelColor {
 	PixelColor_Black = 3
 } PixelColor;
 
+typedef enum _IOFlag {
+	IO_FLAG_SELECT_BUTTON = 32, //0 = Select
+	IO_FLAG_SELECT_DIRECTION = 16, //0 = Select
+	IO_FLAG_DOWN_START_PRESSED = 8,  //0 = Pressed
+	IO_FLAG_UP_SELECT_PRESSED = 4, //0 = Pressed
+	IO_FLAG_LEFT_B_PRESSED = 2, //0 = Pressed
+	IO_FLAG_RIGHT_A_PRESSED = 1 //0 = Pressed
+} IOFlag;
 
 #define VRAM_TOTAL_SIZE 0x2000
 #define VRAM_TOTAL_TILES_SIZE 0x1800
