@@ -13,3 +13,5 @@ void pushByteToStack(Hardware *hardware, unsigned char value);
 void pushWordToStack(Hardware *hardware, int value);
 
 unsigned char popByteFromStack(Hardware *hardware);
+
+void setJoypadDataState(Hardware *hardware);

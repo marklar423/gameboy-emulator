@@ -12,6 +12,7 @@
 #include "game_rom.h"
 #include "cpu.h"
 #include "ppu.h"
+#include "ram.h"
 
 static int numFrames = 0;
 
@@ -55,6 +56,8 @@ void drawFrame() {
 
 void updateFrame() {		
 	clearFramePixels(g_hardware);
+	getInputState(g_hardware->inputState);
+	setJoypadDataState(g_hardware);
 	
 	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(g_hardware, g_mappings);

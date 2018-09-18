@@ -4,6 +4,7 @@
 
 #include "ram.h"
 #include "util.h"
+#include "cpu_interrupts.h"
 
 static unsigned char TODO = 0;
 
@@ -166,5 +167,8 @@ void setJoypadDataState(Hardware *hardware) {
 	}
 	else {
 		hardware->ioData->joypadData |= 0x0F;
+	}
+	if ((hardware->ioData->joypadData & 0x0F) != 0x0F) {
+		setRequestedInterrupt(hardware, INTERRUPT_FLAG_BUTTON_PRESS, true);
 	}
 }
