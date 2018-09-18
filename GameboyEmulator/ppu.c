@@ -222,9 +222,9 @@ void drawSprites(Hardware *hardware, int y) {
 			int startX = xPos - TILE_SIZE;
 			startX = startX < 0 ? 0 : startX;
 
-			int endX = xPos < SCREEN_WIDTH ? xPos : SCREEN_WIDTH - 1;
+			int endX = xPos < SCREEN_WIDTH ? xPos : SCREEN_WIDTH;
 
-			for (int x = startX; x <= endX; x++) {
+			for (int x = startX; x < endX; x++) {
 				int tileCol = x - (xPos - TILE_SIZE);
 				hardware->videoData->framePixels[y][x] = getTilePixelColor(paletteColors, tileRowPixels, tileCol);
 			}
