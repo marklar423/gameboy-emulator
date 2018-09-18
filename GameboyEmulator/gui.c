@@ -15,7 +15,7 @@ void createGUIWindow() {
 	if (!glfwInit()) THROW_ERROR("ERROR INITIALIZING GLFW");
 
 	/* Create a windowed mode window and its OpenGL context */
-	g_window = glfwCreateWindow(500, 500, "Gameboy Emulator", NULL, NULL);
+	g_window = glfwCreateWindow(480, 432, "Gameboy Emulator", NULL, NULL);
 	if (!g_window)
 	{
 		glfwTerminate();
@@ -29,7 +29,8 @@ void createGUIWindow() {
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(0.0, 500.0, 500.0, 0.0, 0.0, 1.0);
+	glViewport(0, 0, 480, 432);
+	glOrtho(0.0, 160.0, 144.0, 0.0, 0.0, 1.0);	
 	glMatrixMode(GL_MODELVIEW);
 }
 

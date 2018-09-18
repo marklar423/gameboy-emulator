@@ -20,7 +20,8 @@ static InstructionMapping *g_mappings;
 static Config *g_config;
 
 void drawFrame() {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);	
+	glPointSize(4.0f);
 
 	GLfloat xStart = -1.0f, yStart = -1.0f;
 
