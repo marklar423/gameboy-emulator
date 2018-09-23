@@ -38,6 +38,7 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->registers->H = 0x01;
 		hardware->registers->L = 0x4D;
 		hardware->registers->SP = 0xFFFE;
+		hardware->registers->globalInterruptsEnabled = true;
 
 		/**(getRamAddress(hardware, 0xFF05)) = 0x00; //TIMA
 		*(getRamAddress(hardware, 0xFF06)) = 0x00; //TMA

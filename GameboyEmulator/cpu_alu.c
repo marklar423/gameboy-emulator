@@ -511,25 +511,26 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_DEC_E].flagResult =
 		mappings[OpCode_DEC_H].flagResult =
 		mappings[OpCode_DEC_L].flagResult =
-		mappings[OpCode_DEC_BC].flagResult =
-		mappings[OpCode_DEC_DE].flagResult =
-		mappings[OpCode_DEC_HL].flagResult =
-		mappings[OpCode_DEC_SP].flagResult =
 		mappings[OpCode_DEC_MEM_HL].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &TRUE_VAL, &(hardware->resultInfo->isSubHalfBorrow), NULL);
 
 
 	mappings[OpCode_INC_A].flagResult =
 		mappings[OpCode_INC_B].flagResult =
-		mappings[OpCode_INC_BC].flagResult =
 		mappings[OpCode_INC_C].flagResult =
 		mappings[OpCode_INC_D].flagResult =
-		mappings[OpCode_INC_DE].flagResult =
 		mappings[OpCode_INC_E].flagResult =
 		mappings[OpCode_INC_H].flagResult =
-		mappings[OpCode_INC_HL].flagResult =
 		mappings[OpCode_INC_L].flagResult =
-		mappings[OpCode_INC_MEM_HL].flagResult =
-		mappings[OpCode_INC_SP].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), NULL);
+		mappings[OpCode_INC_MEM_HL].flagResult = createFlagResult(&(hardware->resultInfo->isZero), &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), NULL);
+	
+	mappings[OpCode_INC_BC].flagResult =
+		mappings[OpCode_INC_DE].flagResult =
+		mappings[OpCode_INC_HL].flagResult =
+		mappings[OpCode_INC_SP].flagResult =
+		mappings[OpCode_DEC_BC].flagResult =
+		mappings[OpCode_DEC_DE].flagResult =
+		mappings[OpCode_DEC_HL].flagResult =
+		mappings[OpCode_DEC_SP].flagResult = NULL; //no flags affected
 
 	mappings[OpCode_ADC_A_A].flagResult =
 		mappings[OpCode_ADC_A_B].flagResult =
