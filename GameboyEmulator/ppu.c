@@ -136,7 +136,7 @@ void drawLine(Hardware *hardware) {
 
 void drawBackgroundLine(Hardware *hardware, int y) {
 	//is BG enabled?
-	if ((hardware->videoData->lcdControl & PPU_FLAG_BG_ENABLE) == PPU_FLAG_BG_ENABLE) {
+	if ((hardware->videoData->lcdControl & PPU_FLAG_BG_ENABLE) != 0) {
 
 		//map the pallete colors
 		PixelColor paletteColors[4];
@@ -145,7 +145,7 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 		//get the right tile map
 		unsigned char* bgTileMap;
 
-		if ((hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_MAP_SELECT) == PPU_FLAG_BG_TILE_MAP_SELECT) {
+		if ((hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_MAP_SELECT) != 0) {
 			bgTileMap = hardware->videoData->bgMap2;
 		}
 		else {
@@ -193,14 +193,14 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 
 void drawWindow(Hardware *hardware, int x, int y) {
 	//is window enabled?
-	if ((hardware->videoData->lcdControl & PPU_FLAG_WINDOW_ENABLE) == PPU_FLAG_WINDOW_ENABLE) {
+	if ((hardware->videoData->lcdControl & PPU_FLAG_WINDOW_ENABLE) != 0) {
 
 	}
 }
 
 void drawSprites(Hardware *hardware, int y) {
 	//are sprites enabled?
-	if ((hardware->videoData->lcdControl & PPU_FLAG_OBJ_ENABLE) == PPU_FLAG_OBJ_ENABLE) {
+	if ((hardware->videoData->lcdControl & PPU_FLAG_OBJ_ENABLE) != 0) {
 
 		for (int i = 0; i < VISIBLE_SPRITES_PER_LINE && hardware->videoData->lineVisibleSprites[i] != NULL; i++) {
 			unsigned char *sprite = hardware->videoData->lineVisibleSprites[i];
@@ -210,12 +210,16 @@ void drawSprites(Hardware *hardware, int y) {
 			unsigned char tileNumber = sprite[OAM_INDEX_TILE_NUM];
 			unsigned char flags = sprite[OAM_INDEX_FLAGS];
 
+			bool isXFlipped = (flags & OAM_FLAG_X_FLIP) != 0;
+			bool isYFlipped = (flags & OAM_FLAG_Y_FLIP) != 0;
+			
 			PixelColor paletteColors[4];
-			unsigned char paletteData = (flags & OAM_FLAG_PALETTE_NUM_MASK) == OAM_FLAG_PALETTE_NUM_MASK ?
+			unsigned char paletteData = (flags & OAM_FLAG_PALETTE_NUM_MASK) != 0 ?
 											hardware->videoData->objPalette1 : hardware->videoData->objPalette0;
 			populatePaletteColors(&paletteColors, paletteData);
 
 			int tileRow = y - (yPos - (TILE_SIZE * 2));
+			if (isYFlipped) tileRow = (TILE_SIZE - 1) - tileRow;
 
 			unsigned char* tileRowPixels = getTileBytes(hardware->videoData->tileData, tileRow, tileNumber, false);
 
@@ -226,6 +230,8 @@ void drawSprites(Hardware *hardware, int y) {
 
 			for (int x = startX; x < endX; x++) {
 				int tileCol = x - (xPos - TILE_SIZE);
+				if (isXFlipped) tileCol = (TILE_SIZE - 1) - tileCol;
+
 				PixelColor finalColor = getTilePixelColor(paletteColors, tileRowPixels, tileCol);
 				
 				//color zero is considered transparent and not rendered

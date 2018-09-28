@@ -63,8 +63,7 @@ void updateFrame() {
 		tickCPU(g_hardware, g_mappings);
 		tickPPU(g_hardware, i);
 	}
-	assert(g_hardware->videoData->lcdYCoord == 153);
-	
+
 	//resetFrameStatus(hardware);
 	
 	numFrames++;
