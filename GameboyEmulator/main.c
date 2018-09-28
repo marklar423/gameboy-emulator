@@ -35,10 +35,10 @@ void drawFrame() {
 				red = green = blue = 1.0f;
 				break;
 			case PixelColor_LightGray:
-				red = green = blue = 0.166f;
+				red = green = blue = 0.75f;
 				break;
 			case PixelColor_DarkGray:
-				red = green = blue = 0.77f;
+				red = green = blue = 0.50f;
 				break;
 			case PixelColor_Black:
 				red = green = blue = 0.0f;
