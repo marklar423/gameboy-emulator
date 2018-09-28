@@ -120,8 +120,8 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		hardware->isOAMDMATriggered = true;
 	}
 	else if (location == &hardware->ioData->joypadData) {
-		//only bits 4-7 can be written (only 4 & 5 are used)
-		*location = (value & 0xF0) | (*location & 0x0F);
+		//only bits 4 & 5 can be written
+		*location = (value & 0x30) | (*location & 0xCF);
 		setJoypadDataState(hardware);
 	}
 	else {
@@ -151,7 +151,7 @@ unsigned char popByteFromStack(Hardware *hardware){
 }
 
 void setJoypadDataState(Hardware *hardware) {
-	//zero means button pressed/selected, one means not pressed/selected	
+	//zero means button pressed/selected, one means not pressed/selected		
 	if ((hardware->ioData->joypadData & IO_FLAG_SELECT_BUTTON) == 0) {		
 		SET_BIT_IF(!hardware->inputState->isAPressed, IO_FLAG_RIGHT_A_PRESSED, hardware->ioData->joypadData);
 		SET_BIT_IF(!hardware->inputState->isBPressed, IO_FLAG_LEFT_B_PRESSED, hardware->ioData->joypadData);
@@ -167,7 +167,8 @@ void setJoypadDataState(Hardware *hardware) {
 	else {
 		hardware->ioData->joypadData |= 0x0F;
 	}
-	if ((hardware->ioData->joypadData & 0x0F) != 0x0F) {
+
+	if ((hardware->ioData->joypadData & 0x0F) == 0) {
 		setRequestedInterrupt(hardware, INTERRUPT_FLAG_BUTTON_PRESS, true);
 	}
 }
