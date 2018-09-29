@@ -107,7 +107,7 @@ Hardware* createHardware() {
 	hardware->registers = calloc(1, sizeof(Registers));
 	hardware->registers->PC = ROM_LOCATION_EXEC_START;
 	hardware->cachedValues = calloc(1, sizeof(CachedOpValues));
-	hardware->cachedResults = calloc(1, sizeof(CachedOpResults));
+	hardware->operations = calloc(1, sizeof(Operations));
 	hardware->resultInfo = calloc(1, sizeof(ResultInfo));
 	hardware->ioData = calloc(1, sizeof(IOData));	
 	hardware->videoData = calloc(1, sizeof(VideoData));	

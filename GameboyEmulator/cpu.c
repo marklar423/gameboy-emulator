@@ -16,11 +16,28 @@ void processInstruction(Hardware *hardware, InstructionMapping *mappings, int in
 int getImmediateWord(Hardware *hardware, int startAddress);
 unsigned char getImmediateByte(Hardware *hardware, int address);
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue);
-void populateCachedResults(CachedOpResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
 void decimalAdjustValue(unsigned char *value, unsigned char *flags);
 void transferOAM(Hardware *hardware, int startAddress, unsigned char* oamTable);
+
+
+int operation_and(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_or(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_xor(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_add(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_subtract(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_getBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_setBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_resetBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_swapNibbles(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_rotateLeft(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_rotateRight(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_rotateLeftCarry(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_rotateRightCarry(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_shiftLeft(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_shiftRightLogical(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+int operation_shiftRightArithmetic(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
 
 Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 	Hardware *hardware = createHardware();
@@ -75,6 +92,23 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->registers->enabledInterrupts = 0x00;
 		hardware->ioData->joypadData = 0xCF;
 	}
+
+	hardware->operations->and = operation_and;
+	hardware->operations->or = operation_or;
+	hardware->operations->xor = operation_xor;
+	hardware->operations->add = operation_add;
+	hardware->operations->subtract = operation_subtract;
+	hardware->operations->getBit = operation_getBit;
+	hardware->operations->setBit = operation_setBit;
+	hardware->operations->resetBit = operation_resetBit;
+	hardware->operations->swapNibbles = operation_swapNibbles;
+	hardware->operations->rotateLeft = operation_rotateLeft;
+	hardware->operations->rotateRight = operation_rotateRight;
+	hardware->operations->rotateLeftCarry = operation_rotateLeftCarry;
+	hardware->operations->rotateRightCarry = operation_rotateRightCarry;
+	hardware->operations->shiftLeft = operation_shiftLeft;
+	hardware->operations->shiftRightLogical = operation_shiftRightLogical;
+	hardware->operations->shiftRightArithmetic = operation_shiftRightArithmetic;
 
 	return hardware;
 }
@@ -131,7 +165,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 		
 	//should we process this operation?
 	bool shouldExecute = true;
-
+	
 	FlagCondition *flagCondition = mapping->flagCondition;	
 
 	if (flagCondition != NULL) {
@@ -182,10 +216,9 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 			//do the operation
 			int resultValue;
-			int *result = mapping->result;
-			if (result != NULL) {
-				populateCachedResults(hardware->cachedResults, operand1, operand2, hardware->registers->F);
-				resultValue = *result;
+			OpResult *operation = mapping->operation;
+			if (operation != NULL) {
+				resultValue = (*operation)(operand1, operand2, hardware->registers->F);
 			}
 			else resultValue = GBValueToInt(operand1);
 			
@@ -271,8 +304,71 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 }
 
 
-void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
-	
+int operation_and(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) return GBValueToInt(operand1) & GBValueToInt(operand2);
+	return NULL;
+}
+
+int operation_or(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) return GBValueToInt(operand1) | GBValueToInt(operand2);
+	return NULL;
+}
+
+int operation_xor(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) return GBValueToInt(operand1) ^ GBValueToInt(operand2);
+	return NULL;
+}
+
+int operation_add(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) return GBValueToInt(operand1) + GBValueToInt(operand2);
+	return NULL;
+}
+
+int operation_subtract(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) return GBValueToInt(operand1) - GBValueToInt(operand2);
+	return NULL;
+}
+
+int operation_getBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+		int operand2Value = GBValueToInt(operand2);
+
+		if (operand2Value >= 0 && operand2Value <= 7) {
+			int operand1Mask = (1 << operand1Value);
+			return operand2Value & operand1Mask;
+		}
+	}
+	return NULL;
+}
+
+int operation_setBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+		int operand2Value = GBValueToInt(operand2);
+
+		if (operand2Value >= 0 && operand2Value <= 7) {
+			int operand1Mask = (1 << operand1Value);
+			return operand2Value | operand1Mask;
+		}	
+	}
+	return NULL;
+}
+
+int operation_resetBit(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL && operand2 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+		int operand2Value = GBValueToInt(operand2);
+
+		if (operand2Value >= 0 && operand2Value <= 7) {
+			int operand1Mask = (1 << operand1Value);
+			return operand2Value & ~operand1Mask;
+		}
+	}
+	return NULL;
+}
+
+int operation_swapNibbles(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
 	if (operand1 != NULL) {
 		int operand1Value = GBValueToInt(operand1);
 
@@ -280,50 +376,88 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 		int operand1High = operand1Value & 0xF0;
 		int operand1Low = operand1Value & 0x0F;
 
-		results->swapNibbles = (operand1High >> 4) | (operand1Low << 4);
-		
-		//shifts and rotates
-		//start with the base shifts
-		results->rotateLeft = results->rotateLeftCarry = 
-			results->shiftLeft = (unsigned char) operand1Value << 1;
-
-		results->rotateRight = results->rotateRightCarry = 
-			results->shiftRightLogical = results->shiftRightArithmetic = (unsigned char) operand1Value >> 1;
-		
-		//loop the ending bits around, for rotates
-		results->rotateLeft |= ((operand1Value & 128) >> 7);
-		results->rotateRight |= ((operand1Value & 1) << 7);
-
-		//loop the carry bits around, for rotates through carry
-		int carryBitRight = (previousFlags & FLAGS_CY) >> 4;
-		int carryBitLeft = (previousFlags & FLAGS_CY) << 3;
-		results->rotateLeftCarry |= carryBitRight;
-		results->rotateRightCarry |= carryBitLeft;
-
-		//change the sign if needed, for arithmetic shift
-		results->shiftRightArithmetic |= (operand1Value & 128);
-
-		if (operand2 != NULL) {
-			int operand2Value = GBValueToInt(operand2);
-
-			results->and = operand1Value & operand2Value;
-			results->or = operand1Value | operand2Value;
-			results->xor = operand1Value ^ operand2Value;
-			results->add = operand1Value + operand2Value;
-			results->subtract = operand1Value - operand2Value;
-
-			if (operand2Value >= 0 && operand2Value <= 7) {
-				int operand1Mask = (1 << operand1Value);
-
-				results->getBit = operand2Value & operand1Mask;
-				results->setBit = operand2Value | operand1Mask;
-				results->resetBit = operand2Value & ~operand1Mask;
-			}
-			else {
-				results->getBit = results->setBit = results->resetBit = NULL;
-			}
-		}		
+		return (operand1High >> 4) | (operand1Low << 4);
 	}
+	return NULL;
+}
+
+int operation_rotateLeft(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+
+		//start with the base shift
+		int result = (unsigned char)operand1Value << 1;
+
+		//loop the ending bits around
+		result |= ((operand1Value & 128) >> 7);
+
+		return result;
+	}
+	return NULL;
+}
+
+int operation_rotateRight(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+
+		//start with the base shifts
+		int result = (unsigned char)operand1Value >> 1;
+
+		//loop the ending bits around
+		result |= ((operand1Value & 1) << 7);
+		return result;
+	}
+	return NULL;
+}
+
+int operation_rotateLeftCarry(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+
+		//start with the base shift
+		int result = (unsigned char)operand1Value << 1;
+		
+		//loop the carry bits around
+		int carryBitRight = (previousFlags & FLAGS_CY) >> 4;
+		result |= carryBitRight;
+		return result;
+	}
+	return NULL;
+}
+
+int operation_rotateRightCarry(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+
+		//start with the base shift
+		int result = (unsigned char)operand1Value >> 1;
+		
+		//loop the carry bits around
+		int carryBitLeft = (previousFlags & FLAGS_CY) << 3;
+		result |= carryBitLeft;
+		return result;
+	}
+	return NULL;
+}
+
+int operation_shiftLeft(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) return ((unsigned char) GBValueToInt(operand1)) << 1;
+	return NULL;
+}
+
+int operation_shiftRightLogical(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) return ((unsigned char) GBValueToInt(operand1)) >> 1;
+	return NULL;
+}
+
+int operation_shiftRightArithmetic(GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+	if (operand1 != NULL) {
+		int operand1Value = GBValueToInt(operand1);
+		int result = (unsigned char)operand1Value >> 1;
+		result |= (operand1Value & 128);
+		return result;
+	}
+	return NULL;
 }
 
 void processDestination(Hardware *hardware, int *result, GBValue *destination) {

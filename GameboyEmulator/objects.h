@@ -80,12 +80,14 @@ typedef struct _CachedOpValues {
 	int stackWordValue;
 } CachedOpValues;
 
-typedef struct _CachedOpResults {
-	int and, or, xor, add, subtract;
-	int getBit, setBit, resetBit, swapNibbles;
-	int rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
-	int shiftLeft, shiftRightLogical, shiftRightArithmetic;
-} CachedOpResults;
+typedef int(*OpResult)(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+
+typedef struct _Operations {
+	OpResult and, or, xor, add, subtract;
+	OpResult getBit, setBit, resetBit, swapNibbles;
+	OpResult rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
+	OpResult shiftLeft, shiftRightLogical, shiftRightArithmetic;
+} Operations;
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
@@ -100,7 +102,7 @@ typedef struct _Hardware {
 	SoundData *soundData;
 	IOData *ioData;
 	CachedOpValues *cachedValues;
-	CachedOpResults *cachedResults;
+	Operations *operations;
 	ResultInfo *resultInfo;
 	InputState *inputState;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
@@ -125,7 +127,7 @@ typedef struct _OpCycleCount {
 
 typedef struct _InstructionMapping {
 	GBValue *operand1, *operand2, *destination;
-	int *result;
+	OpResult *operation;
 	int *nextPC, *nextSP;
 	FlagCondition *flagCondition;
 	FlagResult *flagResult;
