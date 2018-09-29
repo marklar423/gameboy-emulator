@@ -175,6 +175,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			break;
 
 		default:
+			populateCachedValues(hardware, nextPCAddressValue);
+
 			//get the operands
 			operand1 = mapping->operand1;
 			operand2 = mapping->operand2;

@@ -60,16 +60,16 @@ void runMainLoop(float targetFPS) {
 		while (deltaTime >= 1.0) {
 			g_updateLoopCallback();
 			deltaTime--;
+
+			g_drawFrameCallback();
+
+			//Swap front and back buffers
+			glfwSwapBuffers(g_window);
 		}
 
-		g_drawFrameCallback();
-
-		//Swap front and back buffers
-		glfwSwapBuffers(g_window);
 
 		//Poll for and process events
 		glfwPollEvents();
-
 	}
 
 	glfwTerminate();
