@@ -9,7 +9,7 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	return rom;
 }
 
-GBValue* createGBValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char *byteValue, char *byteValue2, int *wordValue) {
+GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;
 
@@ -28,16 +28,14 @@ GBValue* createGBValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char 
 		*wordValuePointer = wordValue;
 	}
 
-	return createGBPointerValue(is16Bit, isSplitValue, isByteSigned, byteValuePointer, byteValue2Pointer, wordValuePointer);
+	return createGBPointerValue(type, byteValuePointer, byteValue2Pointer, wordValuePointer);
 }
 
 
-GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer) {
+GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer) {
 	GBValue *value = malloc(sizeof(GBValue));
 
-	value->isWordValue = is16Bit;
-	value->isSplitValue = isSplitValue;
-	value->isByteSigned = isByteSigned;
+	value->type = type;
 	value->byteValue = byteValuePointer;
 	value->byteValue2 = byteValue2Pointer;
 	value->wordValue = wordValuePointer;
@@ -69,9 +67,20 @@ int GBValueToInt(GBValue *value) {
 	int convertedValue = 0;
 
 	if (value != NULL) {
-		if (value->isWordValue) convertedValue = **(value->wordValue);
-		else if (value->isSplitValue) convertedValue = joinBytes(**(value->byteValue2), **(value->byteValue));
-		else convertedValue = (value->isByteSigned) ? (char) **(value->byteValue) : **(value->byteValue);
+		switch (value->type) {
+		case GBVALUE_WORD:
+			convertedValue = **(value->wordValue);
+			break;
+		case GBVALUE_SPLIT:
+			convertedValue = joinBytes(**(value->byteValue2), **(value->byteValue));
+			break;
+		case GBVALUE_BYTE:
+			convertedValue = **(value->byteValue);
+			break;
+		case GBVALUE_BYTE_SIGNED:
+			convertedValue = (char) **(value->byteValue);
+			break;
+		}
 	}
 
 	return convertedValue;

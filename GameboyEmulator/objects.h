@@ -49,8 +49,15 @@ typedef struct _InputState {
 	bool isAPressed, isBPressed, isStartPressed, isSelectPressed;
 } InputState;
 
+typedef enum _GBValueType {
+	GBVALUE_BYTE = 0,
+	GBVALUE_BYTE_SIGNED = 1,
+	GBVALUE_WORD = 2,
+	GBVALUE_SPLIT = 3
+} GBValueType;
+
 typedef struct _GBValue {
-	bool isWordValue, isSplitValue, isByteSigned;
+	GBValueType type;
 	unsigned char **byteValue;
 	unsigned char **byteValue2; //used with split bytes. byteValue2 is less significant than byteValue
 	int **wordValue;
@@ -128,18 +135,18 @@ typedef struct _InstructionMapping {
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
-GBValue* createGBValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char *byteValue, char *byteValue2, int *wordValue);
-GBValue* createGBPointerValue(bool is16Bit, bool isSplitValue, bool isByteSigned, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
+GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue);
+GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
 int GBValueToInt(GBValue *value);
 
-#define createGBByteValue(byteValue) createGBValue(false, false, false, byteValue, NULL, NULL)
-#define createGBByteValueSigned(signedByteValue) createGBValue(false, false, true, signedByteValue, NULL, NULL)
-#define createGBWordValue(wordValue) createGBValue(true, false, false, NULL, NULL, wordValue)
-#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(false, true, false, byteValue, byteValue2, NULL)
+#define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL)
+#define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL)
+#define createGBWordValue(wordValue) createGBValue(GBVALUE_WORD, NULL, NULL, wordValue)
+#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
 
-#define createGBBytePointer(byteValue) createGBPointerValue(false, false, false, byteValue, NULL, NULL)
-#define createGBWordPointer(wordValue) createGBPointerValue(true, false, false, NULL, NULL, wordValue)
-#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(false, true, false, byteValue, byteValue2, NULL)
+#define createGBBytePointer(byteValue) createGBPointerValue(GBVALUE_BYTE, byteValue, NULL, NULL)
+#define createGBWordPointer(wordValue) createGBPointerValue(GBVALUE_WORD, NULL, NULL, wordValue)
+#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);

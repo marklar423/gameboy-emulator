@@ -128,7 +128,6 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 	int nextPCAddressValue = hardware->registers->PC + opSize;
 	int cyclesToWait = 1;
 
-	populateCachedValues(hardware, nextPCAddressValue);
 		
 	//should we process this operation?
 	bool shouldExecute = true;
@@ -330,18 +329,18 @@ void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue 
 void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 	if (result != NULL && destination != NULL) {
 		int resultValue = *result;
-
-		if (destination->isWordValue) {
+		
+		if (destination->type == GBVALUE_WORD) {
 			**(destination->wordValue) = resultValue;
 		}
-		else if (destination->isSplitValue) {
+		else if (destination->type == GBVALUE_SPLIT) {
 			unsigned char leastSignificant, mostSignificant;
 			splitBytes(resultValue, &leastSignificant, &mostSignificant);
 			
 			writeRamLocation(hardware, *(destination->byteValue2), leastSignificant);
 			writeRamLocation(hardware, *(destination->byteValue), mostSignificant);
 		}
-		else {
+		else if (destination->type == GBVALUE_BYTE || destination->type == GBVALUE_BYTE_SIGNED) {
 			writeRamLocation(hardware, *(destination->byteValue), (unsigned char)resultValue);
 		}
 	}
