@@ -166,7 +166,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			break;
 
 		case OpCode_HALT:
-			THROW_ERROR("Unsupported instruction HALT");
+			//THROW_ERROR("Unsupported instruction HALT");
+			nextPCAddressValue = hardware->registers->PC;
 			break;
 
 		case OpCode_STOP:
