@@ -94,17 +94,17 @@ void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_LD_E_d8].operand1 =
 		mappings[OpCode_LD_H_d8].operand1 =
 		mappings[OpCode_LD_L_d8].operand1 =
-		mappings[OpCode_LD_MEM_HL_d8].operand1 = createGBByteValue(&(hardware->cachedValues->immediateByte));
+		mappings[OpCode_LD_MEM_HL_d8].operand1 = createGBByteValue(&(hardware->computedFunctions->immediateByte));
 
 	mappings[OpCode_LD_BC_d16].operand1 =
 		mappings[OpCode_LD_DE_d16].operand1 =
 		mappings[OpCode_LD_HL_d16].operand1 =
-		mappings[OpCode_LD_SP_d16].operand1 = createGBWordValue(&(hardware->cachedValues->immediateWord));
+		mappings[OpCode_LD_SP_d16].operand1 = createGBWordValue(&(hardware->computedFunctions->immediateWord));
 
-	mappings[OpCode_LD_SP_HL].operand1 = createGBWordValue(&(hardware->cachedValues->HL));
-	mappings[OpCode_LD_A_MEM_a16].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryImmediateWord));
-	mappings[OpCode_LDH_A_MEM_a8].operand1 = createGBBytePointer(&(hardware->cachedValues->highMemoryImmediateByte));
-	mappings[OpCode_LD_A_MEM_C].operand1 = createGBBytePointer(&(hardware->cachedValues->highMemoryC));
+	mappings[OpCode_LD_SP_HL].operand1 = createGBWordValue(&(hardware->computedFunctions->HL));
+	mappings[OpCode_LD_A_MEM_a16].operand1 = createGBBytePointer(&(hardware->computedFunctions->memoryImmediateWord));
+	mappings[OpCode_LDH_A_MEM_a8].operand1 = createGBBytePointer(&(hardware->computedFunctions->highMemoryImmediateByte));
+	mappings[OpCode_LD_A_MEM_C].operand1 = createGBBytePointer(&(hardware->computedFunctions->highMemoryC));
 
 	mappings[OpCode_LD_A_MEM_HL].operand1 =
 		mappings[OpCode_LD_B_MEM_HL].operand1 =
@@ -114,24 +114,24 @@ void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_LD_H_MEM_HL].operand1 =
 		mappings[OpCode_LD_L_MEM_HL].operand1 =
 		mappings[OpCode_LD_A_MEM_HLD].operand1 =
-		mappings[OpCode_LD_A_MEM_HLI].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryHL));
+		mappings[OpCode_LD_A_MEM_HLI].operand1 = createGBBytePointer(&(hardware->computedFunctions->memoryHL));
 
-	mappings[OpCode_LD_A_MEM_BC].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryBC));
-	mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->cachedValues->memoryDE));
+	mappings[OpCode_LD_A_MEM_BC].operand1 = createGBBytePointer(&(hardware->computedFunctions->memoryBC));
+	mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->computedFunctions->memoryDE));
 
 	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
-	mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = createGBByteValueSigned(&(hardware->cachedValues->immediateByte));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = createGBByteValueSigned(&(hardware->computedFunctions->immediateByte));
 	mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
 
 	mappings[OpCode_POP_AF].operand1 =
 		mappings[OpCode_POP_BC].operand1 =
 		mappings[OpCode_POP_DE].operand1 =
-		mappings[OpCode_POP_HL].operand1 = createGBSplitBytePointer(&(hardware->cachedValues->stackPlusOneValue), &(hardware->cachedValues->stackValue));
+		mappings[OpCode_POP_HL].operand1 = createGBSplitBytePointer(&(hardware->computedFunctions->stackPlusOneValue), &(hardware->computedFunctions->stackValue));
 
-	mappings[OpCode_PUSH_AF].operand1 = createGBWordValue(&(hardware->cachedValues->AF));
-	mappings[OpCode_PUSH_BC].operand1 = createGBWordValue(&(hardware->cachedValues->BC));
-	mappings[OpCode_PUSH_DE].operand1 = createGBWordValue(&(hardware->cachedValues->DE));
-	mappings[OpCode_PUSH_HL].operand1 = createGBWordValue(&(hardware->cachedValues->HL));
+	mappings[OpCode_PUSH_AF].operand1 = createGBWordValue(&(hardware->computedFunctions->AF));
+	mappings[OpCode_PUSH_BC].operand1 = createGBWordValue(&(hardware->computedFunctions->BC));
+	mappings[OpCode_PUSH_DE].operand1 = createGBWordValue(&(hardware->computedFunctions->DE));
+	mappings[OpCode_PUSH_HL].operand1 = createGBWordValue(&(hardware->computedFunctions->HL));
 
 }
 
@@ -225,17 +225,17 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_LD_MEM_HL_L].destination =
 		mappings[OpCode_LD_MEM_HL_d8].destination =
 		mappings[OpCode_LD_MEM_HLD_A].destination =
-		mappings[OpCode_LD_MEM_HLI_A].destination = createGBBytePointer(&(hardware->cachedValues->memoryHL));
+		mappings[OpCode_LD_MEM_HLI_A].destination = createGBBytePointer(&(hardware->computedFunctions->memoryHL));
 
-	mappings[OpCode_LD_MEM_BC_A].destination = createGBBytePointer(&(hardware->cachedValues->memoryBC));
-	mappings[OpCode_LD_MEM_DE_A].destination = createGBBytePointer(&(hardware->cachedValues->memoryDE));
+	mappings[OpCode_LD_MEM_BC_A].destination = createGBBytePointer(&(hardware->computedFunctions->memoryBC));
+	mappings[OpCode_LD_MEM_DE_A].destination = createGBBytePointer(&(hardware->computedFunctions->memoryDE));
 
-	mappings[OpCode_LD_MEM_C_A].destination = createGBBytePointer(&(hardware->cachedValues->highMemoryC));
+	mappings[OpCode_LD_MEM_C_A].destination = createGBBytePointer(&(hardware->computedFunctions->highMemoryC));
 
 	mappings[OpCode_LD_MEM_a16_A].destination =
-		mappings[OpCode_LD_MEM_a16_SP].destination = createGBBytePointer(&(hardware->cachedValues->memoryImmediateWord));
+		mappings[OpCode_LD_MEM_a16_SP].destination = createGBBytePointer(&(hardware->computedFunctions->memoryImmediateWord));
 
-	mappings[OpCode_LDH_MEM_a8_A].destination = createGBBytePointer(&(hardware->cachedValues->highMemoryImmediateByte));
+	mappings[OpCode_LDH_MEM_a8_A].destination = createGBBytePointer(&(hardware->computedFunctions->highMemoryImmediateByte));
 
 	mappings[OpCode_LD_BC_d16].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
 	mappings[OpCode_LD_DE_d16].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
@@ -251,7 +251,7 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 	mappings[OpCode_PUSH_AF].destination =
 		mappings[OpCode_PUSH_BC].destination =
 		mappings[OpCode_PUSH_DE].destination =
-		mappings[OpCode_PUSH_HL].destination = createGBSplitBytePointer(&(hardware->cachedValues->stackMinusOneValue), &(hardware->cachedValues->stackMinusTwoValue));
+		mappings[OpCode_PUSH_HL].destination = createGBSplitBytePointer(&(hardware->computedFunctions->stackMinusOneValue), &(hardware->computedFunctions->stackMinusTwoValue));
 }
 
 void populateLoadNextSPs(Hardware *hardware, InstructionMapping *mappings) {
@@ -259,11 +259,11 @@ void populateLoadNextSPs(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_POP_AF].nextSP =
 		mappings[OpCode_POP_BC].nextSP =
 		mappings[OpCode_POP_DE].nextSP =
-		mappings[OpCode_POP_HL].nextSP = &hardware->cachedValues->SPPlusTwo;
+		mappings[OpCode_POP_HL].nextSP = &hardware->computedFunctions->SPPlusTwo;
 
 	mappings[OpCode_PUSH_AF].nextSP=
 		mappings[OpCode_PUSH_BC].nextSP=
 		mappings[OpCode_PUSH_DE].nextSP =
-		mappings[OpCode_PUSH_HL].nextSP = &hardware->cachedValues->SPMinusTwo;
+		mappings[OpCode_PUSH_HL].nextSP = &hardware->computedFunctions->SPMinusTwo;
 	
 }

@@ -24,7 +24,7 @@ void populateJumpCalculations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_RST_20H].operand1 =
 		mappings[OpCode_RST_28H].operand1 =
 		mappings[OpCode_RST_30H].operand1 =
-		mappings[OpCode_RST_38H].operand1 = createGBWordValue(&(hardware->cachedValues->NextPCAddress));
+		mappings[OpCode_RST_38H].operand1 = createGBWordValue(&(hardware->computedFunctions->NextPCAddress));
 	
 	mappings[OpCode_CALL_C_a16].destination =
 		mappings[OpCode_CALL_NC_a16].destination =
@@ -38,7 +38,7 @@ void populateJumpCalculations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_RST_20H].destination =
 		mappings[OpCode_RST_28H].destination =
 		mappings[OpCode_RST_30H].destination =
-		mappings[OpCode_RST_38H].destination = createGBSplitBytePointer(&(hardware->cachedValues->stackMinusOneValue), &(hardware->cachedValues->stackMinusTwoValue));
+		mappings[OpCode_RST_38H].destination = createGBSplitBytePointer(&(hardware->computedFunctions->stackMinusOneValue), &(hardware->computedFunctions->stackMinusTwoValue));
 
 	mappings[OpCode_CALL_C_a16].nextSP =
 		mappings[OpCode_CALL_NC_a16].nextSP =
@@ -52,18 +52,18 @@ void populateJumpCalculations(Hardware *hardware, InstructionMapping *mappings) 
 		mappings[OpCode_RST_20H].nextSP =
 		mappings[OpCode_RST_28H].nextSP =
 		mappings[OpCode_RST_30H].nextSP =
-		mappings[OpCode_RST_38H].nextSP = &hardware->cachedValues->SPMinusTwo;
+		mappings[OpCode_RST_38H].nextSP = &hardware->computedFunctions->SPMinusTwo;
 	
 	mappings[OpCode_RET].nextSP =
 		mappings[OpCode_RETI].nextSP =
 		mappings[OpCode_RET_C].nextSP =
 		mappings[OpCode_RET_NC].nextSP =
 		mappings[OpCode_RET_NZ].nextSP =
-		mappings[OpCode_RET_Z].nextSP = &hardware->cachedValues->SPPlusTwo;
+		mappings[OpCode_RET_Z].nextSP = &hardware->computedFunctions->SPPlusTwo;
 }
 
 void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings) {
-	mappings[OpCode_JP_MEM_HL].nextPC = &(hardware->cachedValues->HL);
+	mappings[OpCode_JP_MEM_HL].nextPC = &(hardware->computedFunctions->HL);
 
 	mappings[OpCode_JP_C_a16].nextPC =
 		mappings[OpCode_JP_NC_a16].nextPC =
@@ -74,20 +74,20 @@ void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_CALL_NC_a16].nextPC =
 		mappings[OpCode_CALL_NZ_a16].nextPC =
 		mappings[OpCode_CALL_Z_a16].nextPC =
-		mappings[OpCode_CALL_a16].nextPC = &(hardware->cachedValues->immediateWord);
+		mappings[OpCode_CALL_a16].nextPC = &(hardware->computedFunctions->immediateWord);
 
 	mappings[OpCode_JR_C_r8].nextPC =
 		mappings[OpCode_JR_NC_r8].nextPC =
 		mappings[OpCode_JR_NZ_r8].nextPC =
 		mappings[OpCode_JR_Z_r8].nextPC =
-		mappings[OpCode_JR_r8].nextPC = &(hardware->cachedValues->NextPCAddressPlusImmediateByteSigned);
+		mappings[OpCode_JR_r8].nextPC = &(hardware->computedFunctions->NextPCAddressPlusImmediateByteSigned);
 
 	mappings[OpCode_RET].nextPC =
 		mappings[OpCode_RETI].nextPC =
 		mappings[OpCode_RET_C].nextPC =
 		mappings[OpCode_RET_NC].nextPC =
 		mappings[OpCode_RET_NZ].nextPC =
-		mappings[OpCode_RET_Z].nextPC = &hardware->cachedValues->stackWordValue;
+		mappings[OpCode_RET_Z].nextPC = &hardware->computedFunctions->stackWordValue;
 
 	mappings[OpCode_RST_00H].nextPC = &HEX_00;
 	mappings[OpCode_RST_08H].nextPC = &HEX_08;

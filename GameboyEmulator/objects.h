@@ -53,40 +53,52 @@ typedef enum _GBValueType {
 	GBVALUE_BYTE = 0,
 	GBVALUE_BYTE_SIGNED = 1,
 	GBVALUE_WORD = 2,
-	GBVALUE_SPLIT = 3
+	GBVALUE_SPLIT = 3,
+	GBVALUE_BYTE_FUNCTION = 4,
+	GBVALUE_BYTE_SIGNED_FUNCTION = 5,
+	GBVALUE_WORD_FUNCTION = 6,
 } GBValueType;
+
+
+typedef unsigned char(*GBValueByteFunction)(void *);
+typedef int(*GBValueWordFunction)(void *);
 
 typedef struct _GBValue {
 	GBValueType type;
 	unsigned char **byteValue;
 	unsigned char **byteValue2; //used with split bytes. byteValue2 is less significant than byteValue
 	int **wordValue;
+	GBValueByteFunction *byteFunction;
+	GBValueWordFunction *wordFunction;
 } GBValue;
 
-typedef struct _CachedOpValues {
-	unsigned char immediateByte;
-	int immediateWord;
-	unsigned char *highMemoryImmediateByte, *memoryImmediateWord;
-	unsigned char *highMemoryC;
-	unsigned char *memoryHL, *memoryBC, *memoryDE;
-	int AF, BC, DE, HL;
-	unsigned char APlusCarry, AMinusCarry;
-	int NextPCAddress, NextPCAddressPlusImmediateByteSigned;
-	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
-	unsigned char *stackValue; //value on top of stack
-	unsigned char *stackPlusOneValue; //second-to-top value in stack
-	unsigned char *stackMinusOneValue; //one value beyond top of stack (new value)
-	unsigned char *stackMinusTwoValue; //two values beyond top of stack (new value)
-	int stackWordValue;
-} CachedOpValues;
+typedef struct _ComputedValues {
+	GBValueByteFunction immediateByte;
+	GBValueWordFunction immediateWord;
+	GBValueByteFunction highMemoryImmediateByte, memoryImmediateWord;
+	GBValueByteFunction highMemoryC;
+	GBValueByteFunction memoryHL, memoryBC, memoryDE;
+	GBValueWordFunction AF, BC, DE, HL;
+	GBValueByteFunction APlusCarry, AMinusCarry;
+	GBValueWordFunction NextPCAddressPlusImmediateByteSigned;	
+	GBValueByteFunction stackValue; //value on top of stack
+	GBValueByteFunction stackPlusOneValue; //second-to-top value in stack
+	GBValueByteFunction stackMinusOneValue; //one value beyond top of stack (new value)
+	GBValueByteFunction stackMinusTwoValue; //two values beyond top of stack (new value)
+	GBValueWordFunction stackWordValue;
+} ComputedFunctions;
 
-typedef int(*OpResult)(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
+typedef struct _ComputedValues {
+	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
+} ComputedValues;
+
+typedef int(*OperationFunction)(GBValue *operand1, GBValue *operand2, unsigned char previousFlags);
 
 typedef struct _Operations {
-	OpResult and, or, xor, add, subtract;
-	OpResult getBit, setBit, resetBit, swapNibbles;
-	OpResult rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
-	OpResult shiftLeft, shiftRightLogical, shiftRightArithmetic;
+	OperationFunction and, or, xor, add, subtract;
+	OperationFunction getBit, setBit, resetBit, swapNibbles;
+	OperationFunction rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
+	OperationFunction shiftLeft, shiftRightLogical, shiftRightArithmetic;
 } Operations;
 
 typedef struct _ResultInfo {
@@ -101,12 +113,13 @@ typedef struct _Hardware {
 	VideoData *videoData;
 	SoundData *soundData;
 	IOData *ioData;
-	CachedOpValues *cachedValues;
+	ComputedFunctions *computedFunctions;
+	ComputedValues *computedValues;
 	Operations *operations;
 	ResultInfo *resultInfo;
 	InputState *inputState;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
-	int cpuCyclesToWait, ppuCyclesToWait;
+	int cpuCyclesToWait, ppuCyclesToWait, nextPCAddress;
 	OpCode opCodePrefix;
 	bool isOAMDMATriggered;
 } Hardware;
@@ -127,7 +140,7 @@ typedef struct _OpCycleCount {
 
 typedef struct _InstructionMapping {
 	GBValue *operand1, *operand2, *destination;
-	OpResult *operation;
+	OperationFunction *operation;
 	int *nextPC, *nextSP;
 	FlagCondition *flagCondition;
 	FlagResult *flagResult;
@@ -139,7 +152,8 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
 GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue);
 GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
-int GBValueToInt(GBValue *value);
+GBValue* createGBFunctionPointerValue(GBValueType type, GBValueByteFunction *byteFunction, GBValueWordFunction *wordFunction);
+int GBValueToInt(Hardware *hardware, GBValue *value);
 
 #define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL)
 #define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL)
@@ -149,6 +163,9 @@ int GBValueToInt(GBValue *value);
 #define createGBBytePointer(byteValue) createGBPointerValue(GBVALUE_BYTE, byteValue, NULL, NULL)
 #define createGBWordPointer(wordValue) createGBPointerValue(GBVALUE_WORD, NULL, NULL, wordValue)
 #define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
+#define createGBByteFunctionPointer(byteFunction) createGBFunctionPointerValue(GBVALUE_BYTE_FUNCTION, byteFunction, NULL)
+#define createGBByteSignedFunctionPointer(byteFunction) createGBFunctionPointerValue(GBVALUE_BYTE_SIGNED_FUNCTION, byteFunction, NULL)
+#define createGBWordFunctionPointer(wordFunction) createGBFunctionPointerValue(GBVALUE_WORD_FUNCTION, NULL, wordFunction)
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);

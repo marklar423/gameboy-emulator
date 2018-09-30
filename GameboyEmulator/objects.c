@@ -43,6 +43,16 @@ GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **
 	return value;
 }
 
+GBValue* createGBFunctionPointerValue(GBValueType type, GBValueByteFunction *byteFunction, GBValueWordFunction *wordFunction) {
+	GBValue *value = malloc(sizeof(GBValue));
+
+	value->type = type;
+	value->byteFunction = byteFunction;
+	value->wordFunction = wordFunction;
+
+	return value;
+}
+
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry) {
 	FlagResult *flagResult = malloc(sizeof(FlagResult));
 
@@ -63,7 +73,7 @@ FlagCondition* createFlagCondition(char condition, bool negate) {
 	return flagCondition;
 }
 
-int GBValueToInt(GBValue *value) {
+int GBValueToInt(Hardware *hardware, GBValue *value) {
 	int convertedValue = 0;
 
 	if (value != NULL) {
@@ -79,6 +89,15 @@ int GBValueToInt(GBValue *value) {
 			break;
 		case GBVALUE_BYTE_SIGNED:
 			convertedValue = (char) **(value->byteValue);
+			break;
+		case GBVALUE_BYTE_FUNCTION:
+			convertedValue = (*value->byteFunction)(hardware);
+			break;
+		case GBVALUE_BYTE_SIGNED_FUNCTION:
+			convertedValue = (char)(*value->byteFunction)(hardware);
+			break;
+		case GBVALUE_WORD_FUNCTION:
+			convertedValue = (*value->wordFunction)(hardware);
 			break;
 		}
 	}
@@ -106,7 +125,8 @@ Hardware* createHardware() {
 
 	hardware->registers = calloc(1, sizeof(Registers));
 	hardware->registers->PC = ROM_LOCATION_EXEC_START;
-	hardware->cachedValues = calloc(1, sizeof(CachedOpValues));
+	hardware->computedFunctions = calloc(1, sizeof(ComputedFunctions));
+	hardware->computedValues = calloc(1, sizeof(ComputedValues));
 	hardware->operations = calloc(1, sizeof(Operations));
 	hardware->resultInfo = calloc(1, sizeof(ResultInfo));
 	hardware->ioData = calloc(1, sizeof(IOData));	
