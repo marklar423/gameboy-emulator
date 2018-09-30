@@ -16,7 +16,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mappings, int in
 int getImmediateWord(Hardware *hardware, int startAddress);
 unsigned char getImmediateByte(Hardware *hardware, int address);
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue);
-void populateCachedResults(CachedOpResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
+void populateCachedResults(OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
 void decimalAdjustValue(unsigned char *value, unsigned char *flags);
@@ -184,7 +184,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			int resultValue;
 			int *result = mapping->result;
 			if (result != NULL) {
-				populateCachedResults(hardware->cachedResults, operand1, operand2, hardware->registers->F);
+				populateCachedResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
 				resultValue = *result;
 			}
 			else resultValue = GBValueToInt(operand1);
@@ -207,12 +207,12 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 			//special cases
 			if (instruction == OpCode_LD_A_MEM_HLI || instruction == OpCode_LD_MEM_HLI_A) {
-				hardware->cachedValues->HL++;
-				splitBytes(hardware->cachedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
+				hardware->computedValues->HL++;
+				splitBytes(hardware->computedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_LD_A_MEM_HLD || instruction == OpCode_LD_MEM_HLD_A) {
-				hardware->cachedValues->HL--;
-				splitBytes(hardware->cachedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
+				hardware->computedValues->HL--;
+				splitBytes(hardware->computedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_RETI) {
 				hardware->registers->globalInterruptsEnabled = true;
@@ -235,7 +235,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 }
 
 void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
-	CachedOpValues *cached = hardware->cachedValues;
+	ComputedValues *cached = hardware->computedValues;
 
 	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
 	cached->immediateWord = getImmediateWord(hardware, hardware->registers->PC + 1);
@@ -271,7 +271,7 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 }
 
 
-void populateCachedResults(CachedOpResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+void populateCachedResults(OperationResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
 	
 	if (operand1 != NULL) {
 		int operand1Value = GBValueToInt(operand1);

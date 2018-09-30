@@ -63,7 +63,7 @@ typedef struct _GBValue {
 	int **wordValue;
 } GBValue;
 
-typedef struct _CachedOpValues {
+typedef struct _ComputedValues {
 	unsigned char immediateByte;
 	int immediateWord;
 	unsigned char *highMemoryImmediateByte, *memoryImmediateWord;
@@ -78,14 +78,14 @@ typedef struct _CachedOpValues {
 	unsigned char *stackMinusOneValue; //one value beyond top of stack (new value)
 	unsigned char *stackMinusTwoValue; //two values beyond top of stack (new value)
 	int stackWordValue;
-} CachedOpValues;
+} ComputedValues;
 
-typedef struct _CachedOpResults {
+typedef struct _OperationResults {
 	int and, or, xor, add, subtract;
 	int getBit, setBit, resetBit, swapNibbles;
 	int rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
 	int shiftLeft, shiftRightLogical, shiftRightArithmetic;
-} CachedOpResults;
+} OperationResults;
 
 typedef struct _ResultInfo {
 	bool isZero, isAddHalfCarry, isAddCarry, isSubHalfBorrow, isSubBorrow;
@@ -99,8 +99,8 @@ typedef struct _Hardware {
 	VideoData *videoData;
 	SoundData *soundData;
 	IOData *ioData;
-	CachedOpValues *cachedValues;
-	CachedOpResults *cachedResults;
+	ComputedValues *computedValues;
+	OperationResults *operationResults;
 	ResultInfo *resultInfo;
 	InputState *inputState;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
