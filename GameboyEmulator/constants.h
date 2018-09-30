@@ -166,6 +166,7 @@ typedef enum _IOFlag {
 
 #define WORK_RAM_SIZE 0x2000
 #define HRAM_SIZE 0x7F
+#define TOTAL_RAM_SIZE 0x10000
 
 #define PPU_CYCLES_OAM_SEARCH 20
 #define PPU_CYCLES_PIXEL_TRANSFER 43

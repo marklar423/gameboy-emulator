@@ -15,7 +15,7 @@
 void processInstruction(Hardware *hardware, InstructionMapping *mappings, int instruction);
 int getImmediateWord(Hardware *hardware, int startAddress);
 unsigned char getImmediateByte(Hardware *hardware, int address);
-void populateCachedValues(Hardware *hardware, int nextPCAddressValue);
+void populateComputedValues(Hardware *hardware, int nextPCAddressValue);
 void populateCachedResults(OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
@@ -40,26 +40,26 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->registers->SP = 0xFFFE;
 		hardware->registers->globalInterruptsEnabled = true;
 
-		/**(getRamAddress(hardware, 0xFF05)) = 0x00; //TIMA
-		*(getRamAddress(hardware, 0xFF06)) = 0x00; //TMA
-		*(getRamAddress(hardware, 0xFF07)) = 0x00; //TAC
-		*(getRamAddress(hardware, 0xFF10)) = 0x80; //NR10
-		*(getRamAddress(hardware, 0xFF11)) = 0xBF; //NR11
-		*(getRamAddress(hardware, 0xFF12)) = 0xF3; //NR12
-		*(getRamAddress(hardware, 0xFF14)) = 0xBF; //NR14
-		*(getRamAddress(hardware, 0xFF16)) = 0x3F; //NR21
-		*(getRamAddress(hardware, 0xFF17)) = 0x00; //NR22
-		*(getRamAddress(hardware, 0xFF19)) = 0xBF; //NR24
-		*(getRamAddress(hardware, 0xFF1A)) = 0x7F; //NR30
-		*(getRamAddress(hardware, 0xFF1B)) = 0xFF; //NR31
-		*(getRamAddress(hardware, 0xFF1C)) = 0x9F; //NR32
-		*(getRamAddress(hardware, 0xFF1E)) = 0xBF; //NR33
-		*(getRamAddress(hardware, 0xFF20)) = 0xFF; //NR41
-		*(getRamAddress(hardware, 0xFF21)) = 0x00; //NR42
-		*(getRamAddress(hardware, 0xFF22)) = 0x00; //NR43
-		*(getRamAddress(hardware, 0xFF23)) = 0xBF; //NR30
-		*(getRamAddress(hardware, 0xFF24)) = 0x77; //NR50
-		*(getRamAddress(hardware, 0xFF25)) = 0xF3; //NR51 */
+		/**(hardware->ramAddresses[0xFF05)) = 0x00; //TIMA
+		*(hardware->ramAddresses[0xFF06)) = 0x00; //TMA
+		*(hardware->ramAddresses[0xFF07)) = 0x00; //TAC
+		*(hardware->ramAddresses[0xFF10)) = 0x80; //NR10
+		*(hardware->ramAddresses[0xFF11)) = 0xBF; //NR11
+		*(hardware->ramAddresses[0xFF12)) = 0xF3; //NR12
+		*(hardware->ramAddresses[0xFF14)) = 0xBF; //NR14
+		*(hardware->ramAddresses[0xFF16)) = 0x3F; //NR21
+		*(hardware->ramAddresses[0xFF17)) = 0x00; //NR22
+		*(hardware->ramAddresses[0xFF19)) = 0xBF; //NR24
+		*(hardware->ramAddresses[0xFF1A)) = 0x7F; //NR30
+		*(hardware->ramAddresses[0xFF1B)) = 0xFF; //NR31
+		*(hardware->ramAddresses[0xFF1C)) = 0x9F; //NR32
+		*(hardware->ramAddresses[0xFF1E)) = 0xBF; //NR33
+		*(hardware->ramAddresses[0xFF20)) = 0xFF; //NR41
+		*(hardware->ramAddresses[0xFF21)) = 0x00; //NR42
+		*(hardware->ramAddresses[0xFF22)) = 0x00; //NR43
+		*(hardware->ramAddresses[0xFF23)) = 0xBF; //NR30
+		*(hardware->ramAddresses[0xFF24)) = 0x77; //NR50
+		*(hardware->ramAddresses[0xFF25)) = 0xF3; //NR51 */
 		hardware->soundData->soundOnOff = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
 		hardware->videoData->lcdControl = 0x91;
 		hardware->videoData->lcdStatus = 0x1;
@@ -74,6 +74,8 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->videoData->windowX = 0x00;
 		hardware->registers->enabledInterrupts = 0x00;
 		hardware->ioData->joypadData = 0xCF;
+
+		populateRamAddresses(hardware);
 	}
 
 	return hardware;
@@ -104,7 +106,7 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 			hardware->isOAMDMATriggered = false;
 		}
 
-		int instruction = *getRamAddress(hardware, hardware->registers->PC);
+		int instruction = *hardware->ramAddresses[hardware->registers->PC];
 		
 		//this ensures "CB xx" instructions get properly executed
 		if (hardware->opCodePrefix != 0) {
@@ -175,7 +177,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			break;
 
 		default:
-			populateCachedValues(hardware, nextPCAddressValue);
+			populateComputedValues(hardware, nextPCAddressValue);
 
 			//get the operands
 			operand1 = mapping->operand1;
@@ -235,7 +237,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 	hardware->cpuCyclesToWait = cyclesToWait < 1 ? 1 : cyclesToWait;
 }
 
-void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
+void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	ComputedValues *cached = hardware->computedValues;
 
 	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
@@ -248,22 +250,22 @@ void populateCachedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->APlusCarry = hardware->registers->A + ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
 	cached->AMinusCarry = hardware->registers->A - ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
 
-	cached->memoryImmediateWord = getRamAddress(hardware, cached->immediateWord);
-	cached->highMemoryImmediateByte = getRamAddress(hardware, 0xFF00 + cached->immediateByte);
-	cached->highMemoryC = getRamAddress(hardware, 0xFF00 + hardware->registers->C);
-	cached->memoryHL = getRamAddress(hardware, cached->HL);
-	cached->memoryBC = getRamAddress(hardware, cached->BC);
-	cached->memoryDE = getRamAddress(hardware, cached->DE);	
+	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
+	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
+	cached->highMemoryC = hardware->ramAddresses[0xFF00 + hardware->registers->C];
+	cached->memoryHL = hardware->ramAddresses[cached->HL];
+	cached->memoryBC = hardware->ramAddresses[cached->BC];
+	cached->memoryDE = hardware->ramAddresses[cached->DE];	
 	cached->NextPCAddress = nextPCAddressValue;
 	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
 	cached->SPMinusTwo = hardware->registers->SP - 2;
 	cached->SPPlusOne = hardware->registers->SP + 1;
 	cached->SPPlusTwo = hardware->registers->SP + 2;
-	cached->stackValue = getRamAddress(hardware, hardware->registers->SP);
-	cached->stackPlusOneValue = getRamAddress(hardware, cached->SPPlusOne);	
-	cached->stackMinusOneValue = getRamAddress(hardware, cached->SPMinusOne);
-	cached->stackMinusTwoValue = getRamAddress(hardware, cached->SPMinusTwo);
+	cached->stackValue = hardware->ramAddresses[hardware->registers->SP];
+	cached->stackPlusOneValue = hardware->ramAddresses[cached->SPPlusOne];	
+	cached->stackMinusOneValue = hardware->ramAddresses[cached->SPMinusOne];
+	cached->stackMinusTwoValue = hardware->ramAddresses[cached->SPMinusTwo];
 
 	if (cached->stackValue != NULL && cached->stackPlusOneValue != NULL)
 		cached->stackWordValue = joinBytes(*cached->stackValue, *cached->stackPlusOneValue);
@@ -376,13 +378,13 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 }
 
 int getImmediateWord(Hardware *hardware, int startAddress) {
-	unsigned char *value1 = getRamAddress(hardware, startAddress);
-	unsigned char *value2 = getRamAddress(hardware, startAddress + 1);
+	unsigned char *value1 = hardware->ramAddresses[startAddress];
+	unsigned char *value2 = hardware->ramAddresses[startAddress + 1];
 	return joinBytes(*value1, *value2);
 }
 
 unsigned char getImmediateByte(Hardware *hardware, int address) {
-	return *(getRamAddress(hardware, address));
+	return *(hardware->ramAddresses[address]);
 }
 
 void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
@@ -414,7 +416,7 @@ void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
 
 void transferOAM(Hardware *hardware, int startAddress, unsigned char* oamTable) {
 	for (int i = 0; i < OAM_SIZE; i++) {
-		oamTable[i] = *getRamAddress(hardware, startAddress);
+		oamTable[i] = *hardware->ramAddresses[startAddress];
 		startAddress++;
 	}
 }

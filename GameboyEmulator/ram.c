@@ -89,7 +89,7 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		//no writing allowed
 		//todo: implement MBC switching
 	}
-	else if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
+	/*else if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER && lcdMode != LCD_STAT_MODE_OAM_SEARCH) {
 			//can't write to OAM during pixel transfer and OAM search
 			*location = value;
@@ -112,7 +112,7 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 			//can't write to map during pixel transfer
 			*location = value;
 		}
-	}
+	}*/
 	else if (location == &hardware->videoData->dmaTransfer) {
 		*location = value;
 
@@ -170,5 +170,11 @@ void setJoypadDataState(Hardware *hardware) {
 
 	if ((hardware->ioData->joypadData & 0x0F) == 0) {
 		setRequestedInterrupt(hardware, INTERRUPT_FLAG_BUTTON_PRESS, true);
+	}
+}
+
+void populateRamAddresses(Hardware *hardware) {
+	for (int i = 0; i < TOTAL_RAM_SIZE; i++) {
+		hardware->ramAddresses[i] = getRamAddress(hardware, i);
 	}
 }

@@ -107,6 +107,7 @@ typedef struct _Hardware {
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;
 	bool isOAMDMATriggered;
+	unsigned char * ramAddresses[TOTAL_RAM_SIZE];
 } Hardware;
 
 typedef struct _FlagResult {

@@ -165,7 +165,7 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 		int tilePixelsRowNumber;
 		tilePixelsRowNumber = (hardware->videoData->scrollY + y) - (mapY * TILE_SIZE);
 
-		unsigned char *tileRowPixels;
+		unsigned char *tileRowPixels = NULL;
 
 		for (int x = 0; x < SCREEN_WIDTH; x++) {
 			int targetMapX = (hardware->videoData->scrollX + x) / TILE_SIZE;
