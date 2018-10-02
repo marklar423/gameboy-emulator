@@ -315,7 +315,7 @@ void populateCachedResults(OperationResults *results, GBValue *operand1, GBValue
 			results->add = operand1Value + operand2Value;
 			results->subtract = operand1Value - operand2Value;
 
-			if (operand2Value >= 0 && operand2Value <= 7) {
+			if (operand1Value >= 0 && operand1Value <= 7) {
 				int operand1Mask = (1 << operand1Value);
 
 				results->getBit = operand2Value & operand1Mask;
