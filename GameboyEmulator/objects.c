@@ -1,5 +1,6 @@
 
 #include "objects.h"
+#include "util.h"
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	GameRom *rom = malloc(sizeof(GameRom));
@@ -84,6 +85,18 @@ int GBValueToInt(GBValue *value) {
 	}
 
 	return convertedValue;
+}
+
+bool GBValueIsByte(GBValue *value) {
+	bool isByte = false;
+
+	if (value != NULL) {
+		if (value->type == GBVALUE_BYTE || value->type == GBVALUE_BYTE_SIGNED) {		
+			isByte = true;
+		}
+	}
+
+	return isByte;
 }
 
 OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles) {

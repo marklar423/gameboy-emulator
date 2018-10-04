@@ -139,6 +139,7 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength);
 GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue);
 GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
 int GBValueToInt(GBValue *value);
+bool GBValueIsByte(GBValue *value);
 
 #define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL)
 #define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL)

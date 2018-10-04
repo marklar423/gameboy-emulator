@@ -30,7 +30,7 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 
 	if (populateDefaultValues == true) {
 		hardware->registers->A = 0x1; // GBC = 0x11
-		hardware->registers->F = 0xB0;
+		hardware->registers->F = 0x80;
 		hardware->registers->B = 0x0;
 		hardware->registers->C = 0x13;
 		hardware->registers->D = 0x00;
@@ -189,6 +189,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			if (result != NULL) {
 				populateCachedResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
 				resultValue = *result;
+				if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) resultValue = (unsigned char)resultValue;
 			}
 			else resultValue = GBValueToInt(operand1);
 			
