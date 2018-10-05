@@ -30,7 +30,7 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 
 	if (populateDefaultValues == true) {
 		hardware->registers->A = 0x1; // GBC = 0x11
-		hardware->registers->F = 0x80;
+		hardware->registers->F = 0xB0;
 		hardware->registers->B = 0x0;
 		hardware->registers->C = 0x13;
 		hardware->registers->D = 0x00;
@@ -189,7 +189,6 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			if (result != NULL) {
 				populateCachedResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
 				resultValue = *result;
-				if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) resultValue = (unsigned char)resultValue;
 			}
 			else resultValue = GBValueToInt(operand1);
 			
@@ -355,7 +354,11 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		int resultValue = *result;
 		int operand1Value = GBValueToInt(operand1);
 
-		hardware->resultInfo->isZero = (resultValue == 0);
+		if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) 
+			hardware->resultInfo->isZero = (((unsigned char) resultValue) == 0);
+		else
+			hardware->resultInfo->isZero = (resultValue == 0);
+
 		hardware->resultInfo->isAddCarry = (resultValue > 0xFF);
 		hardware->resultInfo->isAddCarry16 = (resultValue > 0xFFFF);		
 		hardware->resultInfo->isSubBorrow = (resultValue < 0);
@@ -369,8 +372,8 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		if (operand1 != NULL && operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
 
-			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) == 0x10;
-			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) == 0x1000;
+			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) != 0;
+			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) != 0;
 			hardware->resultInfo->isSubHalfBorrow = ((operand1Value & 0x0F) - (operand2Value & 0x0F)) < 0;
 
 			if (flagResult->isHalfCarry != NULL)		P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
