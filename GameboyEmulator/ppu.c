@@ -156,27 +156,28 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 		int mapY, mapX = -1;
 		mapY = (hardware->videoData->scrollY + y) / TILE_SIZE;
 
-		if (mapY >= BG_MAP_TILES_HEIGHT) 
-			mapY = 0;
-
-		unsigned char tileNumber;
-
 		//get the row of pixels in the tile to draw
 		int tilePixelsRowNumber;
 		tilePixelsRowNumber = (hardware->videoData->scrollY + y) - (mapY * TILE_SIZE);
+
+		if (mapY >= BG_MAP_TILES_HEIGHT) 
+			mapY -= BG_MAP_TILES_HEIGHT;
+
+		unsigned char tileNumber;
+
 
 		unsigned char *tileRowPixels = NULL;
 
 		for (int x = 0; x < SCREEN_WIDTH; x++) {
 			int targetMapX = (hardware->videoData->scrollX + x) / TILE_SIZE;
-				
+
+			if (targetMapX >= BG_MAP_TILES_WIDTH)
+				targetMapX -= BG_MAP_TILES_WIDTH;
+
 			if (mapX != targetMapX) {
 				//map cell changed, so get the new tile number
 				mapX = targetMapX;
-
-				if (mapX >= BG_MAP_TILES_WIDTH)
-					mapX = 0;
-
+				
 				tileNumber = bgTileMap[(mapY * BG_MAP_TILES_WIDTH) + mapX];
 				
 				bool useSignedTileNumber = (hardware->videoData->lcdControl & PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE) != PPU_FLAG_BG_TILE_DATA_ADDRESS_MODE;
