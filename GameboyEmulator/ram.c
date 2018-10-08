@@ -73,7 +73,7 @@ unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize) {
 	return &(array[index]);
 }
 
-void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
+void writeLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
 		
 	PPUFlag lcdMode = (hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK);
 
@@ -123,6 +123,10 @@ void writeRamLocation(Hardware *hardware, unsigned char *location, unsigned char
 		//only bits 4 & 5 can be written
 		*location = (value & 0x30) | (*location & 0xCF);
 		setJoypadDataState(hardware);
+	}
+	else if (location == &hardware->registers->F) {
+		//bits 0-3 are always zero
+		*location = (value & 0xF0);
 	}
 	else {
 		*location = value;

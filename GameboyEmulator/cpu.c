@@ -340,11 +340,11 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 			unsigned char leastSignificant, mostSignificant;
 			splitBytes(resultValue, &leastSignificant, &mostSignificant);
 			
-			writeRamLocation(hardware, *(destination->byteValue2), leastSignificant);
-			writeRamLocation(hardware, *(destination->byteValue), mostSignificant);
+			writeLocation(hardware, *(destination->byteValue2), leastSignificant);
+			writeLocation(hardware, *(destination->byteValue), mostSignificant);
 		}
 		else if (destination->type == GBVALUE_BYTE || destination->type == GBVALUE_BYTE_SIGNED) {
-			writeRamLocation(hardware, *(destination->byteValue), (unsigned char)resultValue);
+			writeLocation(hardware, *(destination->byteValue), (unsigned char)resultValue);
 		}
 	}
 }
