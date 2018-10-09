@@ -74,9 +74,8 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_XOR_H].operand1 =
 		mappings[OpCode_XOR_L].operand1 =
 		mappings[OpCode_XOR_MEM_HL].operand1 =
-		mappings[OpCode_XOR_d8].operand1 = createGBByteValue(&(hardware->registers->A));
-
-	mappings[OpCode_ADC_A_A].operand1 =
+		mappings[OpCode_XOR_d8].operand1 = 
+		mappings[OpCode_ADC_A_A].operand1 =
 		mappings[OpCode_ADC_A_B].operand1 =
 		mappings[OpCode_ADC_A_C].operand1 =
 		mappings[OpCode_ADC_A_D].operand1 =
@@ -84,9 +83,8 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADC_A_H].operand1 =
 		mappings[OpCode_ADC_A_L].operand1 =
 		mappings[OpCode_ADC_A_MEM_HL].operand1 =
-		mappings[OpCode_ADC_A_d8].operand1 = createGBByteValue(&(hardware->computedValues->APlusCarry));
-
-	mappings[OpCode_SBC_A_A].operand1 =
+		mappings[OpCode_ADC_A_d8].operand1 = 
+		mappings[OpCode_SBC_A_A].operand1 =
 		mappings[OpCode_SBC_A_B].operand1 =
 		mappings[OpCode_SBC_A_C].operand1 =
 		mappings[OpCode_SBC_A_D].operand1 =
@@ -94,7 +92,7 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_SBC_A_H].operand1 =
 		mappings[OpCode_SBC_A_L].operand1 =
 		mappings[OpCode_SBC_A_MEM_HL].operand1 =
-		mappings[OpCode_SBC_A_d8].operand1 = createGBByteValue(&(hardware->computedValues->AMinusCarry));
+		mappings[OpCode_SBC_A_d8].operand1 = createGBByteValue(&(hardware->registers->A));
 
 	mappings[OpCode_INC_A].operand1 =
 		mappings[OpCode_DEC_A].operand1 = createGBByteValue(&(hardware->registers->A));
@@ -268,15 +266,6 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_DEC_MEM_HL].result =
 		mappings[OpCode_DEC_SP].result = &(hardware->operationResults->subtract);
 
-	mappings[OpCode_ADC_A_A].result =
-		mappings[OpCode_ADC_A_B].result =
-		mappings[OpCode_ADC_A_C].result =
-		mappings[OpCode_ADC_A_D].result =
-		mappings[OpCode_ADC_A_E].result =
-		mappings[OpCode_ADC_A_H].result =
-		mappings[OpCode_ADC_A_L].result =
-		mappings[OpCode_ADC_A_MEM_HL].result =
-		mappings[OpCode_ADC_A_d8].result =
 		mappings[OpCode_ADD_A_A].result =
 		mappings[OpCode_ADD_A_B].result =
 		mappings[OpCode_ADD_A_C].result =
@@ -304,6 +293,17 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_INC_MEM_HL].result =
 		mappings[OpCode_INC_SP].result = &(hardware->operationResults->add);
 
+
+		mappings[OpCode_ADC_A_A].result =
+			mappings[OpCode_ADC_A_B].result =
+			mappings[OpCode_ADC_A_C].result =
+			mappings[OpCode_ADC_A_D].result =
+			mappings[OpCode_ADC_A_E].result =
+			mappings[OpCode_ADC_A_H].result =
+			mappings[OpCode_ADC_A_L].result =
+			mappings[OpCode_ADC_A_MEM_HL].result =
+			mappings[OpCode_ADC_A_d8].result = &(hardware->operationResults->addWithCarry);
+
 	mappings[OpCode_CP_A].result =
 		mappings[OpCode_CP_B].result =
 		mappings[OpCode_CP_C].result =
@@ -313,15 +313,6 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_CP_L].result =
 		mappings[OpCode_CP_MEM_HL].result =
 		mappings[OpCode_CP_d8].result =
-		mappings[OpCode_SBC_A_A].result =
-		mappings[OpCode_SBC_A_B].result =
-		mappings[OpCode_SBC_A_C].result =
-		mappings[OpCode_SBC_A_D].result =
-		mappings[OpCode_SBC_A_E].result =
-		mappings[OpCode_SBC_A_H].result =
-		mappings[OpCode_SBC_A_L].result =
-		mappings[OpCode_SBC_A_MEM_HL].result =
-		mappings[OpCode_SBC_A_d8].result =
 		mappings[OpCode_SUB_A].result =
 		mappings[OpCode_SUB_B].result =
 		mappings[OpCode_SUB_C].result =
@@ -331,6 +322,16 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_SUB_L].result =
 		mappings[OpCode_SUB_MEM_HL].result =
 		mappings[OpCode_SUB_d8].result = &(hardware->operationResults->subtract);
+
+	mappings[OpCode_SBC_A_A].result =
+		mappings[OpCode_SBC_A_B].result =
+		mappings[OpCode_SBC_A_C].result =
+		mappings[OpCode_SBC_A_D].result =
+		mappings[OpCode_SBC_A_E].result =
+		mappings[OpCode_SBC_A_H].result =
+		mappings[OpCode_SBC_A_L].result =
+		mappings[OpCode_SBC_A_MEM_HL].result =
+		mappings[OpCode_SBC_A_d8].result = &(hardware->operationResults->subtractWithCarry);
 
 	mappings[OpCode_AND_A].result =
 		mappings[OpCode_AND_B].result =

@@ -16,7 +16,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mappings, int in
 int getImmediateWord(Hardware *hardware, int startAddress);
 unsigned char getImmediateByte(Hardware *hardware, int address);
 void populateComputedValues(Hardware *hardware, int nextPCAddressValue);
-void populateCachedResults(OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
+void populateOperationResults(OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
 void decimalAdjustValue(unsigned char *value, unsigned char *flags);
@@ -187,7 +187,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			int resultValue;
 			int *result = mapping->result;
 			if (result != NULL) {
-				populateCachedResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
+				populateOperationResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
 				resultValue = *result;
 			}
 			else resultValue = GBValueToInt(operand1);
@@ -247,8 +247,6 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->BC = joinBytes(hardware->registers->C, hardware->registers->B);
 	cached->DE = joinBytes(hardware->registers->E, hardware->registers->D);
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
-	cached->APlusCarry = hardware->registers->A + ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
-	cached->AMinusCarry = hardware->registers->A - ((hardware->registers->F & FLAGS_CY) == FLAGS_CY);
 
 	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
 	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
@@ -274,7 +272,7 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 }
 
 
-void populateCachedResults(OperationResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+void populateOperationResults(OperationResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
 	
 	if (operand1 != NULL) {
 		int operand1Value = GBValueToInt(operand1);
@@ -315,6 +313,12 @@ void populateCachedResults(OperationResults *results, GBValue *operand1, GBValue
 			results->add = operand1Value + operand2Value;
 			results->subtract = operand1Value - operand2Value;
 
+			int carry = ((previousFlags & FLAGS_CY) != 0) ? 1 : 0;
+			results->addWithCarry = results->add + carry;
+			results->subtractWithCarry = results->subtract - carry;
+
+			//((hardware->registers->F & FLAGS_CY) == FLAGS_CY)
+
 			if (operand1Value >= 0 && operand1Value <= 7) {
 				int operand1Mask = (1 << operand1Value);
 
@@ -344,7 +348,8 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 			writeLocation(hardware, *(destination->byteValue), mostSignificant);
 		}
 		else if (destination->type == GBVALUE_BYTE || destination->type == GBVALUE_BYTE_SIGNED) {
-			writeLocation(hardware, *(destination->byteValue), (unsigned char)resultValue);
+			unsigned char byteResult = resultValue % 0x100;
+			writeLocation(hardware, *(destination->byteValue), byteResult);
 		}
 	}
 }
@@ -354,10 +359,13 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		int resultValue = *result;
 		int operand1Value = GBValueToInt(operand1);
 
-		if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) 
-			hardware->resultInfo->isZero = (((unsigned char) resultValue) == 0);
-		else
+		if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) {			
+			unsigned char byteResult = resultValue % 0x100;
+			hardware->resultInfo->isZero = (byteResult == 0);
+		}
+		else {
 			hardware->resultInfo->isZero = (resultValue == 0);
+		}
 
 		hardware->resultInfo->isAddCarry = (resultValue > 0xFF);
 		hardware->resultInfo->isAddCarry16 = (resultValue > 0xFFFF);		

@@ -10,17 +10,17 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	return rom;
 }
 
-GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue) {
+GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;
 
 	if (byteValue != NULL) {
-		byteValuePointer = malloc(sizeof(char **));
+		byteValuePointer = malloc(sizeof(unsigned char **));
 		*byteValuePointer = byteValue;
 	}
 
 	if (byteValue2 != NULL) {
-		byteValue2Pointer = malloc(sizeof(char **));
+		byteValue2Pointer = malloc(sizeof(unsigned char **));
 		*byteValue2Pointer = byteValue2;
 	}
 
@@ -33,7 +33,7 @@ GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int 
 }
 
 
-GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer) {
+GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, int **wordValuePointer) {
 	GBValue *value = malloc(sizeof(GBValue));
 
 	value->type = type;

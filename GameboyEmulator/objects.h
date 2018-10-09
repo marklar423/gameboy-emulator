@@ -70,7 +70,6 @@ typedef struct _ComputedValues {
 	unsigned char *highMemoryC;
 	unsigned char *memoryHL, *memoryBC, *memoryDE;
 	int AF, BC, DE, HL;
-	unsigned char APlusCarry, AMinusCarry;
 	int NextPCAddress, NextPCAddressPlusImmediateByteSigned;
 	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
 	unsigned char *stackValue; //value on top of stack
@@ -81,7 +80,7 @@ typedef struct _ComputedValues {
 } ComputedValues;
 
 typedef struct _OperationResults {
-	int and, or, xor, add, subtract;
+	int and, or, xor, add, subtract, addWithCarry, subtractWithCarry;
 	int getBit, setBit, resetBit, swapNibbles;
 	int rotateLeft, rotateRight, rotateLeftCarry, rotateRightCarry;
 	int shiftLeft, shiftRightLogical, shiftRightArithmetic;
@@ -136,8 +135,8 @@ typedef struct _InstructionMapping {
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
-GBValue* createGBValue(GBValueType type, char *byteValue, char *byteValue2, int *wordValue);
-GBValue* createGBPointerValue(GBValueType type, char **byteValuePointer, char **byteValue2Pointer, int **wordValuePointer);
+GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue);
+GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, int **wordValuePointer);
 int GBValueToInt(GBValue *value);
 bool GBValueIsByte(GBValue *value);
 
