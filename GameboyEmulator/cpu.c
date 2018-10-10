@@ -187,14 +187,16 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			int resultValue;
 			int *result = mapping->result;
 			if (result != NULL) {
-				populateOperationResults(hardware->operationResults, operand1, operand2, hardware->registers->F);
-				resultValue = *result;
+				populateOperationResults(hardware->operationResults, operand1, operand2, hardware->registers->F);				
 			}
-			else resultValue = GBValueToInt(operand1);
+			else {
+				resultValue = GBValueToInt(operand1);
+				result = &resultValue;
+			}
 			
 			//process flags
 			FlagResult *flagResult = mapping->flagResult;
-			processFlags(hardware, operand1, operand2, &resultValue, flagResult);
+			processFlags(hardware, operand1, operand2, result, flagResult);
 			
 			//process program counter
 			int *nextPC = mapping->nextPC;
@@ -206,7 +208,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 			//send the result to the right destination
 			destination = mapping->destination;
-			processDestination(hardware, &resultValue, destination);
+			processDestination(hardware, result, destination);
 
 			//special cases
 			if (instruction == OpCode_LD_A_MEM_HLI || instruction == OpCode_LD_MEM_HLI_A) {
@@ -317,7 +319,6 @@ void populateOperationResults(OperationResults *results, GBValue *operand1, GBVa
 			results->addWithCarry = results->add + carry;
 			results->subtractWithCarry = results->subtract - carry;
 
-			//((hardware->registers->F & FLAGS_CY) == FLAGS_CY)
 
 			if (operand1Value >= 0 && operand1Value <= 7) {
 				int operand1Mask = (1 << operand1Value);
@@ -358,6 +359,10 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 	if (flagResult != NULL && result != NULL) {
 		int resultValue = *result;
 		int operand1Value = GBValueToInt(operand1);
+		int carry = 0;
+		if (result == &hardware->operationResults->addWithCarry || result == &hardware->operationResults->subtractWithCarry) {
+			carry = ((hardware->registers->F & FLAGS_CY) != 0) ? 1 : 0;
+		}
 
 		if (GBValueIsByte(operand1) && GBValueIsByte(operand2)) {			
 			unsigned char byteResult = resultValue % 0x100;
@@ -380,9 +385,9 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		if (operand1 != NULL && operand2 != NULL) {
 			int operand2Value = GBValueToInt(operand2);
 
-			hardware->resultInfo->isAddHalfCarry = ((operand1Value & 0x0F) + (operand2Value & 0x0F) & 0x10) != 0;
+			hardware->resultInfo->isAddHalfCarry = (((operand1Value & 0x0F) + (operand2Value & 0x0F) + carry) & 0x10) != 0;
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) != 0;
-			hardware->resultInfo->isSubHalfBorrow = ((operand1Value & 0x0F) - (operand2Value & 0x0F)) < 0;
+			hardware->resultInfo->isSubHalfBorrow = (((operand1Value & 0x0F) - (operand2Value & 0x0F) - carry)) < 0;
 
 			if (flagResult->isHalfCarry != NULL)		P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 		}
