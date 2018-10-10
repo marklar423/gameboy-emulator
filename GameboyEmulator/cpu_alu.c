@@ -353,7 +353,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_OR_L].result =
 		mappings[OpCode_OR_MEM_HL].result =
 		mappings[OpCode_OR_d8].result =
-		mappings[OpCode_SCF].operand2 = &(hardware->operationResults-> or);
+		mappings[OpCode_SCF].result = &(hardware->operationResults-> or);
 
 	mappings[OpCode_XOR_A].result =
 		mappings[OpCode_XOR_B].result =
@@ -365,7 +365,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_XOR_MEM_HL].result =
 		mappings[OpCode_XOR_d8].result =
 		mappings[OpCode_CPL].result = 
-		mappings[OpCode_CCF].operand2 = &(hardware->operationResults->xor);
+		mappings[OpCode_CCF].result = &(hardware->operationResults->xor);
 }
 
 void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
