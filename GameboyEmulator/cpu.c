@@ -389,8 +389,9 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) != 0;
 			hardware->resultInfo->isSubHalfBorrow = (((operand1Value & 0x0F) - (operand2Value & 0x0F) - carry)) < 0;
 
-			if (flagResult->isHalfCarry != NULL)		P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 		}
+
+		if (flagResult->isHalfCarry != NULL) P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);
 	}
 }
 

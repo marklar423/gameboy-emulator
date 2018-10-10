@@ -128,8 +128,7 @@ void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings) {
 
 	mappings[OpCode_ADD_SP_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
 
-	mappings[OpCode_CCF].operand1 = 
-		mappings[OpCode_SCF].operand1 = createGBByteValue(&(hardware->registers->F));
+	mappings[OpCode_CCF].operand1 = createGBByteValue(&(hardware->registers->F));
 }
 
 void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings) {
@@ -248,8 +247,7 @@ void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_ADD_SP_r8].operand2 = createGBByteValueSigned(&(hardware->computedValues->immediateByte));
 	mappings[OpCode_CPL].operand2 = createGBByteValue(&(MAX_BYTE));
 
-	mappings[OpCode_CCF].operand2 =
-		mappings[OpCode_SCF].operand2 = createGBByteValue(&(FLAGS_CY_VALUE));
+	mappings[OpCode_CCF].operand2 = createGBByteValue(&(FLAGS_CY_VALUE));
 }
 
 void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
@@ -341,7 +339,8 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_AND_H].result =
 		mappings[OpCode_AND_L].result =
 		mappings[OpCode_AND_MEM_HL].result =
-		mappings[OpCode_AND_d8].result = &(hardware->operationResults->and);
+		mappings[OpCode_AND_d8].result =
+		mappings[OpCode_CCF].result = &(hardware->operationResults->and);
 
 	
 	mappings[OpCode_OR_A].result =
@@ -352,8 +351,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_OR_H].result =
 		mappings[OpCode_OR_L].result =
 		mappings[OpCode_OR_MEM_HL].result =
-		mappings[OpCode_OR_d8].result =
-		mappings[OpCode_SCF].result = &(hardware->operationResults-> or);
+		mappings[OpCode_OR_d8].result = &(hardware->operationResults-> or);
 
 	mappings[OpCode_XOR_A].result =
 		mappings[OpCode_XOR_B].result =
@@ -364,8 +362,7 @@ void populateALUResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_XOR_L].result =
 		mappings[OpCode_XOR_MEM_HL].result =
 		mappings[OpCode_XOR_d8].result =
-		mappings[OpCode_CPL].result = 
-		mappings[OpCode_CCF].result = &(hardware->operationResults->xor);
+		mappings[OpCode_CPL].result = &(hardware->operationResults->xor);
 }
 
 void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
@@ -470,9 +467,6 @@ void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_ADD_SP_r8].destination =
 		mappings[OpCode_INC_SP].destination =
 		mappings[OpCode_DEC_SP].destination = createGBWordValue(&(hardware->registers->SP));
-
-	mappings[OpCode_SCF].destination = 
-		mappings[OpCode_CCF].destination = createGBByteValue(&(hardware->registers->F));
 }
 
 void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
@@ -591,6 +585,6 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 	//mappings[OpCode_DAA].flagResult = createFlagResult(&(hardware->resultInfo->isZero), NULL, &FALSE_VAL, ?? );
 	mappings[OpCode_CPL].flagResult = createFlagResult(NULL, &TRUE_VAL, &TRUE_VAL, NULL);
 
-	mappings[OpCode_SCF].flagResult =
-		mappings[OpCode_CCF].flagResult = createFlagResult(NULL, &FALSE_VAL, &FALSE_VAL, NULL);
+	mappings[OpCode_SCF].flagResult = createFlagResult(NULL, &FALSE_VAL, &FALSE_VAL, &TRUE_VAL);
+	mappings[OpCode_CCF].flagResult = createFlagResult(NULL, &FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isZero));
 }
