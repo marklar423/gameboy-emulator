@@ -288,10 +288,10 @@ void populateOperationResults(OperationResults *results, GBValue *operand1, GBVa
 		//shifts and rotates
 		//start with the base shifts
 		results->rotateLeft = results->rotateLeftCarry = 
-			results->shiftLeft = (unsigned char) operand1Value << 1;
+			results->shiftLeft = (operand1Value << 1) & 0xFF;
 
 		results->rotateRight = results->rotateRightCarry = 
-			results->shiftRightLogical = results->shiftRightArithmetic = (unsigned char) operand1Value >> 1;
+			results->shiftRightLogical = results->shiftRightArithmetic = (operand1Value >> 1);
 		
 		//loop the ending bits around, for rotates
 		results->rotateLeft |= ((operand1Value & 128) >> 7);
@@ -375,8 +375,8 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		hardware->resultInfo->isAddCarry = (resultValue > 0xFF);
 		hardware->resultInfo->isAddCarry16 = (resultValue > 0xFFFF);		
 		hardware->resultInfo->isSubBorrow = (resultValue < 0);
-		hardware->resultInfo->isOperand1Bit0Set = (operand1Value & 1) == 1;
-		hardware->resultInfo->isOperand1Bit7Set = (operand1Value & 128) == 1;
+		hardware->resultInfo->isOperand1Bit0Set = (operand1Value & 1) != 0;
+		hardware->resultInfo->isOperand1Bit7Set = (operand1Value & 128) != 0;
 
 		if (flagResult->isZero != NULL)		P_SET_BIT_IF(flagResult->isZero, FLAGS_Z, hardware->registers->F);
 		if (flagResult->isSubtract != NULL)	P_SET_BIT_IF(flagResult->isSubtract, FLAGS_N, hardware->registers->F);
@@ -388,7 +388,6 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 			hardware->resultInfo->isAddHalfCarry = (((operand1Value & 0x0F) + (operand2Value & 0x0F) + carry) & 0x10) != 0;
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) != 0;
 			hardware->resultInfo->isSubHalfBorrow = (((operand1Value & 0x0F) - (operand2Value & 0x0F) - carry)) < 0;
-
 		}
 
 		if (flagResult->isHalfCarry != NULL) P_SET_BIT_IF(flagResult->isHalfCarry, FLAGS_H, hardware->registers->F);

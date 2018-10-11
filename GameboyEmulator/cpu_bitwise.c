@@ -897,7 +897,7 @@ void populateBitwiseOperandsResults(Hardware *hardware, InstructionMapping *mapp
 		mappings[OpCode_SET_7_H].result =
 		mappings[OpCode_SET_7_L].result =
 		mappings[OpCode_SET_7_MEM_HL].result =
-		mappings[OpCode_SET_7_A].result == &hardware->operationResults->setBit;
+		mappings[OpCode_SET_7_A].result = &hardware->operationResults->setBit;
 
 
 	mappings[OpCode_SWAP_A].result =
@@ -917,7 +917,7 @@ void populateBitwiseOperandsResults(Hardware *hardware, InstructionMapping *mapp
 		mappings[OpCode_RLC_E].result =
 		mappings[OpCode_RLC_H].result =
 		mappings[OpCode_RLC_L].result =
-		mappings[OpCode_RLC_MEM_HL].result = &hardware->operationResults->rotateRight;
+		mappings[OpCode_RLC_MEM_HL].result = &hardware->operationResults->rotateLeft;
 
 	mappings[OpCode_RLA].result = 
 		mappings[OpCode_RL_A].result =
