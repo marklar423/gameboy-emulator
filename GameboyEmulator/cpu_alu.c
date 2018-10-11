@@ -562,7 +562,7 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_CP_L].flagResult =
 		mappings[OpCode_CP_MEM_HL].flagResult =
 		mappings[OpCode_CP_d8].flagResult =
-		mappings[OpCode_SBC_A_A].operand2 =
+		mappings[OpCode_SBC_A_A].flagResult =
 		mappings[OpCode_SBC_A_B].flagResult =
 		mappings[OpCode_SBC_A_C].flagResult =
 		mappings[OpCode_SBC_A_D].flagResult =
