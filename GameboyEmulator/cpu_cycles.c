@@ -3,6 +3,8 @@
 #include "cpu_cycles.h"
 
 void populateCPUCycleCounts(InstructionMapping *mappings) {
+	OpCycleCount *twoCycle = createOpCycleCount(2, 2);
+
 	mappings[OpCode_ADC_A_MEM_HL].cycleCount =
 		mappings[OpCode_ADC_A_d8].cycleCount =
 		mappings[OpCode_ADD_A_MEM_HL].cycleCount =
@@ -62,8 +64,16 @@ void populateCPUCycleCounts(InstructionMapping *mappings) {
 		mappings[OpCode_LD_L_d8].cycleCount =
 		mappings[OpCode_LD_SP_HL].cycleCount =
 		mappings[OpCode_OR_MEM_HL].cycleCount =
-		mappings[OpCode_OR_d8].cycleCount = createOpCycleCount(2, 2);
+		mappings[OpCode_OR_d8].cycleCount = twoCycle;
 	
+	/*
+	TODO: test this
+	//set the basic 0xCB cycle counts
+	for (int i = OPCODE_PREFIX_CB; i <= OPCODE_PREFIX_CB + 0xFF; i++) {
+		mappings[i].cycleCount = twoCycle;
+	}
+	*/
+
 	mappings[OpCode_DEC_MEM_HL].cycleCount =
 		mappings[OpCode_INC_MEM_HL].cycleCount =
 		mappings[OpCode_JR_r8].cycleCount =
