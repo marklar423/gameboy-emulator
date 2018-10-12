@@ -232,8 +232,8 @@ void populateLoadDestinations(Hardware *hardware, InstructionMapping *mappings) 
 
 	mappings[OpCode_LD_MEM_C_A].destination = createGBBytePointer(&(hardware->computedValues->highMemoryC));
 
-	mappings[OpCode_LD_MEM_a16_A].destination =
-		mappings[OpCode_LD_MEM_a16_SP].destination = createGBBytePointer(&(hardware->computedValues->memoryImmediateWord));
+	mappings[OpCode_LD_MEM_a16_A].destination = createGBBytePointer(&(hardware->computedValues->memoryImmediateWord));
+	mappings[OpCode_LD_MEM_a16_SP].destination = createGBSplitBytePointer(&(hardware->computedValues->memoryImmediateWordPlusOne), &(hardware->computedValues->memoryImmediateWord));
 
 	mappings[OpCode_LDH_MEM_a8_A].destination = createGBBytePointer(&(hardware->computedValues->highMemoryImmediateByte));
 

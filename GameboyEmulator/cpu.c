@@ -252,6 +252,7 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
 
 	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
+	cached->memoryImmediateWordPlusOne = cached->memoryImmediateWord + 1;
 	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
 	cached->highMemoryC = hardware->ramAddresses[0xFF00 + hardware->registers->C];
 	cached->memoryHL = hardware->ramAddresses[cached->HL];

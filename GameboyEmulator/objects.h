@@ -71,7 +71,7 @@ typedef struct _GBValue {
 typedef struct _ComputedValues {
 	unsigned char immediateByte;
 	int immediateWord;
-	unsigned char *highMemoryImmediateByte, *memoryImmediateWord;
+	unsigned char *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
 	unsigned char *highMemoryC;
 	unsigned char *memoryHL, *memoryBC, *memoryDE;
 	int AF, BC, DE, HL;
