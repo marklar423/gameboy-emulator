@@ -269,7 +269,9 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->stackMinusOneValue = hardware->ramAddresses[cached->SPMinusOne];
 	cached->stackMinusTwoValue = hardware->ramAddresses[cached->SPMinusTwo];
 
-	if (cached->stackValue != NULL && cached->stackPlusOneValue != NULL)
+	
+	if (cached->stackValue != NULL && cached->stackPlusOneValue != NULL 
+		&& (cached->SPPlusOne >= 0 && cached->SPPlusOne < TOTAL_RAM_SIZE))
 		cached->stackWordValue = joinBytes(*cached->stackValue, *cached->stackPlusOneValue);
 	else
 		cached->stackWordValue = NULL;
