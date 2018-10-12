@@ -13,6 +13,7 @@
 #include "cpu.h"
 #include "ppu.h"
 #include "ram.h"
+#include "timer.h"
 
 static int numFrames = 0;
 
@@ -62,6 +63,8 @@ void updateFrame() {
 	for (int i = 0; i < TARGET_TICKS_FRAME; i++) {		
 		tickCPU(g_hardware, g_mappings);
 		tickPPU(g_hardware, i);
+
+		if (i % CYCLES_PER_TIMER_TICK == 0) tickTimer(g_hardware, CYCLES_PER_TIMER_TICK);
 	}
 
 	//resetFrameStatus(hardware);

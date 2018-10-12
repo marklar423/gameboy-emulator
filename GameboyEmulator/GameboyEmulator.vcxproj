@@ -144,6 +144,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="objects.c" />
     <ClCompile Include="ppu.c" />
+    <ClCompile Include="timer.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="game_rom.h" />
     <ClInclude Include="objects.h" />
     <ClInclude Include="ppu.h" />
+    <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

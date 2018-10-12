@@ -40,6 +40,11 @@ typedef struct _SoundData {
 	unsigned char soundOnOff;
 } SoundData;
 
+typedef struct _TimerData {
+	unsigned char divider, counter, modulo, control;
+	int cycleAccumulator, dividerCycleAccumulator;
+} TimerData;
+
 typedef struct _IOData {
 	unsigned char joypadData, serialTransferData, serialTransferControl;
 } IOData;
@@ -102,6 +107,7 @@ typedef struct _Hardware {
 	OperationResults *operationResults;
 	ResultInfo *resultInfo;
 	InputState *inputState;
+	TimerData *timerData;
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;

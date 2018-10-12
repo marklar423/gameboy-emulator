@@ -126,6 +126,7 @@ Hardware* createHardware() {
 	hardware->videoData = calloc(1, sizeof(VideoData));	
 	hardware->soundData = calloc(1, sizeof(SoundData));
 	hardware->inputState = calloc(1, sizeof(InputState));
+	hardware->timerData = calloc(1, sizeof(TimerData));
 
 	return hardware;
 }

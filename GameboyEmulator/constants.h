@@ -43,6 +43,10 @@ typedef enum _RamLocation {
 	RAM_LOCATION_JOYPAD_INPUT = 0xFF00,
 	RAM_LOCATION_SERIAL_TRANSFER_DATA = 0xFF01,
 	RAM_LOCATION_SERIAL_TRANSFER_CONTROL = 0xFF02,
+	RAM_LOCATION_TIMER_DIVIDER = 0xFF04,
+	RAM_LOCATION_TIMER_COUNTER = 0xFF05,
+	RAM_LOCATION_TIMER_MODULO = 0xFF06,
+	RAM_LOCATION_TIMER_CONTROL = 0xFF07,
 	RAM_LOCATION_SOUND_CHANNEL_1_Sweep_register = 0xFF10, //NR10 - Channel 1 Sweep register
 	RAM_LOCATION_SOUND_CHANNEL_1_Sound_length_Wave_pattern_duty = 0xFF11, //NR11 - Channel 1 Sound_Length/Wave pattern duty
 	RAM_LOCATION_SOUND_CHANNEL_1_Volume_Envelope = 0xFF12, //NR12 - Channel 1 Volume_Envelope
@@ -154,6 +158,18 @@ typedef enum _IOFlag {
 	IO_FLAG_RIGHT_A_PRESSED = 1 //0 = Pressed
 } IOFlag;
 
+typedef enum _TimerFlag {
+	TIMER_CONTROL_MASK_TIMER_ENABLE = 4,
+	TIMER_CONTROL_MASK_TIMER_SPEED = 3
+} TimerFlag;
+
+typedef enum _TimerSpeed {	
+	TIMER_SPEED_CYCLES_256 = 0, //CPU Clock / 1024 (4096 Hz)
+	TIMER_SPEED_CYCLES_4 = 1,  //CPU Clock / 16   (262144 Hz)
+	TIMER_SPEED_CYCLES_16 = 2, //CPU Clock / 64   (65536 Hz)
+	TIMER_SPEED_CYCLES_64 = 3, //CPU Clock / 256  (16384 Hz)
+} TimerSpeed;
+
 #define VRAM_TOTAL_SIZE 0x2000
 #define VRAM_TOTAL_TILES_SIZE 0x1800
 #define VRAM_TILES_1_SIZE 0x800
@@ -172,6 +188,9 @@ typedef enum _IOFlag {
 #define PPU_CYCLES_PIXEL_TRANSFER 43
 #define PPU_CYCLES_HBLANK 51
 #define PPU_CYCLES_LINE_TOTAL 114
+
+#define TIMER_DIVIDER_CYCLES TIMER_SPEED_CYCLES_64
+#define CYCLES_PER_TIMER_TICK 4
 
 /*
  Some notes:

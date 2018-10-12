@@ -43,6 +43,10 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return &hardware->ioData->serialTransferData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_CONTROL) return &hardware->ioData->serialTransferControl;
+	else if (address == RAM_LOCATION_TIMER_DIVIDER) return &hardware->timerData->divider;
+	else if (address == RAM_LOCATION_TIMER_COUNTER) return &hardware->timerData->counter;
+	else if (address == RAM_LOCATION_TIMER_MODULO) return &hardware->timerData->modulo;
+	else if (address == RAM_LOCATION_TIMER_CONTROL) return &hardware->timerData->control;
 	else if (address == RAM_LOCATION_SOUND_ON_OFF) return &hardware->soundData->soundOnOff;
 	else if (address == RAM_LOCATION_LCD_CONTROL) return &hardware->videoData->lcdControl;
 	else if (address == RAM_LOCATION_LCD_STATUS) return &hardware->videoData->lcdStatus;
@@ -127,6 +131,14 @@ void writeLocation(Hardware *hardware, unsigned char *location, unsigned char va
 	else if (location == &hardware->registers->F) {
 		//bits 0-3 are always zero
 		*location = (value & 0xF0);
+	}
+	else if (location == &hardware->timerData->divider) {
+		//writing resets to zero
+		*location = 0;
+	}
+	else if (location == &hardware->timerData->control) {
+		//only bits 0-2 can be written
+		*location = (value & 0x07) | (*location & 0xF8);
 	}
 	else {
 		*location = value;

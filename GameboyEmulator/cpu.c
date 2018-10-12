@@ -74,6 +74,7 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->videoData->windowX = 0x00;
 		hardware->registers->enabledInterrupts = 0x00;
 		hardware->ioData->joypadData = 0xCF;
+		hardware->timerData->control = 0xF8;
 
 		populateRamAddresses(hardware);
 	}
