@@ -203,6 +203,9 @@ void drawSprites(Hardware *hardware, int y) {
 	//are sprites enabled?
 	if ((hardware->videoData->lcdControl & PPU_FLAG_OBJ_ENABLE) != 0) {
 
+		PixelColor bgPaletteColors[4];
+		populatePaletteColors(&bgPaletteColors, hardware->videoData->bgPalette);
+
 		for (int i = 0; i < VISIBLE_SPRITES_PER_LINE && hardware->videoData->lineVisibleSprites[i] != NULL; i++) {
 			unsigned char *sprite = hardware->videoData->lineVisibleSprites[i];
 
@@ -213,6 +216,7 @@ void drawSprites(Hardware *hardware, int y) {
 
 			bool isXFlipped = (flags & OAM_FLAG_X_FLIP) != 0;
 			bool isYFlipped = (flags & OAM_FLAG_Y_FLIP) != 0;
+			bool isPriorityBelowBG = (flags & OAM_FLAG_PRIORITY) != 0;
 			
 			PixelColor paletteColors[4];
 			unsigned char paletteData = (flags & OAM_FLAG_PALETTE_NUM_MASK) != 0 ?
@@ -237,7 +241,10 @@ void drawSprites(Hardware *hardware, int y) {
 				
 				//color zero is considered transparent and not rendered
 				if (finalColor != paletteColors[0]) {
-					hardware->videoData->framePixels[y][x] = finalColor;
+					//when the priority bit is set, hide under BG pixels except for BG color #0
+					if (!isPriorityBelowBG || hardware->videoData->framePixels[y][x] == bgPaletteColors[0]) {
+						hardware->videoData->framePixels[y][x] = finalColor;
+					}
 				}
 			}
 		}
