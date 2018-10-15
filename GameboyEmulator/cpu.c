@@ -142,6 +142,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 		if (flagCondition->negate) shouldExecute = !shouldExecute;
 	}
 
+	shouldExecute = shouldExecute && !(hardware->pauseCPU);
+
 	if (shouldExecute) {
 
 		GBValue *operand1, *operand2, *destination;
@@ -170,7 +172,8 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 		case OpCode_HALT:
 			//THROW_ERROR("Unsupported instruction HALT");
-			nextPCAddressValue = hardware->registers->PC;
+			//nextPCAddressValue = hardware->registers->PC;
+			hardware->pauseCPU = true;
 			break;
 
 		case OpCode_STOP:

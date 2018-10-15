@@ -111,7 +111,7 @@ typedef struct _Hardware {
 	unsigned char workRam[WORK_RAM_SIZE], highRam[HRAM_SIZE];
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;
-	bool isOAMDMATriggered;
+	bool isOAMDMATriggered, pauseCPU;
 	unsigned char * ramAddresses[TOTAL_RAM_SIZE];
 } Hardware;
 

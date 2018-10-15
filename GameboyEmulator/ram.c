@@ -36,6 +36,14 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address >= RAM_LOCATION_WORK_RAM_SWITCHABLE && address <= RAM_LOCATION_WORK_RAM_SWITCHABLE_END)
 		//todo: implement memory bank switching for CGB
 		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE);
+	
+	else if (address >= RAM_LOCATION_MIRROR_WORK_RAM_FIXED && address <= RAM_LOCATION_MIRROR_WORK_RAM_FIXED_END)
+		//echo ram fixed
+		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE);
+
+	else if (address >= RAM_LOCATION_MIRROR_WORK_RAM_SWITCHABLE && address <= RAM_LOCATION_MIRROR_WORK_RAM_SWITCHABLE_END)
+		//echo ram switchable
+		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE);
 
 	else if (address >= RAM_LOCATION_HRAM && address <= RAM_LOCATION_HRAM_END)
 		return getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE);

@@ -122,6 +122,7 @@ void populateLoadOperands(Hardware *hardware, InstructionMapping *mappings) {
 	mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
 	mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = createGBByteValueSigned(&(hardware->computedValues->immediateByte));
 	mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
+	mappings[OpCode_LD_HL_SP_PLUS_r8].result = &hardware->operationResults->add;
 
 	mappings[OpCode_POP_AF].operand1 =
 		mappings[OpCode_POP_BC].operand1 =

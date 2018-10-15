@@ -44,6 +44,9 @@ void processInterrupts(Hardware *hardware) {
 
 				//jump to interrupt handler
 				hardware->registers->PC = interruptAddress;
+
+				//un-pause the CPU, in case HALT was used
+				hardware->pauseCPU = false;
 			}
 		}
 	}
