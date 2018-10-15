@@ -273,7 +273,7 @@ unsigned char* getTileBytes(unsigned char *tileData, int tileRow, unsigned char 
 		tileAddress = tileNumber * BYTES_PER_TILE;
 	}
 
-	unsigned char *tileRowPixels = (tileData + tileAddress + (tileRow * 2));
+	unsigned char *tileRowPixels = (tileData + baseTileAddress + tileAddress + (tileRow * 2));
 	return tileRowPixels;
 }
 
