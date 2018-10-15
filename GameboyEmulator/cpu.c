@@ -97,26 +97,27 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 
 void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 
-	if (hardware->cpuCyclesToWait <= 1) {
-
+	if (hardware->cpuCyclesToWait <= 1) {		
 		processInterrupts(hardware);
 
-		if (hardware->isOAMDMATriggered) {
-			int dmaStartAddress = hardware->videoData->dmaTransfer << 8;
-			transferOAM(hardware, dmaStartAddress, hardware->videoData->oamTable);
-			hardware->isOAMDMATriggered = false;
-		}
+		if (!(hardware->pauseCPU)) {
+			if (hardware->isOAMDMATriggered) {
+				int dmaStartAddress = hardware->videoData->dmaTransfer << 8;
+				transferOAM(hardware, dmaStartAddress, hardware->videoData->oamTable);
+				hardware->isOAMDMATriggered = false;
+			}
 
-		int instruction = *hardware->ramAddresses[hardware->registers->PC];
-		
-		//this ensures "CB xx" instructions get properly executed
-		if (hardware->opCodePrefix != 0) {
-			//__debugbreak();
-			instruction |= hardware->opCodePrefix;
-			hardware->opCodePrefix = 0;
-		}
+			int instruction = *hardware->ramAddresses[hardware->registers->PC];
 
-		processInstruction(hardware, &mappings[instruction], instruction);
+			//this ensures "CB xx" instructions get properly executed
+			if (hardware->opCodePrefix != 0) {
+				//__debugbreak();
+				instruction |= hardware->opCodePrefix;
+				hardware->opCodePrefix = 0;
+			}
+
+			processInstruction(hardware, &mappings[instruction], instruction);
+		}
 	}
 	else {
 		hardware->cpuCyclesToWait--;
@@ -141,9 +142,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 		shouldExecute = ((hardware->registers->F & flagCondition->condition) == flagCondition->condition);
 		if (flagCondition->negate) shouldExecute = !shouldExecute;
 	}
-
-	shouldExecute = shouldExecute && !(hardware->pauseCPU);
-
+	
 	if (shouldExecute) {
 
 		GBValue *operand1, *operand2, *destination;
