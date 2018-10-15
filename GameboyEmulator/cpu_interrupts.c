@@ -9,44 +9,47 @@ void setRequestedInterrupt(Hardware *hardware, InterruptFlag flag, bool requeste
 }
 
 void processInterrupts(Hardware *hardware) {
-	if (hardware->registers->globalInterruptsEnabled) {
-		unsigned char requestedEnabledInterrupt = (hardware->registers->requestedInterrupts & hardware->registers->enabledInterrupts);
+	if (hardware->registers->requestedInterrupts != 0) {
 
-		if (requestedEnabledInterrupt) {
-			int interruptAddress = 0;
+		//un-pause the CPU, in case HALT was used
+		hardware->pauseCPU = false;
 
-			unsigned char interruptToExecute = 0;
+		if (hardware->registers->globalInterruptsEnabled) {
+			unsigned char requestedEnabledInterrupt = (hardware->registers->requestedInterrupts & hardware->registers->enabledInterrupts);
 
-			if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_VBLANK) != 0) 
-				interruptAddress = ROM_LOCATION_INTERRUPT_VBLANK;
+			if (requestedEnabledInterrupt) {
+				int interruptAddress = 0;
 
-			else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_LCD_STAT) != 0) 
-				interruptAddress = ROM_LOCATION_INTERRUPT_LCD_STAT;
+				unsigned char interruptToExecute = 0;
 
-			else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_TIMER_OVERFLOW) != 0) 
-				interruptAddress = ROM_LOCATION_INTERRUPT_TIMER_OVERFLOW;
+				if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_VBLANK) != 0)
+					interruptAddress = ROM_LOCATION_INTERRUPT_VBLANK;
 
-			else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_SERIAL_TRANSFER) != 0) 
-				interruptAddress = ROM_LOCATION_INTERRUPT_SERIAL_TRANSFER;
+				else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_LCD_STAT) != 0)
+					interruptAddress = ROM_LOCATION_INTERRUPT_LCD_STAT;
 
-			else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_BUTTON_PRESS) != 0) 
-				interruptAddress = ROM_LOCATION_INTERRUPT_BUTTON_PRESS;
+				else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_TIMER_OVERFLOW) != 0)
+					interruptAddress = ROM_LOCATION_INTERRUPT_TIMER_OVERFLOW;
 
-			if (interruptAddress) {
-				//clear flag of current interrupt
-				hardware->registers->requestedInterrupts &= ~(interruptToExecute);
+				else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_SERIAL_TRANSFER) != 0)
+					interruptAddress = ROM_LOCATION_INTERRUPT_SERIAL_TRANSFER;
 
-				//disable interrupts
-				hardware->registers->globalInterruptsEnabled = false;
+				else if ((interruptToExecute = requestedEnabledInterrupt & INTERRUPT_FLAG_BUTTON_PRESS) != 0)
+					interruptAddress = ROM_LOCATION_INTERRUPT_BUTTON_PRESS;
 
-				//push current address to stack
-				pushWordToStack(hardware, hardware->registers->PC);
+				if (interruptAddress) {
+					//clear flag of current interrupt
+					hardware->registers->requestedInterrupts &= ~(interruptToExecute);
 
-				//jump to interrupt handler
-				hardware->registers->PC = interruptAddress;
+					//disable interrupts
+					hardware->registers->globalInterruptsEnabled = false;
 
-				//un-pause the CPU, in case HALT was used
-				hardware->pauseCPU = false;
+					//push current address to stack
+					pushWordToStack(hardware, hardware->registers->PC);
+
+					//jump to interrupt handler
+					hardware->registers->PC = interruptAddress;
+				}
 			}
 		}
 	}
