@@ -8,6 +8,7 @@
 
 #include "constants.h"
 #include "gui.h"
+#include "audio.h"
 #include "config.h"
 #include "game_rom.h"
 #include "cpu.h"
@@ -74,6 +75,9 @@ void updateFrame() {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) 
 {
+	/*playSampleAudio();
+	return 0;*/
+
 	g_config = readConfigFile("config.ini");
 	GameRom *gameRom = readGameRom(g_config->romPath);
 
