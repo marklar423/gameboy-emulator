@@ -48,6 +48,9 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address >= RAM_LOCATION_HRAM && address <= RAM_LOCATION_HRAM_END)
 		return getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE);
 
+	else if (address >= RAM_LOCATION_SOUND_WAVE_PATTERN && address <= RAM_LOCATION_SOUND_WAVE_PATTERN_END)
+		return getArrayAddress(hardware->soundData->chan3_WaveData, address - RAM_LOCATION_SOUND_WAVE_PATTERN, SOUND_WAVE_PATTERN_SIZE);
+
 	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return &hardware->ioData->serialTransferData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_CONTROL) return &hardware->ioData->serialTransferControl;
@@ -55,7 +58,12 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_TIMER_COUNTER) return &hardware->timerData->counter;
 	else if (address == RAM_LOCATION_TIMER_MODULO) return &hardware->timerData->modulo;
 	else if (address == RAM_LOCATION_TIMER_CONTROL) return &hardware->timerData->control;
-	else if (address == RAM_LOCATION_SOUND_ON_OFF) return &hardware->soundData->soundOnOff;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_ONOFF) return &hardware->soundData->chan3_OnOff;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_LENGTH) return &hardware->soundData->chan3_Length;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return &hardware->soundData->chan3_Volume;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW) return &hardware->soundData->chan3_FrequencyLow;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan3_FrequencyHighSettings;
+	else if (address == RAM_LOCATION_SOUND_ONOFF) return &hardware->soundData->soundOnOff;
 	else if (address == RAM_LOCATION_LCD_CONTROL) return &hardware->videoData->lcdControl;
 	else if (address == RAM_LOCATION_LCD_STATUS) return &hardware->videoData->lcdStatus;
 	else if (address == RAM_LOCATION_SCROLL_Y) return &hardware->videoData->scrollY;

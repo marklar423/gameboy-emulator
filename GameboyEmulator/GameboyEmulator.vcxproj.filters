@@ -66,7 +66,10 @@
     <ClCompile Include="timer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="audio.c">
+    <ClCompile Include="gui_audio.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="sound_controller.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -122,7 +125,10 @@
     <ClInclude Include="timer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="audio.h">
+    <ClInclude Include="gui_audio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound_controller.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

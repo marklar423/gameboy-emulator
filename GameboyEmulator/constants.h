@@ -56,11 +56,11 @@ typedef enum _RamLocation {
 	RAM_LOCATION_SOUND_CHANNEL_2_Volume_Envelope = 0xFF17, //NR22 - Channel 2 Volume_Envelope
 	RAM_LOCATION_SOUND_CHANNEL_2_Frequency_lo_data = 0xFF18, //NR23 - Channel 2 Frequency_lo data 
 	RAM_LOCATION_SOUND_CHANNEL_2_Frequency_hi_data = 0xFF19, //NR24 - Channel 2 Frequency_hi data
-	RAM_LOCATION_SOUND_CHANNEL_3_Sound_on_off = 0xFF1A, //NR30 - Channel 3 Sound on/off
-	RAM_LOCATION_SOUND_CHANNEL_3_Sound_Length = 0xFF1B, //NR31 - Channel 3 Sound_Length
-	RAM_LOCATION_SOUND_CHANNEL_3_Select_output_level = 0xFF1C, //NR32 - Channel 3 Select output level
-	RAM_LOCATION_SOUND_CHANNEL_3_Frequency_lower_data  = 0xFF1D, //NR33 - Channel 3 Frequency's lower data
-	RAM_LOCATION_SOUND_CHANNEL_3_Frequency_higher_data = 0xFF1E, //NR34 - Channel 3 Frequency's higher data
+	RAM_LOCATION_SOUND_CHANNEL_3_ONOFF = 0xFF1A, //NR30 
+	RAM_LOCATION_SOUND_CHANNEL_3_LENGTH = 0xFF1B, //NR31
+	RAM_LOCATION_SOUND_CHANNEL_3_VOLUME = 0xFF1C, //NR32
+	RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW  = 0xFF1D, //NR33
+	RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS = 0xFF1E, //NR34
 	RAM_LOCATION_SOUND_WAVE_PATTERN = 0xFF30,
 	RAM_LOCATION_SOUND_WAVE_PATTERN_END = 0xFF3F,
 	RAM_LOCATION_SOUND_CHANNEL_4_Sound_Length = 0xFF20, //NR41 - Channel 4 Sound_Length
@@ -69,7 +69,7 @@ typedef enum _RamLocation {
 	RAM_LOCATION_SOUND_CHANNEL_4_Counter_consecutive_Inital = 0xFF23, //NR44 - Channel 4 Counter/consecutive, Inital
 	RAM_LOCATION_SOUND_CHANNEL_control_ON_OFF_Volume = 0xFF24, //NR50 - Channel control / ON-OFF / Volume
 	RAM_LOCATION_SOUND_Selection_of_Sound_output_terminal = 0xFF25, //NR51 - Selection of Sound output terminal
-	RAM_LOCATION_SOUND_ON_OFF = 0xFF26,
+	RAM_LOCATION_SOUND_ONOFF = 0xFF26,
 	RAM_LOCATION_LCD_CONTROL = 0xFF40,
 	RAM_LOCATION_LCD_STATUS = 0xFF41,
 	RAM_LOCATION_SCROLL_Y = 0xFF42,
@@ -130,6 +130,10 @@ typedef enum _PPUFlag {
 	PPU_FLAG_BG_ENABLE = 1 //0 = Off, 1 = On
 } PPUFlag;
 
+typedef enum _SoundFlag {
+	SOUND_FLAG_CHAN3_VOLUME_MASK = 0x60
+} SoundFlag;
+
 typedef enum _OAMIndex {
 	OAM_INDEX_POS_Y = 0,
 	OAM_INDEX_POS_X = 1,
@@ -188,6 +192,10 @@ typedef enum _TimerSpeed {
 #define PPU_CYCLES_PIXEL_TRANSFER 43
 #define PPU_CYCLES_HBLANK 51
 #define PPU_CYCLES_LINE_TOTAL 114
+
+#define SOUND_WAVE_PATTERN_SIZE 16
+#define CYCLES_PER_SOUND_TICK 1
+#define SOUND_SAMPLE_RATE 1048576
 
 #define TIMER_DIVIDER_CYCLES TIMER_SPEED_CYCLES_64
 #define CYCLES_PER_TIMER_TICK 4

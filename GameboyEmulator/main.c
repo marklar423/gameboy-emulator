@@ -8,13 +8,14 @@
 
 #include "constants.h"
 #include "gui.h"
-#include "audio.h"
+#include "gui_audio.h"
 #include "config.h"
 #include "game_rom.h"
 #include "cpu.h"
 #include "ppu.h"
 #include "ram.h"
 #include "timer.h"
+#include "sound_controller.h"
 
 static int numFrames = 0;
 
@@ -66,6 +67,11 @@ void updateFrame() {
 		tickPPU(g_hardware, i);
 
 		if (i % CYCLES_PER_TIMER_TICK == 0) tickTimer(g_hardware, CYCLES_PER_TIMER_TICK);
+
+		if (i % CYCLES_PER_SOUND_TICK == 0) {
+			float audioSample = tickSound(g_hardware);
+			insertGUIAudioBufferSample(audioSample);
+		}
 	}
 
 	//resetFrameStatus(hardware);
@@ -75,18 +81,19 @@ void updateFrame() {
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nShowCmd) 
 {
-	/*playSampleAudio();
-	return 0;*/
-
 	g_config = readConfigFile("config.ini");
 	GameRom *gameRom = readGameRom(g_config->romPath);
 
 	g_hardware = initCPU(gameRom, true);
 	g_mappings = initInstructionMappings(g_hardware);
 
+	initGUIAudio(1, SOUND_SAMPLE_RATE);
+
 	createGUIWindow();
 	setGUICallbacks(updateFrame, drawFrame);
 	runMainLoop(TARGET_FPS);
+
+	disposeGUIAudio();
 
 	return 0;
 }

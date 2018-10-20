@@ -129,7 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="audio.c" />
+    <ClCompile Include="gui_audio.c" />
     <ClCompile Include="config.c" />
     <ClCompile Include="cpu.c" />
     <ClCompile Include="cpu_alu.c" />
@@ -145,11 +145,12 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="objects.c" />
     <ClCompile Include="ppu.c" />
+    <ClCompile Include="sound_controller.c" />
     <ClCompile Include="timer.c" />
     <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="audio.h" />
+    <ClInclude Include="gui_audio.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="cpu.h" />
     <ClInclude Include="constants.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="game_rom.h" />
     <ClInclude Include="objects.h" />
     <ClInclude Include="ppu.h" />
+    <ClInclude Include="sound_controller.h" />
     <ClInclude Include="timer.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
