@@ -70,7 +70,7 @@ void updateFrame() {
 
 		if (i % CYCLES_PER_SOUND_TICK == 0) {
 			float audioSample = tickSound(g_hardware);
-			insertGUIAudioBufferSample(audioSample);
+			writeGUIAudioBuffer(audioSample);
 		}
 	}
 
@@ -87,7 +87,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	g_hardware = initCPU(gameRom, true);
 	g_mappings = initInstructionMappings(g_hardware);
 
-	initGUIAudio(1, SOUND_SAMPLE_RATE);
+	initSound();
+	initGUIAudio(AUDIO_BUFFER_SIZE, SOUND_SAMPLE_RATE);
 
 	createGUIWindow();
 	setGUICallbacks(updateFrame, drawFrame);

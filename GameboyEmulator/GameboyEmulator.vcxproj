@@ -162,6 +162,7 @@
     <ClInclude Include="cpu_load.h" />
     <ClInclude Include="gui.h" />
     <ClInclude Include="ini.h" />
+    <ClInclude Include="mutex.h" />
     <ClInclude Include="ram.h" />
     <ClInclude Include="game_rom.h" />
     <ClInclude Include="objects.h" />

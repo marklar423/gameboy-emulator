@@ -1,13 +1,15 @@
 
-#include "gui_audio.h"
 #include <soundio.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
 #include <intrin.h>
+
+#include "gui_audio.h"
+#include "mutex.h"
+#include "constants.h"
 
 typedef struct _AudioBufferItem {
 	void *next;
@@ -17,64 +19,62 @@ typedef struct _AudioBufferItem {
 static struct SoundIo *g_soundio;
 static struct SoundIoDevice *g_device;
 static struct SoundIoOutStream *g_outstream;
-static AudioBufferItem *g_audioBufferHead = NULL, *g_audioBufferEnd = NULL;
-static AudioBufferItem *g_unusedBufferHead = NULL;
-static int g_bufferSampleRate;
 
-static const float PI = 3.1415926535f;
-static float seconds_offset = 0.0f;
+static AudioBufferItem *g_audioBufferRead = NULL, *g_audioBufferWrite = NULL;
 
-static float pitch = 50.0f;
-static float start_pitch = 50.0f;
-static float end_pitch = 500.0f;
-float sweep_seconds = 3.0f;
-bool reverse_sweep = false;
+static int g_bufferSize, g_itemsInBuffer = 0, g_bufferSampleRate;
+static MUTEX g_bufferMutex;
+
 
 void initBuffer(int bufferSize) {
-	AudioBufferItem *list = calloc(bufferSize, sizeof(AudioBufferItem));
-	g_unusedBufferHead = list;
-	
-	for (int i = 0; i < bufferSize - 1; i++) {
-		list[i].next = &list[i + 1];
+	g_bufferSize = bufferSize;
+
+	AudioBufferItem *lastItem = NULL, *firstItem = NULL;
+	AudioBufferItem *items = calloc(bufferSize, sizeof(AudioBufferItem));
+
+	for (int i = 0; i < bufferSize; i++) {
+		AudioBufferItem *item = (items + i);
+		item->next = lastItem;
+		lastItem = item;
+		if (!firstItem) firstItem = item;
 	}
+
+	g_audioBufferRead = g_audioBufferWrite = lastItem;
+	firstItem->next = lastItem; //make the buffer circular
 }
 
-AudioBufferItem * allocBufferItem() {
-	if (g_unusedBufferHead == NULL) g_unusedBufferHead = malloc(sizeof(AudioBufferItem));
-	AudioBufferItem *item = g_unusedBufferHead;
-	g_unusedBufferHead = g_unusedBufferHead->next;
-	item->sample = 0.0f;
-	item->next = NULL;
-	return item;
+
+bool writeGUIAudioBuffer(float sample) {
+	bool success = false;
+
+	if (g_itemsInBuffer < g_bufferSize) {
+		g_audioBufferWrite->sample = sample;
+		g_audioBufferWrite = g_audioBufferWrite->next;
+
+		TAKE_MUTEX(g_bufferMutex);
+		g_itemsInBuffer++;
+		RELEASE_MUTEX(g_bufferMutex);
+
+		success = true;
+	}
+
+	return success;
 }
 
-void freeBufferItem(AudioBufferItem *bufferItem) {
-	bufferItem->next = g_unusedBufferHead;
-	g_unusedBufferHead = bufferItem;
-}
-
-void insertGUIAudioBufferSample(float sample) {
-	AudioBufferItem *item = allocBufferItem();
-	item->sample = sample;
-
-	if (g_audioBufferHead == NULL) 
-		g_audioBufferHead = g_audioBufferEnd = item;
-	else 
-		g_audioBufferEnd->next = item;
-}
-
-float popBufferSample() {
+float readGUIAudioBuffer() {
 	float sample = 0.0f;
-	if (g_audioBufferHead != NULL) {
-		AudioBufferItem *item = g_audioBufferHead;
 
-		if (item == g_audioBufferEnd) g_audioBufferEnd = NULL;
-		g_audioBufferHead = g_audioBufferHead->next;
 
-		sample = item->sample;
-		
-		freeBufferItem(item);
+	if (g_itemsInBuffer) {
+		sample = g_audioBufferRead->sample;
+		g_audioBufferRead = g_audioBufferRead->next;
+
+		TAKE_MUTEX(g_bufferMutex);
+		g_itemsInBuffer--;
+		RELEASE_MUTEX(g_bufferMutex);
 	}
+
+
 	return sample;
 }
 
@@ -82,79 +82,45 @@ float popBufferSample() {
 static void writeAudioCallback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max)
 {
 	const struct SoundIoChannelLayout *layout = &outstream->layout;
-	float float_sample_rate = outstream->sample_rate;
-	float seconds_per_frame = 1.0f / float_sample_rate;
 	struct SoundIoChannelArea *areas;
-	int frames_left = frame_count_max;
+	int max_frames_left = frame_count_max;
 	int err;
 
-
-
-	float total_inc = end_pitch - start_pitch;
-	float inc_per_second = total_inc / sweep_seconds;
-	float inc_per_frame = inc_per_second * seconds_per_frame;
-
-	while (frames_left > 0) {
-		int frame_count = frames_left;
+	
+	while (max_frames_left > 0) {
+		int frame_count = min(g_itemsInBuffer, frame_count_max);
 
 		if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
-			fprintf(stderr, "%s\n", soundio_strerror(err));
-			exit(1);
+			fprintf(stderr, "%s\n", soundio_strerror(err));			
 		}
 
 		if (!frame_count) break;
+				
+		for (int frame = 0; frame < frame_count; frame++) {
 
-
-		float radians_per_second = pitch * 2.0f * PI;
-
-		int wave_frame = 0;
-
-		for (int frame = 0; frame < frame_count; frame += 1) {
-			float frames_per_cycle = float_sample_rate / pitch;
-			float duty_cycles = 0.5;
-			float high_frames = frames_per_cycle * duty_cycles;
-			float low_frames = frames_per_cycle - high_frames;
-			float volume = 0.05f;
-
-			float sample = popBufferSample(); //sinf((seconds_offset + frame * seconds_per_frame) * radians_per_second);
-			sample = 1.0f;
-
-			if (wave_frame++ > high_frames) {
-				if (wave_frame < frames_per_cycle)
-					sample = -1.0f;
-				else
-					wave_frame = 0;
-			}
-			
-			sample *= volume;
+			float sample = readGUIAudioBuffer();
 
 			for (int channel = 0; channel < layout->channel_count; channel += 1) {
 				float *ptr = (float*)(areas[channel].ptr + areas[channel].step * frame);
 				*ptr = sample;
 			}
-
-			if (!reverse_sweep) {
-				if (pitch < end_pitch) pitch += inc_per_frame;
-				else reverse_sweep = true;				
-			}
-			else {
-				if (pitch > start_pitch) pitch -= inc_per_frame;
-				else reverse_sweep = false;
-			}
 		}
 
-		seconds_offset = fmodf(seconds_offset + seconds_per_frame * frame_count, 1.0f);
 
 		if ((err = soundio_outstream_end_write(outstream))) {
 			fprintf(stderr, "%s\n", soundio_strerror(err));
-			exit(1);
 		}
 
-		frames_left -= frame_count;
+		max_frames_left -= frame_count;
 	}
 }
 
 void initGUIAudio(int bufferSize, int bufferSampleRate) {
+
+	initBuffer(bufferSize);
+	g_bufferSampleRate = bufferSampleRate;
+	g_bufferMutex = CREATE_MUTEX();
+
 	int err;
 	g_soundio = soundio_create();
 	if (!g_soundio) {
@@ -186,6 +152,7 @@ void initGUIAudio(int bufferSize, int bufferSampleRate) {
 	g_outstream = soundio_outstream_create(g_device);
 	g_outstream->format = SoundIoFormatFloat32NE;
 	g_outstream->write_callback = writeAudioCallback;
+	g_outstream->sample_rate = SOUND_SAMPLE_RATE;
 
 	if ((err = soundio_outstream_open(g_outstream))) {
 		fprintf(stderr, "unable to open device: %s", soundio_strerror(err));
@@ -200,9 +167,6 @@ void initGUIAudio(int bufferSize, int bufferSampleRate) {
 		return 1;
 	}
 
-	initBuffer(bufferSize);
-	g_bufferSampleRate = bufferSampleRate;
-
 	/*for (;;)
 		soundio_wait_events(soundio);
 	*/
@@ -212,4 +176,5 @@ void disposeGUIAudio() {
 	soundio_outstream_destroy(g_outstream);
 	soundio_device_unref(g_device);
 	soundio_destroy(g_soundio);
+	DISPOSE_MUTEX(g_bufferMutex);
 }
