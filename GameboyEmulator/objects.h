@@ -38,9 +38,11 @@ typedef struct _VideoData {
 
 typedef struct _SoundData {
 	unsigned char soundOnOff;
+
 	unsigned char chan3_OnOff, chan3_Length, chan3_Volume;
 	unsigned char chan3_FrequencyLow, chan3_FrequencyHighSettings;
 	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_SIZE];
+	int chan3_currentTick;
 } SoundData;
 
 typedef struct _TimerData {

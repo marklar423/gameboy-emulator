@@ -88,7 +88,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	g_mappings = initInstructionMappings(g_hardware);
 
 	initSound();
-	initGUIAudio(AUDIO_BUFFER_SIZE, SOUND_SAMPLE_RATE);
+	initGUIAudio(AUDIO_BUFFER_SIZE, AUDIO_SAMPLE_RATE);
 
 	createGUIWindow();
 	setGUICallbacks(updateFrame, drawFrame);

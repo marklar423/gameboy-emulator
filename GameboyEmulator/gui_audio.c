@@ -152,7 +152,7 @@ void initGUIAudio(int bufferSize, int bufferSampleRate) {
 	g_outstream = soundio_outstream_create(g_device);
 	g_outstream->format = SoundIoFormatFloat32NE;
 	g_outstream->write_callback = writeAudioCallback;
-	g_outstream->sample_rate = SOUND_SAMPLE_RATE;
+	g_outstream->sample_rate = AUDIO_SAMPLE_RATE;
 
 	if ((err = soundio_outstream_open(g_outstream))) {
 		fprintf(stderr, "unable to open device: %s", soundio_strerror(err));

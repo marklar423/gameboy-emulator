@@ -144,6 +144,10 @@ void writeLocation(Hardware *hardware, unsigned char *location, unsigned char va
 		*location = (value & 0x30) | (*location & 0xCF);
 		setJoypadDataState(hardware);
 	}
+	else if (location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_SIZE - 1]) {
+		*location = value;
+		hardware->soundData->chan3_currentTick = 1;
+	}
 	else if (location == &hardware->registers->F) {
 		//bits 0-3 are always zero
 		*location = (value & 0xF0);
