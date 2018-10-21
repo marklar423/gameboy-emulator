@@ -69,7 +69,7 @@ float tickSound(Hardware *hardware) {
 		
 		bool useHighBits =  (sampleIndex % 2 == 0);
 		if (useHighBits) sample4Bit = (sampleCombined & 0xF0) >> 4;
-		else sample4Bit = sampleCombined & 0xF0;
+		else sample4Bit = sampleCombined & 0x0F;
 		
 		sample = sample4Bit / 15.0f;
 
