@@ -6,7 +6,7 @@
 #include "util.h"
 #include "cpu_interrupts.h"
 
-static unsigned char TODO = 0;
+static unsigned char TODO = 0xFF;
 
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize);
 
@@ -58,6 +58,15 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_TIMER_COUNTER) return &hardware->timerData->counter;
 	else if (address == RAM_LOCATION_TIMER_MODULO) return &hardware->timerData->modulo;
 	else if (address == RAM_LOCATION_TIMER_CONTROL) return &hardware->timerData->control;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP) return &hardware->soundData->chan1_FrequencySweep;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_PATTERN_LENGTH) return &hardware->soundData->chan1_PatternLength;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_VOLUME_SWEEP) return &hardware->soundData->chan1_VolumeSweep;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_LOW) return &hardware->soundData->chan1_FrequencyLow;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan1_FrequencyHighSettings;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_PATTERN_LENGTH) return &hardware->soundData->chan2_PatternLength;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_VOLUME_SWEEP) return &hardware->soundData->chan2_VolumeSweep;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_LOW) return &hardware->soundData->chan2_FrequencyLow;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan2_FrequencyHighSettings;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_ONOFF) return &hardware->soundData->chan3_OnOff;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_LENGTH) return &hardware->soundData->chan3_Length;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return &hardware->soundData->chan3_Volume;
@@ -80,7 +89,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_INTERRUPTS_ENABLE)  return &hardware->registers->enabledInterrupts;
 
 	//todo:
-	else if ((address >= RAM_LOCATION_SOUND_CHANNEL_1_Sweep_register && address <= RAM_LOCATION_SOUND_Selection_of_Sound_output_terminal) 
+	else if ((address >= RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP && address <= RAM_LOCATION_SOUND_Selection_of_Sound_output_terminal) 
 				|| (address >= RAM_LOCATION_UNUSABLE && RAM_LOCATION_UNUSABLE_END <= RAM_LOCATION_UNUSABLE_END))
 		return &TODO;
 

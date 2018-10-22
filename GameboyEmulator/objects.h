@@ -39,6 +39,12 @@ typedef struct _VideoData {
 typedef struct _SoundData {
 	unsigned char soundOnOff;
 
+	unsigned char chan1_FrequencySweep, chan1_PatternLength, chan1_VolumeSweep;
+	unsigned char chan1_FrequencyLow, chan1_FrequencyHighSettings;
+
+	unsigned char chan2_PatternLength, chan2_VolumeSweep;
+	unsigned char chan2_FrequencyLow, chan2_FrequencyHighSettings;
+
 	unsigned char chan3_OnOff, chan3_Length, chan3_Volume;
 	unsigned char chan3_FrequencyLow, chan3_FrequencyHighSettings;
 	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_SIZE];

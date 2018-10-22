@@ -2,6 +2,11 @@
 #include "sound_controller.h"
 #include "util.h"
 
+float getChannel1Sample(SoundData *soundData);
+float getChannel2Sample(SoundData *soundData);
+float getChannel3Sample(SoundData *soundData);
+float getChannel4Sample(SoundData *soundData);
+
 /*static float pitch = 50.0f;
 static float start_pitch = 50.0f;
 static float end_pitch = 500.0f;
@@ -18,6 +23,54 @@ void initSound() {
 	total_inc = end_pitch - start_pitch;
 	inc_per_second = total_inc / sweep_seconds;
 	inc_per_frame = inc_per_second * seconds_per_frame;*/
+}
+
+
+float tickSound(Hardware *hardware) {
+	SoundData *soundData = hardware->soundData;
+
+	float sample1 = getChannel1Sample(soundData);
+	float sample2 = getChannel2Sample(soundData);
+	float sample3 = getChannel3Sample(soundData);
+	float sample4 = getChannel4Sample(soundData);
+
+	float mixedSample = sample1 + sample2 + sample3 + sample4;
+
+	return mixedSample;
+}
+
+float getChannel1Sample(SoundData *soundData) {
+	/*float float_sample_rate = AUDIO_SAMPLE_RATE;
+	float frames_per_cycle = float_sample_rate / pitch;
+	float duty_cycles = 0.5;
+	float high_frames = frames_per_cycle * duty_cycles;
+	float low_frames = frames_per_cycle - high_frames;
+	float volume = 0.05f;
+
+
+	if (wave_frame++ > high_frames) {
+	if (wave_frame < frames_per_cycle)
+	sample = -1.0f;
+	else
+	wave_frame = 0;
+	}
+
+	sample *= volume;
+
+	if (!reverse_sweep) {
+	if (pitch < end_pitch) pitch += inc_per_frame;
+	else reverse_sweep = true;
+	}
+	else {
+	if (pitch > start_pitch) pitch -= inc_per_frame;
+	else reverse_sweep = false;
+	}*/
+
+	return 0.0f;
+}
+
+float getChannel2Sample(SoundData *soundData) {
+	return 0.0f;
 }
 
 float getChannel3Sample(SoundData *soundData) {
@@ -57,38 +110,6 @@ float getChannel3Sample(SoundData *soundData) {
 	return sample;
 }
 
-float tickSound(Hardware *hardware) {
-	float sample = 0.0f;
-
-	/*float float_sample_rate = AUDIO_SAMPLE_RATE;
-	float frames_per_cycle = float_sample_rate / pitch;
-	float duty_cycles = 0.5;
-	float high_frames = frames_per_cycle * duty_cycles;
-	float low_frames = frames_per_cycle - high_frames;
-	float volume = 0.05f;
-
-
-	if (wave_frame++ > high_frames) {
-		if (wave_frame < frames_per_cycle)
-			sample = -1.0f;
-		else
-			wave_frame = 0;
-	}
-
-	sample *= volume;
-	
-	if (!reverse_sweep) {
-		if (pitch < end_pitch) pitch += inc_per_frame;
-		else reverse_sweep = true;
-	}
-	else {
-		if (pitch > start_pitch) pitch -= inc_per_frame;
-		else reverse_sweep = false;
-	}*/
-
-	SoundData *soundData = hardware->soundData;
-
-	sample = getChannel3Sample(soundData);
-
-	return sample;
+float getChannel4Sample(SoundData *soundData) {
+	return 0.0f;
 }
