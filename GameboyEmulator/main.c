@@ -58,7 +58,7 @@ void drawFrame() {
 
 
 void updateFrame() {		
-	clearFramePixels(g_hardware);
+	//clearFramePixels(g_hardware);
 	getInputState(g_hardware->inputState);
 	setJoypadDataState(g_hardware);
 	
@@ -87,7 +87,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	g_hardware = initCPU(gameRom, true);
 	g_mappings = initInstructionMappings(g_hardware);
 
-	initSound();
 	initGUIAudio(AUDIO_BUFFER_SIZE, AUDIO_SAMPLE_RATE);
 
 	createGUIWindow();

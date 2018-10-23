@@ -41,13 +41,15 @@ typedef struct _SoundData {
 
 	unsigned char chan1_FrequencySweep, chan1_PatternLength, chan1_VolumeSweep;
 	unsigned char chan1_FrequencyLow, chan1_FrequencyHighSettings;
+	int chan1_currentTick;
 
 	unsigned char chan2_PatternLength, chan2_VolumeSweep;
 	unsigned char chan2_FrequencyLow, chan2_FrequencyHighSettings;
+	int chan2_currentTick;
 
 	unsigned char chan3_OnOff, chan3_Length, chan3_Volume;
 	unsigned char chan3_FrequencyLow, chan3_FrequencyHighSettings;
-	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_SIZE];
+	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_BYTES];
 	int chan3_currentTick;
 } SoundData;
 

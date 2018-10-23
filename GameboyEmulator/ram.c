@@ -49,7 +49,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 		return getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE);
 
 	else if (address >= RAM_LOCATION_SOUND_WAVE_PATTERN && address <= RAM_LOCATION_SOUND_WAVE_PATTERN_END)
-		return getArrayAddress(hardware->soundData->chan3_WaveData, address - RAM_LOCATION_SOUND_WAVE_PATTERN, SOUND_WAVE_PATTERN_SIZE);
+		return getArrayAddress(hardware->soundData->chan3_WaveData, address - RAM_LOCATION_SOUND_WAVE_PATTERN, SOUND_WAVE_PATTERN_BYTES);
 
 	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadData;
 	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return &hardware->ioData->serialTransferData;
@@ -153,7 +153,7 @@ void writeLocation(Hardware *hardware, unsigned char *location, unsigned char va
 		*location = (value & 0x30) | (*location & 0xCF);
 		setJoypadDataState(hardware);
 	}
-	else if (location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_SIZE - 1]) {
+	else if (location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_BYTES - 1]) {
 		*location = value;
 		hardware->soundData->chan3_currentTick = 1;
 	}
