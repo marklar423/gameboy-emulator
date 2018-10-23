@@ -2,20 +2,24 @@
 #include "sound_controller.h"
 #include "util.h"
 
-float getChannel1Sample(SoundData *soundData);
-float getChannel2Sample(SoundData *soundData);
+float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyHighSettings, 
+							unsigned char patternLength, unsigned char volumeSweep, int* tick);
 float getChannel3Sample(SoundData *soundData);
 float getChannel4Sample(SoundData *soundData);
 
-float getPulseVolume(unsigned char pulseVolumeRegister);
+float getPulseVolume(unsigned char pulseVolumeSweepRegister, int tick);
 float getPulseDutyPercentage(unsigned char pulseDuty);
 float getFrequency(unsigned char frequencyLow, unsigned char frequencyHigh);
 
 float tickSound(Hardware *hardware) {
 	SoundData *soundData = hardware->soundData;
 
-	float sample1 = getChannel1Sample(soundData);
-	float sample2 = getChannel2Sample(soundData);
+	float sample1 = getPulseChannelSample(soundData->chan1_FrequencyLow, soundData->chan1_FrequencyHighSettings,
+											soundData->chan1_PatternLength, soundData->chan1_VolumeSweep, &soundData->chan1_currentTick);
+
+	float sample2 = getPulseChannelSample(soundData->chan2_FrequencyLow, soundData->chan2_FrequencyHighSettings,
+											soundData->chan2_PatternLength, soundData->chan2_VolumeSweep, &soundData->chan2_currentTick);
+
 	float sample3 = getChannel3Sample(soundData);
 	float sample4 = getChannel4Sample(soundData);
 
@@ -24,66 +28,50 @@ float tickSound(Hardware *hardware) {
 	return mixedSample;
 }
 
-float getChannel1Sample(SoundData *soundData) {
+float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyHighSettings,
+							unsigned char patternLength, unsigned char volumeSweep, int* tick) {
 	float sample = 0.0f;
-	float volume = getPulseVolume(soundData->chan1_VolumeSweep);
+	float volume = getPulseVolume(volumeSweep, *tick);
 
 	if (volume) {
-		float frequency = getFrequency(soundData->chan1_FrequencyLow, soundData->chan1_FrequencyHighSettings);
+		float frequency = getFrequency(frequencyLow, frequencyHighSettings);
 
 		float sampleRate = AUDIO_SAMPLE_RATE;
 		float framesPerWave = sampleRate / frequency;
-		float dutyCycles = getPulseDutyPercentage(soundData->chan1_PatternLength);
+		float dutyCycles = getPulseDutyPercentage(patternLength);
 		float highSamples = framesPerWave * dutyCycles;
 
-		int currentTick = soundData->chan1_currentTick;
+		int currentTick = *tick;
 		int waveIndex = (currentTick % (int)framesPerWave);
 
 		if (waveIndex < highSamples) sample = 1.0f;
 
 		sample *= volume;
 
-		soundData->chan1_currentTick++;
+		*tick += 1;
 	}
 	else {
-		soundData->chan1_currentTick = 1;
+		*tick = 1;
 	}
 
 
 	return sample;
 }
 
-float getChannel2Sample(SoundData *soundData) {
-	float sample = 0.0f;
-	float volume = getPulseVolume(soundData->chan2_VolumeSweep);
 
-	if (volume) {
-		float frequency = getFrequency(soundData->chan2_FrequencyLow, soundData->chan2_FrequencyHighSettings);
+float getPulseVolume(unsigned char pulseVolumeSweepRegister, int tick) {
+	float volume = pulseVolumeSweepRegister & SOUND_MASK_PULSE_VOLUME;
+	
+	int volumeStepNumber = pulseVolumeSweepRegister & SOUND_MASK_PULSE_VOLUME_SWEEP_STEP;
 
-		float sampleRate = AUDIO_SAMPLE_RATE;
-		float framesPerWave = sampleRate / frequency;
-		float dutyCycles = getPulseDutyPercentage(soundData->chan2_PatternLength);
-		float highSamples = framesPerWave * dutyCycles;
+	if (volumeStepNumber && (volumeStepNumber % tick == 0)) {		
+		if (pulseVolumeSweepRegister & SOUND_MASK_PULSE_VOLUME_SWEEP_INCREASE)
+			if (volume < 0xF0) volume += 0x10;
+		else 
+			if (volume > 0x00) volume -= 0x10;
 		
-		int currentTick = soundData->chan2_currentTick;
-		int waveIndex = (currentTick % (int)framesPerWave);
-		
-		if (waveIndex < highSamples) sample = 1.0f;
-
-		sample *= volume;
-
-		soundData->chan2_currentTick++;
-	}
-	else {
-		soundData->chan2_currentTick = 1;
 	}
 
-
-	return sample;
-}
-
-float getPulseVolume(unsigned char pulseVolumeRegister) {
-	float volume = pulseVolumeRegister & SOUND_MASK_PULSE_VOLUME;
 	return volume / 0xF0;
 }
 
