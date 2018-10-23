@@ -69,8 +69,8 @@ void updateFrame() {
 		if (i % CYCLES_PER_TIMER_TICK == 0) tickTimer(g_hardware, CYCLES_PER_TIMER_TICK);
 
 		if (i % CYCLES_PER_SOUND_TICK == 0) {
-			float audioSample = tickSound(g_hardware);
-			writeGUIAudioBuffer(audioSample);
+			AudioSample audioSample = tickSound(g_hardware);
+			writeGUIAudioBuffer(audioSample.leftSample, audioSample.rightSample);
 		}
 	}
 

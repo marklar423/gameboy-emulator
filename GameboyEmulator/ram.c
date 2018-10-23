@@ -72,7 +72,9 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return &hardware->soundData->chan3_Volume;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW) return &hardware->soundData->chan3_FrequencyLow;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan3_FrequencyHighSettings;
-	else if (address == RAM_LOCATION_SOUND_ONOFF) return &hardware->soundData->soundOnOff;
+	else if (address == RAM_LOCATION_SOUND_MASTER_LR_VOLUME) return &hardware->soundData->masterVolume;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) return &hardware->soundData->channelLeftRightEnable;
+	else if (address == RAM_LOCATION_SOUND_ENABLE) return &hardware->soundData->soundEnable;
 	else if (address == RAM_LOCATION_LCD_CONTROL) return &hardware->videoData->lcdControl;
 	else if (address == RAM_LOCATION_LCD_STATUS) return &hardware->videoData->lcdStatus;
 	else if (address == RAM_LOCATION_SCROLL_Y) return &hardware->videoData->scrollY;
@@ -89,7 +91,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_INTERRUPTS_ENABLE)  return &hardware->registers->enabledInterrupts;
 
 	//todo:
-	else if ((address >= RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP && address <= RAM_LOCATION_SOUND_Selection_of_Sound_output_terminal) 
+	else if ((address >= RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP && address <= RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) 
 				|| (address >= RAM_LOCATION_UNUSABLE && RAM_LOCATION_UNUSABLE_END <= RAM_LOCATION_UNUSABLE_END))
 		return &TODO;
 

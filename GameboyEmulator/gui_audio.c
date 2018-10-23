@@ -10,10 +10,11 @@
 #include "gui_audio.h"
 #include "mutex.h"
 #include "constants.h"
+#include "objects.h"
 
 typedef struct _AudioBufferItem {
 	void *next;
-	float sample;
+	AudioSample sample;
 } AudioBufferItem;
 
 static struct SoundIo *g_soundio;
@@ -44,10 +45,14 @@ void initBuffer(int bufferSize) {
 }
 
 
-bool writeGUIAudioBuffer(float sample) {
+bool writeGUIAudioBuffer(float leftSample, float rightSample) {
 	bool success = false;
 
 	if (g_itemsInBuffer < g_bufferSize) {
+		AudioSample sample;
+		sample.leftSample = leftSample;
+		sample.rightSample = rightSample;
+
 		g_audioBufferWrite->sample = sample;
 		g_audioBufferWrite = g_audioBufferWrite->next;
 
@@ -61,8 +66,8 @@ bool writeGUIAudioBuffer(float sample) {
 	return success;
 }
 
-float readGUIAudioBuffer() {
-	float sample = 0.0f;
+AudioSample readGUIAudioBuffer() {
+	AudioSample sample;
 
 
 	if (g_itemsInBuffer) {
@@ -98,11 +103,15 @@ static void writeAudioCallback(struct SoundIoOutStream *outstream, int frame_cou
 				
 		for (int frame = 0; frame < frame_count; frame++) {
 
-			float sample = readGUIAudioBuffer();
+			AudioSample sample = readGUIAudioBuffer();
 
 			for (int channel = 0; channel < layout->channel_count; channel += 1) {
 				float *ptr = (float*)(areas[channel].ptr + areas[channel].step * frame);
-				*ptr = sample;
+
+				if (layout->channels[channel] == SoundIoChannelIdFrontLeft)
+					*ptr = sample.leftSample;
+				else if (layout->channels[channel] == SoundIoChannelIdFrontRight)
+					*ptr = sample.rightSample;
 			}
 		}
 

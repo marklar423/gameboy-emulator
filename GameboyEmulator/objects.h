@@ -36,8 +36,12 @@ typedef struct _VideoData {
 	PixelColor framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]; //2D array, framePixels[y][x], size is framePixels[SCREEN_HEIGHT][SCREEN_WIDTH]
 } VideoData;
 
+typedef struct _AudioSample {
+	float leftSample, rightSample;
+} AudioSample;
+
 typedef struct _SoundData {
-	unsigned char soundOnOff;
+	unsigned char masterVolume, channelLeftRightEnable, soundEnable;
 
 	unsigned char chan1_FrequencySweep, chan1_PatternLength, chan1_VolumeSweep;
 	unsigned char chan1_FrequencyLow, chan1_FrequencyHighSettings;

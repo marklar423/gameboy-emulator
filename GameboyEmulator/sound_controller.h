@@ -3,4 +3,4 @@
 
 #pragma once
 
-float tickSound(Hardware *hardware);
+AudioSample tickSound(Hardware *hardware);

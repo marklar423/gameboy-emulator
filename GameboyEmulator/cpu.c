@@ -42,25 +42,25 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 
 		/**(hardware->ramAddresses[0xFF05)) = 0x00; //TIMA
 		*(hardware->ramAddresses[0xFF06)) = 0x00; //TMA
-		*(hardware->ramAddresses[0xFF07)) = 0x00; //TAC
-		*(hardware->ramAddresses[0xFF10)) = 0x80; //NR10
-		*(hardware->ramAddresses[0xFF11)) = 0xBF; //NR11
-		*(hardware->ramAddresses[0xFF12)) = 0xF3; //NR12
-		*(hardware->ramAddresses[0xFF14)) = 0xBF; //NR14
-		*(hardware->ramAddresses[0xFF16)) = 0x3F; //NR21
-		*(hardware->ramAddresses[0xFF17)) = 0x00; //NR22
-		*(hardware->ramAddresses[0xFF19)) = 0xBF; //NR24*/
+		*(hardware->ramAddresses[0xFF07)) = 0x00; //TAC*/
+		/*hardware->soundData->chan1_FrequencySweep = 0x80; //NR10
+		hardware->soundData->chan1_PatternLength = 0xBF; //NR11
+		hardware->soundData->chan1_VolumeSweep = 0xF3; //NR12
+		hardware->soundData->chan1_FrequencyHighSettings = 0xBF; //NR14
+		hardware->soundData->chan2_PatternLength = 0x3F; //NR21
+		hardware->soundData->chan2_VolumeSweep = 0x00; //NR22
+		hardware->soundData->chan2_FrequencyHighSettings = 0xBF; //NR24
 		hardware->soundData->chan3_OnOff = 0x7F; //NR30
 		hardware->soundData->chan3_Length = 0xFF; //NR31
 		hardware->soundData->chan3_Volume = 0x9F; //NR32
-		hardware->soundData->chan3_FrequencyLow = 0xBF; //NR33
-		/**(hardware->ramAddresses[0xFF20)) = 0xFF; //NR41
+		hardware->soundData->chan3_FrequencyLow = 0xBF; //NR33*/
+		/*(hardware->ramAddresses[0xFF20)) = 0xFF; //NR41
 		*(hardware->ramAddresses[0xFF21)) = 0x00; //NR42
 		*(hardware->ramAddresses[0xFF22)) = 0x00; //NR43
-		*(hardware->ramAddresses[0xFF23)) = 0xBF; //NR30
-		*(hardware->ramAddresses[0xFF24)) = 0x77; //NR50
-		*(hardware->ramAddresses[0xFF25)) = 0xF3; //NR51 */
-		hardware->soundData->soundOnOff = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
+		*(hardware->ramAddresses[0xFF23)) = 0xBF; //NR30*/
+		hardware->soundData->masterVolume = 0x77; //NR50
+		hardware->soundData->channelLeftRightEnable = 0xF3; //NR51 
+		hardware->soundData->soundEnable = 0xF1; //0xF1 - GB, 0xF0 - SGB; NR52
 		hardware->videoData->lcdControl = 0x91;
 		hardware->videoData->lcdStatus = 0x1;
 		hardware->videoData->scrollY = 0x00;
@@ -75,6 +75,10 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 		hardware->registers->enabledInterrupts = 0x00;
 		hardware->ioData->joypadData = 0xCF;
 		hardware->timerData->control = 0xF8;
+
+		hardware->soundData->chan1_currentTick =
+			hardware->soundData->chan2_currentTick =
+			hardware->soundData->chan3_currentTick = 1;
 
 		populateRamAddresses(hardware);
 	}
@@ -123,6 +127,8 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 		hardware->cpuCyclesToWait--;
 	}
 }
+
+int debugaddress = -1;// 0x7cb; //0x241
 
 void processInstruction(Hardware *hardware, InstructionMapping *mapping, int instruction) {
 	//get the operation size to calculate the next PC address
@@ -181,6 +187,11 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 		default:
 			populateComputedValues(hardware, nextPCAddressValue);
+
+			if (hardware->registers->PC == debugaddress) __debugbreak();
+
+			//if (hardware->registers->PC == 0xC2B6) __debugbreak();
+			//if (instruction == OpCode_SCF) __debugbreak();
 
 			//get the operands
 			operand1 = mapping->operand1;
