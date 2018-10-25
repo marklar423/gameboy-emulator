@@ -163,6 +163,9 @@ float getChannel4Sample(SoundData *soundData) {
 			sample = soundData->chan4_lastSample;
 		}
 	}
+	else {
+		soundData->chan4_lastRNGValue = 1;
+	}
 
 	soundData->chan4_currentTick++;
 	
@@ -170,10 +173,8 @@ float getChannel4Sample(SoundData *soundData) {
 }
 
 int getChannel4Rand(int lastRandom, bool sevenBitMode) {
-	int newRandom = (lastRandom ? lastRandom : 1);
-	bool flipHighBits = (newRandom & 1) ^ ((newRandom & 2) >> 1);
-	
-	newRandom = newRandom >> 1;
+	int newRandom = lastRandom >> 1;
+	bool flipHighBits = (lastRandom ^ newRandom) & 1;
 
 	if (flipHighBits) {
 		if (sevenBitMode)
