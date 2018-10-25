@@ -2,6 +2,7 @@
 #include "sound_controller.h"
 #include "util.h"
 
+
 float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyHighSettings, 
 							unsigned char patternLength, unsigned char volumeSweep, int* tick);
 float getChannel3Sample(SoundData *soundData);
@@ -10,6 +11,7 @@ float getChannel4Sample(SoundData *soundData);
 float getPulseVolume(unsigned char pulseVolumeSweepRegister, int tick);
 float getPulseDutyPercentage(unsigned char pulseDuty);
 float getFrequency(unsigned char frequencyLow, unsigned char frequencyHigh);
+int getChannel4Rand(int lastRandom, bool sevenBitMode);
 
 AudioSample tickSound(Hardware *hardware) {
 	SoundData *soundData = hardware->soundData;
@@ -26,21 +28,21 @@ AudioSample tickSound(Hardware *hardware) {
 		float sample3 = getChannel3Sample(soundData);
 		float sample4 = getChannel4Sample(soundData);
 
-		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_1) mixedSampleLeft += sample1;
+		/*if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_1) mixedSampleLeft += sample1;
 		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_2) mixedSampleLeft += sample2;
-		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_3) mixedSampleLeft += sample3;
+		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_3) mixedSampleLeft += sample3;*/
 		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_LEFT_CHAN_4) mixedSampleLeft += sample4;
 
-		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_1) mixedSampleRight += sample1;
+		/*if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_1) mixedSampleRight += sample1;
 		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_2) mixedSampleRight += sample2;
-		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_3) mixedSampleRight += sample3;
+		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_3) mixedSampleRight += sample3;*/
 		if (soundData->channelLeftRightEnable & SOUND_MASK_ENABLE_RIGHT_CHAN_4) mixedSampleRight += sample4;
 				
-		float volumeRight = (float)(soundData->masterVolume & SOUND_MASK_MASTER_VOLUME_RIGHT) / 7.0f;
+		/*float volumeRight = (float)(soundData->masterVolume & SOUND_MASK_MASTER_VOLUME_RIGHT) / 7.0f;
 		float volumeLeft = (float) ((soundData->masterVolume & SOUND_MASK_MASTER_VOLUME_LEFT) >> 4) / 7.0f;
 
 		mixedSampleRight *= volumeRight;
-		mixedSampleLeft *= volumeLeft;
+		mixedSampleLeft *= volumeLeft;*/
 	}
 
 	AudioSample sample;
@@ -147,7 +149,37 @@ float getChannel3Sample(SoundData *soundData) {
 }
 
 float getChannel4Sample(SoundData *soundData) {
-	return 0.0f;
+	float sample = 0.0f;
+
+	if (soundData->chan4_currentTick % 50 == 0) {
+		int r = getChannel4Rand(soundData->chan4_lastRNGValue, false);
+		soundData->chan4_lastRNGValue = r;
+		sample = ~r & 1;
+
+		soundData->chan4_lastSample = sample;
+	}
+	else {
+		sample = soundData->chan4_lastSample;
+	}
+
+	soundData->chan4_currentTick++;
+	
+	return sample;
+}
+
+int getChannel4Rand(int lastRandom, bool sevenBitMode) {
+	int newRandom = (lastRandom ? lastRandom : 1);
+	bool flipHighBits = (newRandom & 1) ^ ((newRandom & 2) >> 1);
+	
+	newRandom = newRandom >> 1;
+
+	if (flipHighBits) {
+		if (sevenBitMode)
+			newRandom |= 0x4040;
+		else
+			newRandom |= 0x4000;
+	}
+	return newRandom;
 }
 
 float getFrequency(unsigned char frequencyLow, unsigned char frequencyHigh) {

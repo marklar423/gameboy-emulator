@@ -55,6 +55,8 @@ typedef struct _SoundData {
 	unsigned char chan3_FrequencyLow, chan3_FrequencyHighSettings;
 	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_BYTES];
 	int chan3_currentTick;
+
+	int chan4_currentTick, chan4_lastSample, chan4_lastRNGValue;
 } SoundData;
 
 typedef struct _TimerData {
