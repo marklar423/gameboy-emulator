@@ -72,6 +72,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return &hardware->soundData->chan3_Volume;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW) return &hardware->soundData->chan3_FrequencyLow;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan3_FrequencyHighSettings;
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_VOLUME_SWEEP) return &hardware->soundData->chan4_VolumeSweep;
 	else if (address == RAM_LOCATION_SOUND_MASTER_LR_VOLUME) return &hardware->soundData->masterVolume;
 	else if (address == RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) return &hardware->soundData->channelLeftRightEnable;
 	else if (address == RAM_LOCATION_SOUND_ENABLE) return &hardware->soundData->soundEnable;

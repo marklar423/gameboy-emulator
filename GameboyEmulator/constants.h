@@ -64,7 +64,7 @@ typedef enum _RamLocation {
 	RAM_LOCATION_SOUND_WAVE_PATTERN = 0xFF30,
 	RAM_LOCATION_SOUND_WAVE_PATTERN_END = 0xFF3F,
 	RAM_LOCATION_SOUND_CHANNEL_4_Sound_Length = 0xFF20, //NR41 - Channel 4 Sound_Length
-	RAM_LOCATION_SOUND_CHANNEL_4_Volume_Envelope = 0xFF21, //NR42 - Channel 4 Volume_Envelope
+	RAM_LOCATION_SOUND_CHANNEL_4_VOLUME_SWEEP = 0xFF21, //NR42 - Channel 4 Volume sweep
 	RAM_LOCATION_SOUND_CHANNEL_4_Polynomial_Counter = 0xFF22, //NR43 - Channel 4 Polynomial Counter
 	RAM_LOCATION_SOUND_CHANNEL_4_Counter_consecutive_Inital = 0xFF23, //NR44 - Channel 4 Counter/consecutive, Inital
 	RAM_LOCATION_SOUND_MASTER_LR_VOLUME = 0xFF24, //NR50 - Master volume controls for left & right

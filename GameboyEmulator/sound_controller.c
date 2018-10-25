@@ -151,15 +151,17 @@ float getChannel3Sample(SoundData *soundData) {
 float getChannel4Sample(SoundData *soundData) {
 	float sample = 0.0f;
 
-	if (soundData->chan4_currentTick % 50 == 0) {
-		int r = getChannel4Rand(soundData->chan4_lastRNGValue, false);
-		soundData->chan4_lastRNGValue = r;
-		sample = ~r & 1;
+	if (soundData->chan4_VolumeSweep & 0xF0) {
+		if (soundData->chan4_currentTick % 50 == 0) {
+			int r = getChannel4Rand(soundData->chan4_lastRNGValue, false);
+			soundData->chan4_lastRNGValue = r;
+			sample = ~r & 1;
 
-		soundData->chan4_lastSample = sample;
-	}
-	else {
-		sample = soundData->chan4_lastSample;
+			soundData->chan4_lastSample = sample;
+		}
+		else {
+			sample = soundData->chan4_lastSample;
+		}
 	}
 
 	soundData->chan4_currentTick++;

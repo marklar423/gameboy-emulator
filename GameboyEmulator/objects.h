@@ -56,6 +56,7 @@ typedef struct _SoundData {
 	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_BYTES];
 	int chan3_currentTick;
 
+	unsigned char chan4_VolumeSweep;
 	int chan4_currentTick, chan4_lastSample, chan4_lastRNGValue;
 } SoundData;
 
