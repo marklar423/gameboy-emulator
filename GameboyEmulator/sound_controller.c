@@ -9,7 +9,7 @@ float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyH
 float getChannel3Sample(SoundData *soundData);
 float getChannel4Sample(SoundData *soundData);
 
-float getVolumeWithSweep(unsigned char pulseVolumeSweepRegister, int tick);
+float getVolumeWithSweep(unsigned char pulseVolumeSweepRegister, int tick, int *volumeCounter);
 float getPulseDutyPercentage(unsigned char pulseDuty);
 float getFrequency(unsigned char frequencyLow, unsigned char frequencyHigh);
 int getChannel4Rand(int lastRandom, bool sevenBitMode);
@@ -21,10 +21,12 @@ AudioSample tickSound(Hardware *hardware) {
 
 	if (soundData->soundEnable) {
 		float sample1 = getPulseChannelSample(soundData->chan1_FrequencyLow, soundData->chan1_FrequencyHighSettings,
-			soundData->chan1_PatternLength, soundData->chan1_VolumeSweep, &soundData->chan1_currentTick);
+			soundData->chan1_PatternLength, soundData->chan1_VolumeSweep, &soundData->chan1_currentTick,
+			&soundData->chan1_VolumeCounter);
 
 		float sample2 = getPulseChannelSample(soundData->chan2_FrequencyLow, soundData->chan2_FrequencyHighSettings,
-			soundData->chan2_PatternLength, soundData->chan2_VolumeSweep, &soundData->chan2_currentTick);
+			soundData->chan2_PatternLength, soundData->chan2_VolumeSweep, &soundData->chan2_currentTick,
+			&soundData->chan2_VolumeCounter);
 
 		float sample3 = getChannel3Sample(soundData);
 		float sample4 = getChannel4Sample(soundData);
@@ -54,9 +56,9 @@ AudioSample tickSound(Hardware *hardware) {
 }
 
 float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyHighSettings,
-							unsigned char patternLength, unsigned char volumeSweep, int* tick) {
+							unsigned char patternLength, unsigned char volumeSweep, int* tick, int *volumeCounter) {
 	float sample = 0.0f;
-	float volume = getVolumeWithSweep(volumeSweep, *tick);
+	float volume = getVolumeWithSweep(volumeSweep, *tick, volumeCounter);
 
 	if (volume) {
 		float frequency = getFrequency(frequencyLow, frequencyHighSettings);
@@ -84,20 +86,22 @@ float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyH
 }
 
 
-float getVolumeWithSweep(unsigned char volumeSweepRegister, int tick) {
-	float volume = volumeSweepRegister & SOUND_MASK_VOLUME_SWEEP_INITIAL;
-	
+float getVolumeWithSweep(unsigned char volumeSweepRegister, int tick, int *volumeCounter) {
 	int volumeStepNumber = volumeSweepRegister & SOUND_MASK_VOLUME_SWEEP_STEP;
+	int convertedStepNumber = (AUDIO_SAMPLE_RATE * volumeStepNumber) / 64;
 
-	if (volumeStepNumber && (volumeStepNumber % tick == 0)) {		
+	if (*volumeCounter == -1) *volumeCounter = (volumeSweepRegister & SOUND_MASK_VOLUME_SWEEP_INITIAL);
+
+	if (volumeStepNumber && (tick % convertedStepNumber == 0)) {
 		if (volumeSweepRegister & SOUND_MASK_VOLUME_SWEEP_INCREASE)
-			if (volume < 0xF0) volume += 0x10;
+			if (*volumeCounter < 0xF0) (*volumeCounter) += 0x10;
 		else 
-			if (volume > 0x00) volume -= 0x10;
-		
+			if (*volumeCounter > 0x00) (*volumeCounter) -= 0x10;
 	}
 
-	return volume / 0xF0;
+	float volumeFloat = *volumeCounter;
+
+	return volumeFloat / 0xF0;
 }
 
 float getPulseDutyPercentage(unsigned char pulseDutyRegister) {
@@ -153,7 +157,6 @@ float getChannel4Sample(SoundData *soundData) {
 	float sample = 0.0f;
 
 	if (soundData->chan4_VolumeSweep & 0xF0) {
-		float volume = getVolumeWithSweep(soundData->chan4_VolumeSweep, soundData->chan4_currentTick);
 
 		float shiftFrequency = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_CLOCK_FREQUENCY) >> 4;
 		float dividingRatio = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_DIVIDING_RATIO);
@@ -165,17 +168,17 @@ float getChannel4Sample(SoundData *soundData) {
 		float frequency = dividingRatio / p;
 		int ticksPerUpdate = AUDIO_SAMPLE_RATE / frequency;
 
-		if (soundData->chan4_currentTick >= ticksPerUpdate) {
+		if (ticksPerUpdate && soundData->chan4_currentTick % ticksPerUpdate == 0) {
 			bool sevenBitMode = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_7BIT_MODE);
 
 			int nextRand = getChannel4Rand(soundData->chan4_lastRNGValue, false);
 			
 			soundData->chan4_lastRNGValue = nextRand;
 			sample = ~nextRand & 1;
+			
+			float volume = getVolumeWithSweep(soundData->chan4_VolumeSweep, soundData->chan4_currentTick, &soundData->chan4_VolumeCounter);
 
-			soundData->chan4_lastSample = sample;
-
-			soundData->chan4_currentTick = 0;
+			soundData->chan4_lastSample = sample * volume;
 		}
 		else {
 			sample = soundData->chan4_lastSample;
@@ -183,6 +186,7 @@ float getChannel4Sample(SoundData *soundData) {
 	}
 	else {
 		soundData->chan4_lastRNGValue = 1;
+		soundData->chan4_currentTick = 0;
 	}
 
 	soundData->chan4_currentTick++;

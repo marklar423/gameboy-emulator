@@ -45,19 +45,20 @@ typedef struct _SoundData {
 
 	unsigned char chan1_FrequencySweep, chan1_PatternLength, chan1_VolumeSweep;
 	unsigned char chan1_FrequencyLow, chan1_FrequencyHighSettings;
-	int chan1_currentTick;
+	int chan1_currentTick, chan1_VolumeCounter, chan1_lengthCounter;
 
 	unsigned char chan2_PatternLength, chan2_VolumeSweep;
 	unsigned char chan2_FrequencyLow, chan2_FrequencyHighSettings;
-	int chan2_currentTick;
+	int chan2_currentTick, chan2_VolumeCounter, chan2_lengthCounter;
 
 	unsigned char chan3_OnOff, chan3_Length, chan3_Volume;
 	unsigned char chan3_FrequencyLow, chan3_FrequencyHighSettings;
 	unsigned char chan3_WaveData[SOUND_WAVE_PATTERN_BYTES];
-	int chan3_currentTick;
+	int chan3_currentTick, chan3_lengthCounter;
 
 	unsigned char chan4_VolumeSweep, chan4_polynomialCounter, chan4_length, chan4_settings;
 	int chan4_currentTick, chan4_lastSample, chan4_lastRNGValue;
+	int chan4_VolumeCounter, chan4_lengthCounter;
 } SoundData;
 
 typedef struct _TimerData {
