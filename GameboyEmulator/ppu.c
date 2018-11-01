@@ -195,7 +195,7 @@ void drawBackgroundLine(Hardware *hardware, int y) {
 void drawWindow(Hardware *hardware, int x, int y) {
 	//is window enabled?
 	if ((hardware->videoData->lcdControl & PPU_FLAG_WINDOW_ENABLE) != 0) {
-
+		THROW_ERROR("WINDOW NOT IMPLEMENTED");
 	}
 }
 
