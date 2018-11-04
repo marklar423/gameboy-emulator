@@ -57,7 +57,8 @@ typedef struct _SoundData {
 	int chan3_currentTick;
 
 	unsigned char chan4_VolumeSweep, chan4_polynomialCounter, chan4_length, chan4_settings;
-	int chan4_currentTick, chan4_lastSample, chan4_lastRNGValue;
+	int chan4_currentTick, chan4_lastRNGValue;
+	float chan4_polynomialShiftCount;
 } SoundData;
 
 typedef struct _TimerData {

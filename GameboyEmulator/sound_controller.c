@@ -163,23 +163,17 @@ float getChannel4Sample(SoundData *soundData) {
 
 		float p = powf(2.0f, shiftFrequency + 1);
 		float frequency = dividingRatio / p;
-		int ticksPerUpdate = AUDIO_SAMPLE_RATE / frequency;
+		float ticksPerUpdate = AUDIO_SAMPLE_RATE / frequency;
 
-		if (soundData->chan4_currentTick >= ticksPerUpdate) {
-			bool sevenBitMode = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_7BIT_MODE);
+		bool sevenBitMode = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_7BIT_MODE);
 
-			int nextRand = getChannel4Rand(soundData->chan4_lastRNGValue, false);
-			
-			soundData->chan4_lastRNGValue = nextRand;
-			sample = ~nextRand & 1;
-
-			soundData->chan4_lastSample = sample;
-
-			soundData->chan4_currentTick = 0;
+		while (soundData->chan4_polynomialShiftCount < 1) {
+			soundData->chan4_lastRNGValue = getChannel4Rand(soundData->chan4_lastRNGValue, false);
+			soundData->chan4_polynomialShiftCount += ticksPerUpdate;
 		}
-		else {
-			sample = soundData->chan4_lastSample;
-		}
+
+		soundData->chan4_polynomialShiftCount -= 1.0f;
+		sample = ~soundData->chan4_lastRNGValue & 1;
 	}
 	else {
 		soundData->chan4_lastRNGValue = 1;
