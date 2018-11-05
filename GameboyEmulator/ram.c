@@ -167,7 +167,8 @@ void writeLocation(Hardware *hardware, unsigned char *location, unsigned char va
 		*location = value;
 		hardware->soundData->chan2_currentTick = 1;
 	}
-	else if (location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_BYTES - 1]) {
+	else if ((location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_BYTES - 1]) 
+		|| location == &hardware->soundData->chan3_Length || location == &hardware->soundData->chan3_FrequencyHighSettings) {
 		*location = value;
 		hardware->soundData->chan3_currentTick = 1;
 	}

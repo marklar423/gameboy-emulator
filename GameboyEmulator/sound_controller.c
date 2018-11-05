@@ -10,7 +10,7 @@ float getChannel3Sample(SoundData *soundData);
 float getChannel4Sample(SoundData *soundData);
 
 float getVolumeWithSweep(unsigned char pulseVolumeSweepRegister, int tick);
-bool isOverLength(unsigned char soundLengthRegsiter, unsigned char settingsRegister, int tick);
+bool isOverLength(unsigned char soundLengthRegsiter, unsigned char settingsRegister, int tick, int lengthMask);
 float getPulseDutyPercentage(unsigned char pulseDuty);
 float getFrequency(unsigned char frequencyLow, unsigned char frequencyHigh);
 int getChannel4Rand(int lastRandom, bool sevenBitMode);
@@ -59,7 +59,7 @@ float getPulseChannelSample(unsigned char frequencyLow, unsigned char frequencyH
 	float sample = 0.0f;
 	float volume = getVolumeWithSweep(volumeSweep, *tick);
 
-	if (volume && !isOverLength(patternLength, frequencyHighSettings, *tick)) {
+	if (volume && !isOverLength(patternLength, frequencyHighSettings, *tick, SOUND_MASK_SOUND_LENGTH_6_BIT)) {
 		float frequency = getFrequency(frequencyLow, frequencyHighSettings);
 
 		float sampleRate = AUDIO_SAMPLE_RATE;
@@ -101,12 +101,13 @@ float getVolumeWithSweep(unsigned char volumeSweepRegister, int tick) {
 	return volume / 0xF0;
 }
 
-bool isOverLength(unsigned char soundLengthRegsiter, unsigned char settingsRegister, int tick) {
+bool isOverLength(unsigned char soundLengthRegsiter, unsigned char settingsRegister, int tick, int lengthMask) {
 	bool isOver = false;
 
-	if (settingsRegister & SOUND_MASK_SOND_LENGTH_ENABLED) {
-		float lengthSeconds = (64.0f - (soundLengthRegsiter & SOUND_MASK_SOUND_LENGTH)) / 256.0f;
-		int numTicks = AUDIO_SAMPLE_RATE * lengthSeconds;
+	if (settingsRegister & lengthMask) {
+		float maxValue = lengthMask + 1.0f;
+		float lengthSeconds = (maxValue - (soundLengthRegsiter & lengthMask)) / 256.0f;
+		int numTicks = (float) AUDIO_SAMPLE_RATE * lengthSeconds;
 		isOver = (tick >= numTicks);
 	}
 
@@ -128,8 +129,9 @@ float getPulseDutyPercentage(unsigned char pulseDutyRegister) {
 
 float getChannel3Sample(SoundData *soundData) {
 	float sample = 0.0f;
+	bool isOver = isOverLength(soundData->chan3_Length, soundData->chan3_FrequencyHighSettings, soundData->chan3_currentTick, SOUND_MASK_SOUND_LENGTH_8_BIT);
 
-	if (soundData->chan3_OnOff) {
+	if (soundData->chan3_OnOff && !isOver) {
 		float frequency = getFrequency(soundData->chan3_FrequencyLow, soundData->chan3_FrequencyHighSettings);
 		
 		float sampleRate = AUDIO_SAMPLE_RATE;
@@ -164,8 +166,9 @@ float getChannel3Sample(SoundData *soundData) {
 
 float getChannel4Sample(SoundData *soundData) {
 	float sample = 0.0f;
+	bool isOver = isOverLength(soundData->chan4_length, soundData->chan4_settings, soundData->chan4_currentTick, SOUND_MASK_SOUND_LENGTH_6_BIT);
 
-	if (soundData->chan4_VolumeSweep & 0xF0 && !isOverLength(soundData->chan4_length, soundData->chan4_settings, soundData->chan4_currentTick)) {
+	if (soundData->chan4_VolumeSweep & 0xF0 && !isOver) {
 		float volume = getVolumeWithSweep(soundData->chan4_VolumeSweep, soundData->chan4_currentTick);
 
 		float shiftFrequency = (soundData->chan4_polynomialCounter & SOUND_MASK_CHAN4_CLOCK_FREQUENCY) >> 4;
