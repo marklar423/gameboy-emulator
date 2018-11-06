@@ -104,7 +104,7 @@ float getVolumeWithSweep(unsigned char volumeSweepRegister, int tick) {
 bool isOverLength(unsigned char soundLengthRegsiter, unsigned char settingsRegister, int tick, int lengthMask) {
 	bool isOver = false;
 
-	if (settingsRegister & lengthMask) {
+	if (settingsRegister & SOUND_MASK_SOUND_LENGTH_ENABLED) {
 		float maxValue = lengthMask + 1.0f;
 		float lengthSeconds = (maxValue - (soundLengthRegsiter & lengthMask)) / 256.0f;
 		int numTicks = (float) AUDIO_SAMPLE_RATE * lengthSeconds;
