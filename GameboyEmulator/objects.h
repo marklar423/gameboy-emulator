@@ -12,6 +12,7 @@ typedef struct _GameRom {
 	unsigned char *romBytes;
 	long romLength;
 	char gameName[15];
+	CartType cartType;
 } GameRom;
 
 typedef struct _Config {

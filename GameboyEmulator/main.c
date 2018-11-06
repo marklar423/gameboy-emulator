@@ -89,7 +89,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	initGUIAudio(AUDIO_BUFFER_SIZE, AUDIO_SAMPLE_RATE);
 
-	createGUIWindow();
+	char title[40];
+	title[0] = '\0';
+	strcat_s(title, 40, gameRom->gameName);
+	strcat_s(title, 40, " | Gameboy Emulator");
+
+	createGUIWindow(title);
 	setGUICallbacks(updateFrame, drawFrame);
 	runMainLoop(TARGET_FPS);
 

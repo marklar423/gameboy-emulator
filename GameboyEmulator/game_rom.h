@@ -5,4 +5,4 @@
 
 
 GameRom* readGameRom(const char* filePath);
-void populateGameName(GameRom *rom);
+void parseCartHeader(GameRom *rom);

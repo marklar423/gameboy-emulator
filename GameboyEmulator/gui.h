@@ -6,7 +6,7 @@
 
 typedef void(*guiCallback)();
 
-void createGUIWindow();
+void createGUIWindow(char *title);
 
 void setGUICallbacks(guiCallback updateLoopCallback, guiCallback drawFrameCallback);
 

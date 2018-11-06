@@ -10,12 +10,12 @@
 static guiCallback g_updateLoopCallback, g_drawFrameCallback;
 static GLFWwindow *g_window;
 
-void createGUIWindow() {
+void createGUIWindow(char *title) {
 	/* Initialize the library */
 	if (!glfwInit()) THROW_ERROR("ERROR INITIALIZING GLFW");
 
 	/* Create a windowed mode window and its OpenGL context */
-	g_window = glfwCreateWindow(480, 432, "Gameboy Emulator", NULL, NULL);
+	g_window = glfwCreateWindow(480, 432, title, NULL, NULL);
 	if (!g_window)
 	{
 		glfwTerminate();

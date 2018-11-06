@@ -18,15 +18,17 @@ GameRom* readGameRom(const char* filePath) {
 	fclose(filePtr); // Close the file
 
 	GameRom *rom = createGameRom(fileBytes, fileLen);
-	populateGameName(rom);
+	parseCartHeader(rom);
 
 	return rom;
 }
 
-void populateGameName(GameRom *rom) {
+void parseCartHeader(GameRom *rom) {
 	int n = 0;
 	for (int i = ROM_LOCATION_GAME_NAME; i <= ROM_LOCATION_GAME_NAME_END; i++) {
 		rom->gameName[n++] = rom->romBytes[i];
 	}
 	rom->gameName[n] = '\0';
+
+	rom->cartType = rom->romBytes[ROM_LOCATION_CART_TYPE];
 }
