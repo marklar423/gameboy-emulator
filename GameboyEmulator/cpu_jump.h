@@ -4,10 +4,10 @@
 #include "constants.h"
 #include "objects.h"
 
-void populateJumpInstructions(Hardware *hardware, InstructionMapping *mappings);
+void populateJumpInstructions(InstructionMappingList *mappings);
 
-void populateJumpCalculations(Hardware *hardware, InstructionMapping *mappings);
+void populateJumpCalculations(InstructionMappingList *mappings);
 
-void populateJumpNextPC(Hardware *hardware, InstructionMapping *mappings);
+void populateJumpNextPC(InstructionMappingList *mappings);
 
-void populateJumpFlagConditions(Hardware *hardware, InstructionMapping *mappings);
+void populateJumpFlagConditions(InstructionMappingList *mappings);

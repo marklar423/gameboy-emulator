@@ -188,6 +188,13 @@ typedef struct _InstructionMapping {
 	OpCycleCount *cycleCount; //default is 1 cycle per operation
 } InstructionMapping;
 
+typedef struct _InstructionMappingList {
+	InstructionMapping mappings[NUM_OPCODES];
+
+
+
+} InstructionMappingList;
+
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
 

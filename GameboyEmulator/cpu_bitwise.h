@@ -3,4 +3,4 @@
 #include "constants.h"
 #include "objects.h"
 
-void populateBitwiseInstructions(Hardware *hardware, InstructionMapping *mappings);
+void populateBitwiseInstructions(InstructionMappingList *mappings);

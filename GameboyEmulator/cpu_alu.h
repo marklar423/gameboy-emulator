@@ -4,10 +4,10 @@
 #include "objects.h"
 
 
-void populateALUInstructions(Hardware *hardware, InstructionMapping *mappings);
+void populateALUInstructions(InstructionMappingList *mappings);
 
-void populateALUOperands1(Hardware *hardware, InstructionMapping *mappings);
-void populateALUOperands2(Hardware *hardware, InstructionMapping *mappings);
-void populateALUResults(Hardware *hardware, InstructionMapping *mappings);
-void populateALUDestinations(Hardware *hardware, InstructionMapping *mappings);
-void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings);
+void populateALUOperands1(InstructionMappingList *mappings);
+void populateALUOperands2(InstructionMappingList *mappings);
+void populateALUResults(InstructionMappingList *mappings);
+void populateALUDestinations(InstructionMappingList *mappings);
+void populateALUFlagResults(InstructionMappingList *mappings);
