@@ -16,5 +16,6 @@ void setJoypadDataState(Hardware *hardware);
 
 void populateRamAddresses(Hardware *hardware);
 
-#define getRamAddressValue(hardware, ramAddress) ramAddress->valueFunc != NULL ? ramAddress->valueFunc(hardware, ramAddress) : *(ramAddress->value)
+#define getRamAddressPointer(hardware, ramAddress) (ramAddress->valueFunc != NULL ? ramAddress->valueFunc(hardware, ramAddress) : ramAddress->value)
+#define getRamAddressValue(hardware, ramAddress) ramAddress->valueFunc != NULL ? *(ramAddress->valueFunc(hardware, ramAddress)) : *(ramAddress->value)
 #define writeRamAddressValue(hardware, ramAddress, valueToWrite) if (ramAddress->writeValueFunc != NULL) { ramAddress->writeValueFunc(hardware, ramAddress, valueToWrite); } else { *(ramAddress->value) = valueToWrite; }

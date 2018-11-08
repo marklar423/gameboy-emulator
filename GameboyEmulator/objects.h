@@ -105,7 +105,7 @@ typedef enum _GBValueType {
 typedef struct _RamAddress {
 	int address;
 	unsigned char *value;
-	unsigned char(*valueFunc)(void *hardware, void *ramAddress);
+	unsigned char *(*valueFunc)(void *hardware, void *ramAddress);
 	void(*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value);
 } RamAddress;
 
@@ -244,7 +244,7 @@ OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles);
 InstructionMapping* createInstructionMappings(int numInstructions);
 
 RamAddress *createRamAddress(int address, unsigned char *value,
-	unsigned char(*valueFunc)(void *hardware, void *ramAddress),
+	unsigned char *(*valueFunc)(void *hardware, void *ramAddress),
 	void(*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value));
 
 Hardware* createHardware();
