@@ -276,7 +276,7 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->memoryBC = hardware->ramAddresses[BC];
 	cached->memoryDE = hardware->ramAddresses[DE];	
 	cached->NextPCAddress = nextPCAddressValue;
-	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
+	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
 	cached->SPMinusTwo = hardware->registers->SP - 2;
 	cached->SPPlusOne = hardware->registers->SP + 1;
