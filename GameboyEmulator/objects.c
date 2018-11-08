@@ -33,17 +33,16 @@ void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMapp
 	mappingList->value_immediateWord = createGBWordValue(&(hardware->computedValues->immediateWord));
 
 	mappingList->value_split_memoryImmediateWordPlusOne_memoryImmediateWord =
-		createGBSplitBytePointer(&(hardware->computedValues->memoryImmediateWordPlusOne), &(hardware->computedValues->memoryImmediateWord));
-	mappingList->value_highMemoryImmediateByte = createGBBytePointer(&(hardware->computedValues->highMemoryImmediateByte));
-	mappingList->value_memoryImmediateWord = createGBBytePointer(&(hardware->computedValues->memoryImmediateWord));
-	mappingList->value_memoryImmediateWordPlusOne = NULL;
-	mappingList->value_highMemoryC = createGBBytePointer(&(hardware->computedValues->highMemoryC));
-	mappingList->value_memoryHL = createGBBytePointer(&(hardware->computedValues->memoryHL));
-	mappingList->value_memoryBC = createGBBytePointer(&(hardware->computedValues->memoryBC));
-	mappingList->value_memoryDE = createGBBytePointer(&(hardware->computedValues->memoryDE));
-	mappingList->value_split_stackPlusOne_stack = createGBSplitBytePointer(&(hardware->computedValues->stackPlusOneValue), &(hardware->computedValues->stackValue));
+		createGBRamAddressSplit(&(hardware->computedValues->memoryImmediateWordPlusOne), &(hardware->computedValues->memoryImmediateWord));
+	mappingList->value_highMemoryImmediateByte = createGBRamAddress(&(hardware->computedValues->highMemoryImmediateByte));
+	mappingList->value_memoryImmediateWord = createGBRamAddress(&(hardware->computedValues->memoryImmediateWord));
+	mappingList->value_highMemoryC = createGBRamAddress(&(hardware->computedValues->highMemoryC));
+	mappingList->value_memoryHL = createGBRamAddress(&(hardware->computedValues->memoryHL));
+	mappingList->value_memoryBC = createGBRamAddress(&(hardware->computedValues->memoryBC));
+	mappingList->value_memoryDE = createGBRamAddress(&(hardware->computedValues->memoryDE));
+	mappingList->value_split_stackPlusOne_stack = createGBRamAddressSplit(&(hardware->computedValues->stackPlusOneValue), &(hardware->computedValues->stackValue));
 	mappingList->value_split_stackMinusOne_stackMinusTwo =
-		createGBSplitBytePointer(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
+		createGBRamAddressSplit(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
 }
 
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue) {

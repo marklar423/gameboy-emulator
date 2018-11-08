@@ -198,7 +198,7 @@ typedef struct _InstructionMappingList {
 	GBValue *value_immediateByte, *value_immediateByteSigned, *value_immediateWord;
 
 	GBValue *value_split_memoryImmediateWordPlusOne_memoryImmediateWord;
-	GBValue *value_highMemoryImmediateByte, *value_memoryImmediateWord, *value_memoryImmediateWordPlusOne;
+	GBValue *value_highMemoryImmediateByte, *value_memoryImmediateWord;
 	GBValue *value_highMemoryC;
 	GBValue *value_memoryHL, *value_memoryBC, *value_memoryDE;
 	GBValue *value_split_stackPlusOne_stack;
