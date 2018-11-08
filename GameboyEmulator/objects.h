@@ -120,6 +120,7 @@ typedef struct _GBValue {
 typedef struct _ComputedValues {
 	unsigned char immediateByte;
 	int immediateWord;
+	int HL;
 	RamAddress *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
 	RamAddress *highMemoryC;
 	RamAddress *memoryHL, *memoryBC, *memoryDE;

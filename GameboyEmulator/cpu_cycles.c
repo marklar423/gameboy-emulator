@@ -2,7 +2,7 @@
 
 #include "cpu_cycles.h"
 
-void populateCPUCycleCounts(InstructionMapping *mappings) {
+void populateCPUCycleCounts(InstructionMappingList *mappings) {
 	OpCycleCount *twoCycle = createOpCycleCount(2, 2);
 
 	mappings->mappings[OpCode_ADC_A_MEM_HL].cycleCount =
@@ -167,7 +167,7 @@ void populateCPUCycleCounts(InstructionMapping *mappings) {
 }
 
 
-void populateCPUOpSizes(InstructionMapping *mappings) {
+void populateCPUOpSizes(InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_ADC_A_d8].sizeBytes = 2;
 	mappings->mappings[OpCode_ADD_A_d8].sizeBytes = 2;
 	mappings->mappings[OpCode_ADD_SP_r8].sizeBytes = 2;
