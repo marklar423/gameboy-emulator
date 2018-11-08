@@ -98,7 +98,8 @@ typedef enum _GBValueType {
 	GBVALUE_WORD = 2,
 	GBVALUE_SPLIT = 3,
 	GBVALUE_RAM = 4,
-	GBVALUE_RAM_SPLIT = 5
+	GBVALUE_RAM_SIGNED = 5,
+	GBVALUE_RAM_SPLIT = 6
 } GBValueType;
 
 typedef struct _RamAddress {
@@ -113,12 +114,12 @@ typedef struct _GBValue {
 	unsigned char **byteValue;
 	unsigned char **byteValue2; //used with split bytes. byteValue2 is less significant than byteValue
 	int **wordValue;
-	RamAddress *ramValue;
-	RamAddress *ramValue2; //used with split ram bytes. ramValue2 is less significant than ramValue
+	RamAddress **ramValue;
+	RamAddress **ramValue2; //used with split ram bytes. ramValue2 is less significant than ramValue
 } GBValue;
 
 typedef struct _ComputedValues {
-	unsigned char immediateByte;
+	RamAddress *immediateByte, *immediateByte2;
 	int immediateWord;
 	int HL;
 	RamAddress *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
@@ -210,23 +211,28 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
 void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMappingList *mappingList);
 
-GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue);
+GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue,
+	RamAddress *ramValue, RamAddress *ramValue2);
 
 GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer,
-	int **wordValuePointer, RamAddress *ramValue, RamAddress *ramValue2);
+	int **wordValuePointer, RamAddress **ramValue, RamAddress **ramValue2);
 
-#define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL)
-#define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL)
-#define createGBWordValue(wordValue) createGBValue(GBVALUE_WORD, NULL, NULL, wordValue)
-#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
+#define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL, NULL, NULL)
+#define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL, NULL, NULL)
+#define createGBWordValue(wordValue) createGBValue(GBVALUE_WORD, NULL, NULL, wordValue, NULL, NULL)
+#define createGBSplitByteValue(byteValue, byteValue2) createGBValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL, NULL, NULL)
+#define createGBRamAddress(ramValue) createGBPointerValue(GBVALUE_RAM, NULL, NULL, NULL, ramValue, NULL)
+#define createGBRamAddressSigned(ramValue) createGBPointerValue(GBVALUE_RAM_SIGNED, NULL, NULL, NULL, ramValue, NULL)
+#define createGBRamAddressSplit(ramValue, ramValue2) createGBPointerValue(GBVALUE_RAM_SPLIT, NULL, NULL, NULL, ramValue, ramValue2)
 
 #define createGBBytePointer(byteValue) createGBPointerValue(GBVALUE_BYTE, byteValue, NULL, NULL, NULL, NULL)
 #define createGBWordPointer(wordValue) createGBPointerValue(GBVALUE_WORD, NULL, NULL, wordValue, NULL, NULL)
 #define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL, NULL, NULL)
-#define createGBRamAddress(ramValue) createGBPointerValue(GBVALUE_RAM, NULL, NULL, NULL, ramValue, NULL)
-#define createGBRamAddressSplit(ramValue, ramValue2) createGBPointerValue(GBVALUE_RAM_SPLIT, NULL, NULL, NULL, ramValue, ramValue2)
+#define createGBRamPointer(ramValue) createGBPointerValue(GBVALUE_RAM, NULL, NULL, NULL, ramValue, NULL)
+#define createGBRamPointerSigned(ramValue) createGBPointerValue(GBVALUE_RAM_SIGNED, NULL, NULL, NULL, ramValue, NULL)
+#define createGBRamPointerSplit(ramValue, ramValue2) createGBPointerValue(GBVALUE_RAM_SPLIT, NULL, NULL, NULL, ramValue, ramValue2)
 
-int GBValueToInt(GBValue *value);
+int GBValueToInt(Hardware *hardware, GBValue *value);
 bool GBValueIsByte(GBValue *value);
 
 

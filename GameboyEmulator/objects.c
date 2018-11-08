@@ -28,26 +28,28 @@ void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMapp
 
 	mappingList->value_SP = createGBWordValue(&(hardware->registers->SP));
 	mappingList->value_nextPCAddress = createGBWordValue(&(hardware->computedValues->NextPCAddress));
-	mappingList->value_immediateByte = createGBByteValue(&(hardware->computedValues->immediateByte));
-	mappingList->value_immediateByteSigned = createGBByteValueSigned(&(hardware->computedValues->immediateByte));
-	mappingList->value_immediateWord = createGBWordValue(&(hardware->computedValues->immediateWord));
+	mappingList->value_immediateByte = createGBRamPointer(&(hardware->computedValues->immediateByte));
+	mappingList->value_immediateByteSigned = createGBRamPointerSigned(&(hardware->computedValues->immediateByte));
+	mappingList->value_immediateWord = createGBRamPointerSplit(&(hardware->computedValues->immediateByte2), &(hardware->computedValues->immediateByte));
 
 	mappingList->value_split_memoryImmediateWordPlusOne_memoryImmediateWord =
-		createGBRamAddressSplit(&(hardware->computedValues->memoryImmediateWordPlusOne), &(hardware->computedValues->memoryImmediateWord));
-	mappingList->value_highMemoryImmediateByte = createGBRamAddress(&(hardware->computedValues->highMemoryImmediateByte));
-	mappingList->value_memoryImmediateWord = createGBRamAddress(&(hardware->computedValues->memoryImmediateWord));
-	mappingList->value_highMemoryC = createGBRamAddress(&(hardware->computedValues->highMemoryC));
-	mappingList->value_memoryHL = createGBRamAddress(&(hardware->computedValues->memoryHL));
-	mappingList->value_memoryBC = createGBRamAddress(&(hardware->computedValues->memoryBC));
-	mappingList->value_memoryDE = createGBRamAddress(&(hardware->computedValues->memoryDE));
-	mappingList->value_split_stackPlusOne_stack = createGBRamAddressSplit(&(hardware->computedValues->stackPlusOneValue), &(hardware->computedValues->stackValue));
+		createGBRamPointerSplit(&(hardware->computedValues->memoryImmediateWordPlusOne), &(hardware->computedValues->memoryImmediateWord));
+	mappingList->value_highMemoryImmediateByte = createGBRamPointer(&(hardware->computedValues->highMemoryImmediateByte));
+	mappingList->value_memoryImmediateWord = createGBRamPointer(&(hardware->computedValues->memoryImmediateWord));
+	mappingList->value_highMemoryC = createGBRamPointer(&(hardware->computedValues->highMemoryC));
+	mappingList->value_memoryHL = createGBRamPointer(&(hardware->computedValues->memoryHL));
+	mappingList->value_memoryBC = createGBRamPointer(&(hardware->computedValues->memoryBC));
+	mappingList->value_memoryDE = createGBRamPointer(&(hardware->computedValues->memoryDE));
+	mappingList->value_split_stackPlusOne_stack = createGBRamPointerSplit(&(hardware->computedValues->stackPlusOneValue), &(hardware->computedValues->stackValue));
 	mappingList->value_split_stackMinusOne_stackMinusTwo =
-		createGBRamAddressSplit(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
+		createGBRamPointerSplit(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
 }
 
-GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue) {
+GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue,
+	RamAddress *ramValue, RamAddress *ramValue2) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;
+	RamAddress **ramValuePointer = NULL, **ramValue2Pointer = NULL;
 
 	if (byteValue != NULL) {
 		byteValuePointer = malloc(sizeof(unsigned char **));
@@ -64,12 +66,22 @@ GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char
 		*wordValuePointer = wordValue;
 	}
 
-	return createGBPointerValue(type, byteValuePointer, byteValue2Pointer, wordValuePointer, NULL, NULL);
+	if (ramValue != NULL) {
+		ramValuePointer = malloc(sizeof(RamAddress **));
+		*ramValuePointer = ramValue;
+	}
+
+	if (ramValue != NULL) {
+		ramValue2Pointer = malloc(sizeof(RamAddress **));
+		*ramValue2Pointer = ramValue;
+	}
+
+	return createGBPointerValue(type, byteValuePointer, byteValue2Pointer, wordValuePointer, ramValuePointer, ramValue2Pointer);
 }
 
 
 GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, 
-	int **wordValuePointer, RamAddress *ramValue, RamAddress *ramValue2) {
+	int **wordValuePointer, RamAddress **ramValue, RamAddress **ramValue2) {
 	GBValue *value = malloc(sizeof(GBValue));
 
 	value->type = type;
@@ -120,10 +132,13 @@ int GBValueToInt(Hardware *hardware, GBValue *value) {
 			convertedValue = (char) **(value->byteValue);
 			break;
 		case GBVALUE_RAM:
-			convertedValue = getRamAddressValue(hardware, value->ramValue);
+			convertedValue = getRamAddressValue(hardware, (*value->ramValue));
+			break;
+		case GBVALUE_RAM_SIGNED:
+			convertedValue = (char)getRamAddressValue(hardware, (*value->ramValue));
 			break;
 		case GBVALUE_RAM_SPLIT:
-			convertedValue = joinBytes(getRamAddressValue(hardware, value->ramValue2), getRamAddressValue(hardware, value->ramValue));
+			convertedValue = joinBytes(getRamAddressValue(hardware, (*value->ramValue2)), getRamAddressValue(hardware, (*value->ramValue)));
 			break;
 		}
 	}

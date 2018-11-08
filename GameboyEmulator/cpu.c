@@ -16,7 +16,7 @@ void processInstruction(Hardware *hardware, InstructionMapping *mappings, int in
 int getImmediateWord(Hardware *hardware, int startAddress);
 unsigned char getImmediateByte(Hardware *hardware, int address);
 void populateComputedValues(Hardware *hardware, int nextPCAddressValue);
-void populateOperationResults(OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
+void populateOperationResults(Hardware *hardware, OperationResults *results, GBValue *operands1, GBValue *operands2, unsigned char previousFlags);
 void processDestination(Hardware *hardware, int *result, GBValue *destination);
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult);
 void decimalAdjustValue(unsigned char *value, unsigned char *flags);
@@ -121,7 +121,7 @@ void tickCPU(Hardware *hardware, InstructionMappingList *mappings) {
 				hardware->opCodePrefix = 0;
 			}
 
-			processInstruction(hardware, &mappings[instruction], instruction);
+			processInstruction(hardware, &mappings->mappings[instruction], instruction);
 		}
 	}
 	else {
@@ -202,10 +202,10 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 			int resultValue;
 			int *result = mapping->result;
 			if (result != NULL) {
-				populateOperationResults(hardware->operationResults, operand1, operand2, hardware->registers->F);				
+				populateOperationResults(hardware, hardware->operationResults, operand1, operand2, hardware->registers->F);				
 			}
 			else {
-				resultValue = GBValueToInt(operand1);
+				resultValue = GBValueToInt(hardware, operand1);
 				result = &resultValue;
 			}
 			
@@ -257,17 +257,20 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	ComputedValues *cached = hardware->computedValues;
 
-	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
-	cached->immediateWord = getImmediateWord(hardware, hardware->registers->PC + 1);
+	cached->immediateByte = hardware->ramAddresses[hardware->registers->PC + 1];
+	cached->immediateByte2 = hardware->ramAddresses[hardware->registers->PC + 2];
 
 	int AF = joinBytes(hardware->registers->F, hardware->registers->A);
 	int BC = joinBytes(hardware->registers->C, hardware->registers->B);
 	int DE = joinBytes(hardware->registers->E, hardware->registers->D);
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
 
+	unsigned char immediateByte = getRamAddressValue(hardware, cached->immediateByte);
+	cached->immediateWord = joinBytes(immediateByte, getRamAddressValue(hardware, cached->immediateByte2));
+
 	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
 	cached->memoryImmediateWordPlusOne = hardware->ramAddresses[cached->immediateWord + 1];
-	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
+	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + immediateByte];
 	cached->highMemoryC = hardware->ramAddresses[0xFF00 + hardware->registers->C];
 	cached->memoryHL = hardware->ramAddresses[cached->HL];
 	cached->memoryBC = hardware->ramAddresses[BC];
@@ -292,10 +295,10 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 }
 
 
-void populateOperationResults(OperationResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
+void populateOperationResults(Hardware *hardware, OperationResults *results, GBValue *operand1, GBValue *operand2, unsigned char previousFlags) {
 	
 	if (operand1 != NULL) {
-		int operand1Value = GBValueToInt(operand1);
+		int operand1Value = GBValueToInt(hardware, operand1);
 
 		//swap nibbles
 		int operand1High = operand1Value & 0xF0;
@@ -325,7 +328,7 @@ void populateOperationResults(OperationResults *results, GBValue *operand1, GBVa
 		results->shiftRightArithmetic |= (operand1Value & 128);
 
 		if (operand2 != NULL) {
-			int operand2Value = GBValueToInt(operand2);
+			int operand2Value = GBValueToInt(hardware, operand2);
 
 			results->and = operand1Value & operand2Value;
 			results->or = operand1Value | operand2Value;
@@ -380,16 +383,16 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 			unsigned char byteResult = resultValue % 0x100;
 			writeLocation(hardware, *(destination->byteValue), byteResult);
 		}
-		else if (destination->type == GBVALUE_RAM) {
+		else if (destination->type == GBVALUE_RAM || destination->type == GBVALUE_RAM_SIGNED) {
 			unsigned char byteResult = resultValue % 0x100;
-			writeRamAddressValue(hardware, destination->ramValue, byteResult);
+			writeRamAddressValue(hardware, (*destination->ramValue), byteResult);
 		}
 		else if (destination->type == GBVALUE_RAM_SPLIT) {
 			unsigned char leastSignificant, mostSignificant;
 			splitBytes(resultValue, &leastSignificant, &mostSignificant);
 
-			writeRamAddressValue(hardware, destination->ramValue2, leastSignificant);
-			writeRamAddressValue(hardware, destination->ramValue, mostSignificant);
+			writeRamAddressValue(hardware, (*destination->ramValue2), leastSignificant);
+			writeRamAddressValue(hardware, (*destination->ramValue), mostSignificant);
 		}
 	}
 }
@@ -397,7 +400,7 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int *result, FlagResult *flagResult) {
 	if (flagResult != NULL && result != NULL) {
 		int resultValue = *result;
-		int operand1Value = GBValueToInt(operand1);
+		int operand1Value = GBValueToInt(hardware, operand1);
 		int carry = 0;
 		if (result == &hardware->operationResults->addWithCarry || result == &hardware->operationResults->subtractWithCarry) {
 			carry = ((hardware->registers->F & FLAGS_CY) != 0) ? 1 : 0;
@@ -422,7 +425,7 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 		if (flagResult->isCarry != NULL)	P_SET_BIT_IF(flagResult->isCarry, FLAGS_CY, hardware->registers->F);
 
 		if (operand1 != NULL && operand2 != NULL) {
-			int operand2Value = GBValueToInt(operand2);
+			int operand2Value = GBValueToInt(hardware, operand2);
 
 			hardware->resultInfo->isAddHalfCarry = (((operand1Value & 0x0F) + (operand2Value & 0x0F) + carry) & 0x10) != 0;
 			hardware->resultInfo->isAddHalfCarry16 = ((operand1Value & 0xFFF) + (operand2Value & 0xFFF) & 0x1000) != 0;
