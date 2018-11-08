@@ -130,7 +130,7 @@ unsigned char * getSwitchableRom(Hardware *hardware, RamAddress *address) {
 }
 
 unsigned char * getSwitchableCartRam(Hardware *hardware, RamAddress *address) {
-	return getArrayAddress(hardware->rom->ramSwitchable, address->address - RAM_LOCATION_CART_RAM_END, SWITCHABLE_CART_RAM_ADDRESS_SIZE);
+	return getArrayAddress(hardware->rom->ramSwitchable, address->address - RAM_LOCATION_CART_RAM, SWITCHABLE_CART_RAM_ADDRESS_SIZE);
 }
 
 void writeRomAddress(Hardware *hardware, RamAddress *address, unsigned char value) {
