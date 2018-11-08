@@ -18,7 +18,7 @@ GameRom* readGameRom(const char* filePath) {
 	fclose(filePtr); // Close the file
 
 	GameRom *rom = createGameRom(fileBytes, fileLen);
-	rom->romBytesSwitchable = &rom->romBytes[RAM_LOCATION_CART_SWITCHABLE];
+	rom->romBytesSwitchable = &rom->romBytes[RAM_LOCATION_ROM_SWITCHABLE];
 	parseCartHeader(rom);
 
 	return rom;

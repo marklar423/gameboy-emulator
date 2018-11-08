@@ -1,6 +1,7 @@
 
 #include "objects.h"
 #include "util.h"
+#include "ram.h"
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	GameRom *rom = malloc(sizeof(GameRom));
@@ -29,17 +30,20 @@ GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char
 		*wordValuePointer = wordValue;
 	}
 
-	return createGBPointerValue(type, byteValuePointer, byteValue2Pointer, wordValuePointer);
+	return createGBPointerValue(type, byteValuePointer, byteValue2Pointer, wordValuePointer, NULL, NULL);
 }
 
 
-GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, int **wordValuePointer) {
+GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, 
+	int **wordValuePointer, RamAddress *ramValue, RamAddress *ramValue2) {
 	GBValue *value = malloc(sizeof(GBValue));
 
 	value->type = type;
 	value->byteValue = byteValuePointer;
 	value->byteValue2 = byteValue2Pointer;
 	value->wordValue = wordValuePointer;
+	value->ramValue = ramValue;
+	value->ramValue2 = ramValue2;
 
 	return value;
 }
@@ -64,7 +68,7 @@ FlagCondition* createFlagCondition(char condition, bool negate) {
 	return flagCondition;
 }
 
-int GBValueToInt(GBValue *value) {
+int GBValueToInt(Hardware *hardware, GBValue *value) {
 	int convertedValue = 0;
 
 	if (value != NULL) {
@@ -80,6 +84,12 @@ int GBValueToInt(GBValue *value) {
 			break;
 		case GBVALUE_BYTE_SIGNED:
 			convertedValue = (char) **(value->byteValue);
+			break;
+		case GBVALUE_RAM:
+			convertedValue = getRamAddressValue(hardware, value->ramValue);
+			break;
+		case GBVALUE_RAM_SPLIT:
+			convertedValue = joinBytes(getRamAddressValue(hardware, value->ramValue2), getRamAddressValue(hardware, value->ramValue));
 			break;
 		}
 	}
@@ -113,6 +123,19 @@ InstructionMapping* createInstructionMappings(int numInstructions) {
 	return instructions;
 }
 
+
+RamAddress *createRamAddress(int address, unsigned char *value,
+	unsigned char(*valueFunc)(void *hardware, void *ramAddress),
+	void(*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value)) {
+
+	RamAddress *ramAddress = calloc(1, sizeof(RamAddress));
+	ramAddress->address = address;
+	ramAddress->value = value;
+	ramAddress->valueFunc = valueFunc;
+	ramAddress->writeValueFunc = writeValueFunc;
+
+	return ramAddress;
+}
 
 Hardware* createHardware() {
 	Hardware *hardware = calloc(1, sizeof(Hardware));

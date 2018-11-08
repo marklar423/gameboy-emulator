@@ -111,7 +111,7 @@ void tickCPU(Hardware *hardware, InstructionMapping *mappings) {
 				hardware->isOAMDMATriggered = false;
 			}
 
-			int instruction = *hardware->ramAddresses[hardware->registers->PC];
+			int instruction = getRamAddressValue(hardware, hardware->ramAddresses[hardware->registers->PC]);
 
 			//this ensures "CB xx" instructions get properly executed
 			if (hardware->opCodePrefix != 0) {
@@ -265,7 +265,7 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
 
 	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
-	cached->memoryImmediateWordPlusOne = cached->memoryImmediateWord + 1;
+	cached->memoryImmediateWordPlusOne = hardware->ramAddresses[cached->immediateWord + 1];
 	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
 	cached->highMemoryC = hardware->ramAddresses[0xFF00 + hardware->registers->C];
 	cached->memoryHL = hardware->ramAddresses[cached->HL];
@@ -285,7 +285,7 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	
 	if (cached->stackValue != NULL && cached->stackPlusOneValue != NULL 
 		&& (cached->SPPlusOne >= 0 && cached->SPPlusOne < TOTAL_RAM_SIZE))
-		cached->stackWordValue = joinBytes(*cached->stackValue, *cached->stackPlusOneValue);
+		cached->stackWordValue = joinBytes(getRamAddressValue(hardware, cached->stackValue), getRamAddressValue(hardware, cached->stackPlusOneValue));
 	else
 		cached->stackWordValue = NULL;
 }
@@ -351,6 +351,16 @@ void populateOperationResults(OperationResults *results, GBValue *operand1, GBVa
 	}
 }
 
+void writeLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
+	if (location == &hardware->registers->F) {
+		//bits 0-3 are always zero
+		*location = (value & 0xF0);
+	}
+	else {
+		*location = value;
+	}
+}
+
 void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 	if (result != NULL && destination != NULL) {
 		int resultValue = *result;
@@ -368,6 +378,17 @@ void processDestination(Hardware *hardware, int *result, GBValue *destination) {
 		else if (destination->type == GBVALUE_BYTE || destination->type == GBVALUE_BYTE_SIGNED) {
 			unsigned char byteResult = resultValue % 0x100;
 			writeLocation(hardware, *(destination->byteValue), byteResult);
+		}
+		else if (destination->type == GBVALUE_RAM) {
+			unsigned char byteResult = resultValue % 0x100;
+			writeRamAddressValue(hardware, destination->ramValue, byteResult);
+		}
+		else if (destination->type == GBVALUE_RAM_SPLIT) {
+			unsigned char leastSignificant, mostSignificant;
+			splitBytes(resultValue, &leastSignificant, &mostSignificant);
+
+			writeRamAddressValue(hardware, destination->ramValue2, leastSignificant);
+			writeRamAddressValue(hardware, destination->ramValue, mostSignificant);
 		}
 	}
 }
@@ -412,13 +433,13 @@ void processFlags(Hardware *hardware, GBValue *operand1, GBValue *operand2, int 
 }
 
 int getImmediateWord(Hardware *hardware, int startAddress) {
-	unsigned char *value1 = hardware->ramAddresses[startAddress];
-	unsigned char *value2 = hardware->ramAddresses[startAddress + 1];
-	return joinBytes(*value1, *value2);
+	unsigned char value1 = getRamAddressValue(hardware, hardware->ramAddresses[startAddress]);
+	unsigned char value2 = getRamAddressValue(hardware, hardware->ramAddresses[startAddress + 1]);
+	return joinBytes(value1, value2);
 }
 
 unsigned char getImmediateByte(Hardware *hardware, int address) {
-	return *(hardware->ramAddresses[address]);
+	return getRamAddressValue(hardware, hardware->ramAddresses[address]);
 }
 
 void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
@@ -450,7 +471,7 @@ void decimalAdjustValue(unsigned char *value, unsigned char *flags) {
 
 void transferOAM(Hardware *hardware, int startAddress, unsigned char* oamTable) {
 	for (int i = 0; i < OAM_SIZE; i++) {
-		oamTable[i] = *hardware->ramAddresses[startAddress];
+		oamTable[i] = getRamAddressValue(hardware, hardware->ramAddresses[startAddress]);
 		startAddress++;
 	}
 }

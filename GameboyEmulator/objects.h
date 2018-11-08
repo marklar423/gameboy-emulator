@@ -96,29 +96,40 @@ typedef enum _GBValueType {
 	GBVALUE_BYTE = 0,
 	GBVALUE_BYTE_SIGNED = 1,
 	GBVALUE_WORD = 2,
-	GBVALUE_SPLIT = 3
+	GBVALUE_SPLIT = 3,
+	GBVALUE_RAM = 4,
+	GBVALUE_RAM_SPLIT = 5
 } GBValueType;
+
+typedef struct _RamAddress {
+	int address;
+	unsigned char *value;
+	unsigned char(*valueFunc)(void *hardware, void *ramAddress);
+	void(*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value);
+} RamAddress;
 
 typedef struct _GBValue {
 	GBValueType type;
 	unsigned char **byteValue;
 	unsigned char **byteValue2; //used with split bytes. byteValue2 is less significant than byteValue
 	int **wordValue;
+	RamAddress *ramValue;
+	RamAddress *ramValue2; //used with split ram bytes. ramValue2 is less significant than ramValue
 } GBValue;
 
 typedef struct _ComputedValues {
 	unsigned char immediateByte;
 	int immediateWord;
-	unsigned char *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
-	unsigned char *highMemoryC;
-	unsigned char *memoryHL, *memoryBC, *memoryDE;
+	RamAddress *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
+	RamAddress *highMemoryC;
+	RamAddress *memoryHL, *memoryBC, *memoryDE;
 	int AF, BC, DE, HL;
 	int NextPCAddress, NextPCAddressPlusImmediateByteSigned;
 	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
-	unsigned char *stackValue; //value on top of stack
-	unsigned char *stackPlusOneValue; //second-to-top value in stack
-	unsigned char *stackMinusOneValue; //one value beyond top of stack (new value)
-	unsigned char *stackMinusTwoValue; //two values beyond top of stack (new value)
+	RamAddress *stackValue; //value on top of stack
+	RamAddress *stackPlusOneValue; //second-to-top value in stack
+	RamAddress *stackMinusOneValue; //one value beyond top of stack (new value)
+	RamAddress *stackMinusTwoValue; //two values beyond top of stack (new value)
 	int stackWordValue;
 } ComputedValues;
 
@@ -134,13 +145,6 @@ typedef struct _ResultInfo {
 	bool isAddHalfCarry16, isAddCarry16;
 	bool isOperand1Bit0Set, isOperand1Bit7Set;
 } ResultInfo;
-
-typedef struct _RamAddress {
-	int address;
-	unsigned char *value;
-	unsigned char(*valueFunc)(void *hardware, void *ramAddress);
-	void (*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value);
-} RamAddress;
 
 typedef struct _Hardware {
 	GameRom *rom;
@@ -188,7 +192,10 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
 
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue);
-GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, int **wordValuePointer);
+
+GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer,
+	int **wordValuePointer, RamAddress *ramValue, RamAddress *ramValue2);
+
 int GBValueToInt(GBValue *value);
 bool GBValueIsByte(GBValue *value);
 
@@ -197,9 +204,11 @@ bool GBValueIsByte(GBValue *value);
 #define createGBWordValue(wordValue) createGBValue(GBVALUE_WORD, NULL, NULL, wordValue)
 #define createGBSplitByteValue(byteValue, byteValue2) createGBValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
 
-#define createGBBytePointer(byteValue) createGBPointerValue(GBVALUE_BYTE, byteValue, NULL, NULL)
-#define createGBWordPointer(wordValue) createGBPointerValue(GBVALUE_WORD, NULL, NULL, wordValue)
-#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL)
+#define createGBBytePointer(byteValue) createGBPointerValue(GBVALUE_BYTE, byteValue, NULL, NULL, NULL, NULL)
+#define createGBWordPointer(wordValue) createGBPointerValue(GBVALUE_WORD, NULL, NULL, wordValue, NULL, NULL)
+#define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL, NULL, NULL)
+#define createGBRamAddress(ramValue) createGBPointerValue(GBVALUE_RAM, NULL, NULL, NULL, ramValue, NULL)
+#define createGBRamAddressSplit(ramValue, ramValue2) createGBPointerValue(GBVALUE_RAM_SPLIT, NULL, NULL, NULL, ramValue, ramValue2)
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);
@@ -207,5 +216,9 @@ FlagCondition* createFlagCondition(char condition, bool negate);
 OpCycleCount* createOpCycleCount(int executeCycles, int dontExecuteCycles);
 
 InstructionMapping* createInstructionMappings(int numInstructions);
+
+RamAddress *createRamAddress(int address, unsigned char *value,
+	unsigned char(*valueFunc)(void *hardware, void *ramAddress),
+	void(*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value));
 
 Hardware* createHardware();

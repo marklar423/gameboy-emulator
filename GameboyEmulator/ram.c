@@ -9,109 +9,114 @@
 static unsigned char TODO = 0xFF;
 
 unsigned char getSwitchableRom(Hardware *hardware, RamAddress *address);
+unsigned char getSwitchableCartRam(Hardware *hardware, RamAddress *address);
 
 void writeRomAddress(Hardware *hardware, RamAddress *address, unsigned char value);
+void writeVRAM(Hardware *hardware, RamAddress *address, unsigned char value);
+void writeSound(Hardware *hardware, RamAddress *address, unsigned char value);
+void writeJoypad(Hardware *hardware, RamAddress *address, unsigned char value);
+void writeTimer(Hardware *hardware, RamAddress *address, unsigned char value);
+void writeVideoSettings(Hardware *hardware, RamAddress *address, unsigned char value);
 
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize);
 
 RamAddress* getRamAddress(Hardware *hardware, int address) {
-	RamAddress *ramAddress = calloc(1, sizeof(RamAddress));
-	ramAddress->address = address;
+	if (address >= RAM_LOCATION_ROM_FIXED && address <= RAM_LOCATION_ROM_FIXED_END)
+		return createRamAddress(address, &hardware->rom->romBytes[address], NULL, writeRomAddress);
 
-	if (address >= RAM_LOCATION_CART_FIXED && address <= RAM_LOCATION_CART_FIXED_END) {
-		ramAddress->value = &hardware->rom->romBytes[address];
-		ramAddress->writeValueFunc = writeRomAddress;
-	}
-	else if (address >= RAM_LOCATION_CART_SWITCHABLE && address <= RAM_LOCATION_CART_SWITCHABLE_END) {
-		ramAddress->valueFunc = getSwitchableRom;
-		ramAddress->writeValueFunc = writeRomAddress;
-	}
+	else if (address >= RAM_LOCATION_ROM_SWITCHABLE && address <= RAM_LOCATION_ROM_SWITCHABLE_END)
+		return createRamAddress(address, NULL, getSwitchableRom, writeRomAddress);
+
 	else if (address >= RAM_LOCATION_VRAM_TILES_1 && address < RAM_LOCATION_VRAM_BG_MAP_1)
-		return getArrayAddress(hardware->videoData->tileData, address - RAM_LOCATION_VRAM_TILES_1, VRAM_TOTAL_TILES_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->videoData->tileData, address - RAM_LOCATION_VRAM_TILES_1, VRAM_TOTAL_TILES_SIZE),
+			NULL, writeVRAM);
 
-	else if (address >= RAM_LOCATION_VRAM_BG_MAP_1 && address < RAM_LOCATION_VRAM_BG_MAP_2)
-		return getArrayAddress(hardware->videoData->bgMap1, address - RAM_LOCATION_VRAM_BG_MAP_1, VRAM_BG_MAP_1_SIZE);
-
-	else if (address >= RAM_LOCATION_VRAM_BG_MAP_2 && address <= RAM_LOCATION_VRAM_END)
-		return getArrayAddress(hardware->videoData->bgMap2, address - RAM_LOCATION_VRAM_BG_MAP_2, VRAM_BG_MAP_2_SIZE);
-
+	else if (address >= RAM_LOCATION_VRAM_BG_MAP_1 && address < RAM_LOCATION_VRAM_BG_MAP_2) 
+		return createRamAddress(address, getArrayAddress(hardware->videoData->bgMap1, address - RAM_LOCATION_VRAM_BG_MAP_1, VRAM_BG_MAP_1_SIZE),
+			NULL, writeVRAM);
+	
+	else if (address >= RAM_LOCATION_VRAM_BG_MAP_2 && address <= RAM_LOCATION_VRAM_END) 
+		return createRamAddress(address, getArrayAddress(hardware->videoData->bgMap2, address - RAM_LOCATION_VRAM_BG_MAP_2, VRAM_BG_MAP_2_SIZE),
+			NULL, writeVRAM);
+	
 	else if (address >= RAM_LOCATION_OAM && address <= RAM_LOCATION_OAM_END)
-		return getArrayAddress(hardware->videoData->oamTable, address - RAM_LOCATION_OAM, OAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->videoData->oamTable, address - RAM_LOCATION_OAM, OAM_SIZE),
+			NULL, writeVRAM);
 
-	else if ((address >= RAM_LOCATION_CART_RAM && address <= RAM_LOCATION_CART_RAM_END) && hardware->rom->hasExternalRam)		
-		return getArrayAddress(hardware->rom->ramSwitchable, address - RAM_LOCATION_CART_RAM_END, SWITCHABLE_CART_RAM_ADDRESS_SIZE);
+	else if ((address >= RAM_LOCATION_CART_RAM && address <= RAM_LOCATION_CART_RAM_END) && hardware->rom->hasExternalRam)
+		return createRamAddress(address, NULL, getSwitchableCartRam, NULL);
 
 	else if (address >= RAM_LOCATION_WORK_RAM_FIXED && address <= RAM_LOCATION_WORK_RAM_FIXED_END)
-		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE), NULL, NULL);
 
 	else if (address >= RAM_LOCATION_WORK_RAM_SWITCHABLE && address <= RAM_LOCATION_WORK_RAM_SWITCHABLE_END)
 		//todo: implement memory bank switching for CGB
-		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE), NULL, NULL);
 	
 	else if (address >= RAM_LOCATION_MIRROR_WORK_RAM_FIXED && address <= RAM_LOCATION_MIRROR_WORK_RAM_FIXED_END)
 		//echo ram fixed
-		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE), NULL, NULL);
 
 	else if (address >= RAM_LOCATION_MIRROR_WORK_RAM_SWITCHABLE && address <= RAM_LOCATION_MIRROR_WORK_RAM_SWITCHABLE_END)
 		//echo ram switchable
-		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->workRam, address - RAM_LOCATION_MIRROR_WORK_RAM_FIXED, WORK_RAM_SIZE), NULL, NULL);
 
 	else if (address >= RAM_LOCATION_HRAM && address <= RAM_LOCATION_HRAM_END)
-		return getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE);
+		return createRamAddress(address, getArrayAddress(hardware->highRam, address - RAM_LOCATION_HRAM, HRAM_SIZE), NULL, NULL);
 
-	else if (address >= RAM_LOCATION_SOUND_WAVE_PATTERN && address <= RAM_LOCATION_SOUND_WAVE_PATTERN_END)
-		return getArrayAddress(hardware->soundData->chan3_WaveData, address - RAM_LOCATION_SOUND_WAVE_PATTERN, SOUND_WAVE_PATTERN_BYTES);
-
-	else if (address == RAM_LOCATION_JOYPAD_INPUT) return &hardware->ioData->joypadData;
-	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return &hardware->ioData->serialTransferData;
-	else if (address == RAM_LOCATION_SERIAL_TRANSFER_CONTROL) return &hardware->ioData->serialTransferControl;
-	else if (address == RAM_LOCATION_TIMER_DIVIDER) return &hardware->timerData->divider;
-	else if (address == RAM_LOCATION_TIMER_COUNTER) return &hardware->timerData->counter;
-	else if (address == RAM_LOCATION_TIMER_MODULO) return &hardware->timerData->modulo;
-	else if (address == RAM_LOCATION_TIMER_CONTROL) return &hardware->timerData->control;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP) return &hardware->soundData->chan1_FrequencySweep;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_PATTERN_LENGTH) return &hardware->soundData->chan1_PatternLength;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_VOLUME_SWEEP) return &hardware->soundData->chan1_VolumeSweep;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_LOW) return &hardware->soundData->chan1_FrequencyLow;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan1_FrequencyHighSettings;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_PATTERN_LENGTH) return &hardware->soundData->chan2_PatternLength;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_VOLUME_SWEEP) return &hardware->soundData->chan2_VolumeSweep;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_LOW) return &hardware->soundData->chan2_FrequencyLow;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan2_FrequencyHighSettings;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_ONOFF) return &hardware->soundData->chan3_OnOff;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_LENGTH) return &hardware->soundData->chan3_Length;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return &hardware->soundData->chan3_Volume;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW) return &hardware->soundData->chan3_FrequencyLow;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) return &hardware->soundData->chan3_FrequencyHighSettings;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_LENGTH) return &hardware->soundData->chan4_length;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_VOLUME_SWEEP) return &hardware->soundData->chan4_VolumeSweep;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_POLYNOMIAL_COUNTER) return &hardware->soundData->chan4_polynomialCounter;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_SETTINGS) return &hardware->soundData->chan4_settings;
-	else if (address == RAM_LOCATION_SOUND_MASTER_LR_VOLUME) return &hardware->soundData->masterVolume;
-	else if (address == RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) return &hardware->soundData->channelLeftRightEnable;
-	else if (address == RAM_LOCATION_SOUND_ENABLE) return &hardware->soundData->soundEnable;
-	else if (address == RAM_LOCATION_LCD_CONTROL) return &hardware->videoData->lcdControl;
-	else if (address == RAM_LOCATION_LCD_STATUS) return &hardware->videoData->lcdStatus;
-	else if (address == RAM_LOCATION_SCROLL_Y) return &hardware->videoData->scrollY;
-	else if (address == RAM_LOCATION_SCROLL_X) return &hardware->videoData->scrollX;
-	else if (address == RAM_LOCATION_LCD_Y_COORD) return &hardware->videoData->lcdYCoord;
-	else if (address == RAM_LOCATION_LCD_Y_COMPARE) return &hardware->videoData->lcdYCompare;
-	else if (address == RAM_LOCATION_DMA_TRANSFER) return &hardware->videoData->dmaTransfer;
-	else if (address == RAM_LOCATION_BG_PALETTE) return &hardware->videoData->bgPalette;
-	else if (address == RAM_LOCATION_OBJ_PALETTE_0) return &hardware->videoData->objPalette0;
-	else if (address == RAM_LOCATION_OBJ_PALETTE_1) return &hardware->videoData->objPalette1;
-	else if (address == RAM_LOCATION_WINDOW_Y) return &hardware->videoData->windowY;
-	else if (address == RAM_LOCATION_WINDOW_X) return &hardware->videoData->windowX;
-	else if (address == RAM_LOCATION_INTERRUPT_FLAGS) return &hardware->registers->requestedInterrupts;
-	else if (address == RAM_LOCATION_INTERRUPTS_ENABLE)  return &hardware->registers->enabledInterrupts;
+	else if (address >= RAM_LOCATION_SOUND_WAVE_PATTERN && address <= RAM_LOCATION_SOUND_WAVE_PATTERN_END) 
+		return createRamAddress(address, getArrayAddress(hardware->soundData->chan3_WaveData, address - RAM_LOCATION_SOUND_WAVE_PATTERN, SOUND_WAVE_PATTERN_BYTES),
+			NULL, writeSound);
+	
+	else if (address == RAM_LOCATION_JOYPAD_INPUT) return createRamAddress(address, &hardware->ioData->joypadData, NULL, writeJoypad);
+	else if (address == RAM_LOCATION_SERIAL_TRANSFER_DATA) return createRamAddress(address, &hardware->ioData->serialTransferData, NULL, NULL);
+	else if (address == RAM_LOCATION_SERIAL_TRANSFER_CONTROL) return createRamAddress(address, &hardware->ioData->serialTransferControl, NULL, NULL);
+	else if (address == RAM_LOCATION_TIMER_DIVIDER) return createRamAddress(address, &hardware->timerData->divider, NULL, writeTimer);
+	else if (address == RAM_LOCATION_TIMER_COUNTER) return createRamAddress(address, &hardware->timerData->counter, NULL, writeTimer);
+	else if (address == RAM_LOCATION_TIMER_MODULO) return createRamAddress(address, &hardware->timerData->modulo, NULL, writeTimer);
+	else if (address == RAM_LOCATION_TIMER_CONTROL) return createRamAddress(address, &hardware->timerData->control, NULL, writeTimer);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP) return createRamAddress(address, &hardware->soundData->chan1_FrequencySweep, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_PATTERN_LENGTH) return createRamAddress(address, &hardware->soundData->chan1_PatternLength, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_VOLUME_SWEEP) return createRamAddress(address, &hardware->soundData->chan1_VolumeSweep, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_LOW) return createRamAddress(address, &hardware->soundData->chan1_FrequencyLow, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_HIGH_SETTINGS) return createRamAddress(address, &hardware->soundData->chan1_FrequencyHighSettings, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_PATTERN_LENGTH) return createRamAddress(address, &hardware->soundData->chan2_PatternLength, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_VOLUME_SWEEP) return createRamAddress(address, &hardware->soundData->chan2_VolumeSweep, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_LOW) return createRamAddress(address, &hardware->soundData->chan2_FrequencyLow, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_HIGH_SETTINGS) return createRamAddress(address, &hardware->soundData->chan2_FrequencyHighSettings, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_ONOFF) return createRamAddress(address, &hardware->soundData->chan3_OnOff, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_LENGTH) return createRamAddress(address, &hardware->soundData->chan3_Length, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_VOLUME) return createRamAddress(address, &hardware->soundData->chan3_Volume, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_LOW) return createRamAddress(address, &hardware->soundData->chan3_FrequencyLow, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) return createRamAddress(address, &hardware->soundData->chan3_FrequencyHighSettings, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_LENGTH) return createRamAddress(address, &hardware->soundData->chan4_length, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_VOLUME_SWEEP) return createRamAddress(address, &hardware->soundData->chan4_VolumeSweep, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_POLYNOMIAL_COUNTER) return createRamAddress(address, &hardware->soundData->chan4_polynomialCounter, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_4_SETTINGS) return createRamAddress(address, &hardware->soundData->chan4_settings, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_MASTER_LR_VOLUME) return createRamAddress(address, &hardware->soundData->masterVolume, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) return createRamAddress(address, &hardware->soundData->channelLeftRightEnable, NULL, writeSound);
+	else if (address == RAM_LOCATION_SOUND_ENABLE) return createRamAddress(address, &hardware->soundData->soundEnable, NULL, writeSound);
+	else if (address == RAM_LOCATION_LCD_CONTROL) return createRamAddress(address, &hardware->videoData->lcdControl, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_LCD_STATUS) return createRamAddress(address, &hardware->videoData->lcdStatus, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_SCROLL_Y) return createRamAddress(address, &hardware->videoData->scrollY, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_SCROLL_X) return createRamAddress(address, &hardware->videoData->scrollX, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_LCD_Y_COORD) return createRamAddress(address, &hardware->videoData->lcdYCoord, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_LCD_Y_COMPARE) return createRamAddress(address, &hardware->videoData->lcdYCompare, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_DMA_TRANSFER) return createRamAddress(address, &hardware->videoData->dmaTransfer, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_BG_PALETTE) return createRamAddress(address, &hardware->videoData->bgPalette, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_OBJ_PALETTE_0) return createRamAddress(address, &hardware->videoData->objPalette0, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_OBJ_PALETTE_1) return createRamAddress(address, &hardware->videoData->objPalette1, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_WINDOW_Y) return createRamAddress(address, &hardware->videoData->windowY, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_WINDOW_X) return createRamAddress(address, &hardware->videoData->windowX, NULL, writeVideoSettings);
+	else if (address == RAM_LOCATION_INTERRUPT_FLAGS) return createRamAddress(address, &hardware->registers->requestedInterrupts, NULL, NULL);
+	else if (address == RAM_LOCATION_INTERRUPTS_ENABLE)  return createRamAddress(address, &hardware->registers->enabledInterrupts, NULL, NULL);
 
 	//todo:
 	else if ((address >= RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_SWEEP && address <= RAM_LOCATION_SOUND_CHANNEL_LR_ENABLE) 
 				|| (address >= RAM_LOCATION_UNUSABLE && RAM_LOCATION_UNUSABLE_END <= RAM_LOCATION_UNUSABLE_END))
-		return &TODO;
+	return createRamAddress(address, &TODO, NULL, NULL);
 
-	//assert(false && "Unknown RAM location");
-	return ramAddress;
+	return createRamAddress(address, NULL, NULL, NULL);
 }
 
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize) {
@@ -121,93 +126,119 @@ unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize) {
 
 unsigned char getSwitchableRom(Hardware *hardware, RamAddress *address) {
 	//todo: implement memory bank switching
-	return *getArrayAddress(hardware->rom->romBytesSwitchable, address->address - RAM_LOCATION_CART_SWITCHABLE, SWITCHABLE_CART_ROM_ADDRESS_SIZE);
+	return *getArrayAddress(hardware->rom->romBytesSwitchable, address->address - RAM_LOCATION_ROM_SWITCHABLE, SWITCHABLE_CART_ROM_ADDRESS_SIZE);
 }
 
-void writeLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
-	
-	PPUFlag lcdMode = (hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK);
+unsigned char getSwitchableCartRam(Hardware *hardware, RamAddress *address) {
+	return *getArrayAddress(hardware->rom->ramSwitchable, address - RAM_LOCATION_CART_RAM_END, SWITCHABLE_CART_RAM_ADDRESS_SIZE);
+}
 
-	if (location == &hardware->videoData->lcdStatus) {
-		//bits 0-2 are read only
-		*location = (value & 0xF8) | (*location & 0x7);
-	}
-	else if (location == &hardware->videoData->lcdYCoord) {
-		//writing should reset?
-		*location = 0;
-	}
-	else if (location >= hardware->rom->romBytes && location <= &hardware->rom->romBytes[hardware->rom->romLength - 1]) {
-		//no writing allowed
-		//todo: implement MBC switching
-	}
-	/*else if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
+void writeRomAddress(Hardware *hardware, RamAddress *address, unsigned char value) {
+	//todo: implement bank switching
+}
+
+void writeVRAM(Hardware *hardware, RamAddress *address, unsigned char value) {
+
+	PPUFlag lcdMode = (hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK);
+	
+	/*if (location >= hardware->videoData->oamTable && location <= &hardware->videoData->oamTable[OAM_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER && lcdMode != LCD_STAT_MODE_OAM_SEARCH) {
 			//can't write to OAM during pixel transfer and OAM search
-			*location = value;
+			writeRamAddressValue(hardware, address, value);
 		}
 	}
 	else if (location >= hardware->videoData->tileData && location <= &hardware->videoData->tileData[VRAM_TOTAL_TILES_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER) {
 			//can't write to tiles during pixel transfer
-			*location = value;
+			writeRamAddressValue(hardware, address, value);
 		}
 	}
 	else if (location >= hardware->videoData->bgMap1 && location <= &hardware->videoData->bgMap1[VRAM_BG_MAP_1_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER) {
 			//can't write to map during pixel transfer
-			*location = value;
+			writeRamAddressValue(hardware, address, value);
 		}
 	}
 	else if (location >= hardware->videoData->bgMap2 && location <= &hardware->videoData->bgMap2[VRAM_BG_MAP_2_SIZE - 1]) {
 		if (lcdMode != LCD_STAT_MODE_PIXEL_TRANSFER) {
 			//can't write to map during pixel transfer
-			*location = value;
+			writeRamAddressValue(hardware, address, value);
 		}
-	}*/
-	else if (location == &hardware->videoData->dmaTransfer) {
-		*location = value;
+	}
+	else {*/
+		writeRamAddressValue(hardware, address, value);
+	//}
+}
+
+void writeSound(Hardware *hardware, RamAddress *address, unsigned char value) {
+	if (address->address == RAM_LOCATION_SOUND_CHANNEL_1_PATTERN_LENGTH|| address->address == RAM_LOCATION_SOUND_CHANNEL_1_FREQUENCY_HIGH_SETTINGS) {
+		writeRamAddressValue(hardware, address, value);
+		hardware->soundData->chan1_currentTick = 1;
+	}
+	else if (address->address == RAM_LOCATION_SOUND_CHANNEL_2_PATTERN_LENGTH || address->address == RAM_LOCATION_SOUND_CHANNEL_2_FREQUENCY_HIGH_SETTINGS) {
+		writeRamAddressValue(hardware, address, value);
+		hardware->soundData->chan2_currentTick = 1;
+	}
+	else if ((address->address >= RAM_LOCATION_SOUND_WAVE_PATTERN && address->address <= RAM_LOCATION_SOUND_WAVE_PATTERN_END)
+		|| address->address == RAM_LOCATION_SOUND_CHANNEL_3_LENGTH || address->address == RAM_LOCATION_SOUND_CHANNEL_3_FREQUENCY_HIGH_SETTINGS) {
+		writeRamAddressValue(hardware, address, value);
+		hardware->soundData->chan3_currentTick = 1;
+	}
+	else if (address->address == RAM_LOCATION_SOUND_CHANNEL_4_LENGTH || address->address == RAM_LOCATION_SOUND_CHANNEL_4_SETTINGS) {
+		writeRamAddressValue(hardware, address, value);
+		hardware->soundData->chan4_currentTick = 1;
+	}
+	else {
+		writeRamAddressValue(hardware, address, value);
+	}
+}
+
+void writeJoypad(Hardware *hardware, RamAddress *address, unsigned char value) {
+	 if (address->address == RAM_LOCATION_JOYPAD_INPUT) {
+		//only bits 4 & 5 can be written
+		unsigned char currentValue = getRamAddressValue(hardware, address);
+		writeRamAddressValue(hardware, address, (value & 0x30) | (currentValue & 0xCF));
+		setJoypadDataState(hardware);
+	}
+	else {
+		writeRamAddressValue(hardware, address, value);
+	}
+}
+
+void writeTimer(Hardware *hardware, RamAddress *address, unsigned char value) {
+	if (address == RAM_LOCATION_TIMER_DIVIDER) {
+		//writing resets to zero
+		writeRamAddressValue(hardware, address, 0);
+	}
+	else if (address == RAM_LOCATION_TIMER_CONTROL) {
+		//only bits 0-2 can be written
+		unsigned char currentValue = getRamAddressValue(hardware, address);
+		writeRamAddressValue(hardware, address, (value & 0x07) | (currentValue & 0xF8));
+	}
+	else {
+		writeRamAddressValue(hardware, address, value);
+	}
+}
+
+void writeVideoSettings(Hardware *hardware, RamAddress *address, unsigned char value) {
+	if (address == RAM_LOCATION_LCD_STATUS) {
+		//bits 0-2 are read 
+		unsigned char currentValue = getRamAddressValue(hardware, address);
+		writeRamAddressValue(hardware, address, (value & 0xF8) | (currentValue & 0x7));
+	}
+	else if (address == RAM_LOCATION_LCD_Y_COORD) {
+		//writing should reset?
+		writeRamAddressValue(hardware, address,  0);
+	}
+	else if (address == RAM_LOCATION_DMA_TRANSFER) {
+		writeRamAddressValue(hardware, address, value);
 
 		//start DMA transfer
 		hardware->isOAMDMATriggered = true;
-	}
-	else if (location == &hardware->ioData->joypadData) {
-		//only bits 4 & 5 can be written
-		*location = (value & 0x30) | (*location & 0xCF);
-		setJoypadDataState(hardware);
-	}
-	else if (location == &hardware->soundData->chan1_PatternLength || location == &hardware->soundData->chan1_FrequencyHighSettings) {
-		*location = value;
-		hardware->soundData->chan1_currentTick = 1;
-	}
-	else if (location == &hardware->soundData->chan2_PatternLength || location == &hardware->soundData->chan2_FrequencyHighSettings) {
-		*location = value;
-		hardware->soundData->chan2_currentTick = 1;
-	}
-	else if ((location >= &hardware->soundData->chan3_WaveData && location <= &hardware->soundData->chan3_WaveData[SOUND_WAVE_PATTERN_BYTES - 1]) 
-		|| location == &hardware->soundData->chan3_Length || location == &hardware->soundData->chan3_FrequencyHighSettings) {
-		*location = value;
-		hardware->soundData->chan3_currentTick = 1;
-	}
-	else if (location == &hardware->soundData->chan4_length || location == &hardware->soundData->chan4_settings) {
-		*location = value;
-		hardware->soundData->chan4_currentTick = 1;
-	}
-	else if (location == &hardware->registers->F) {
-		//bits 0-3 are always zero
-		*location = (value & 0xF0);
-	}
-	else if (location == &hardware->timerData->divider) {
-		//writing resets to zero
-		*location = 0;
-	}
-	else if (location == &hardware->timerData->control) {
-		//only bits 0-2 can be written
-		*location = (value & 0x07) | (*location & 0xF8);
-	}
+	}	
 	else {
-		*location = value;
+		writeRamAddressValue(hardware, address, value);
 	}
-
 }
 
 void pushByteToStack(Hardware *hardware, unsigned char value) {
