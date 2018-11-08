@@ -206,11 +206,11 @@ void writeJoypad(Hardware *hardware, RamAddress *address, unsigned char value) {
 }
 
 void writeTimer(Hardware *hardware, RamAddress *address, unsigned char value) {
-	if (address == RAM_LOCATION_TIMER_DIVIDER) {
+	if (address->address == RAM_LOCATION_TIMER_DIVIDER) {
 		//writing resets to zero
 		(*getRamAddressPointer(hardware, address)) = 0;
 	}
-	else if (address == RAM_LOCATION_TIMER_CONTROL) {
+	else if (address->address == RAM_LOCATION_TIMER_CONTROL) {
 		//only bits 0-2 can be written
 		unsigned char currentValue = getRamAddressValue(hardware, address);
 		(*getRamAddressPointer(hardware, address)) = (value & 0x07) | (currentValue & 0xF8);
@@ -221,16 +221,16 @@ void writeTimer(Hardware *hardware, RamAddress *address, unsigned char value) {
 }
 
 void writeVideoSettings(Hardware *hardware, RamAddress *address, unsigned char value) {
-	if (address == RAM_LOCATION_LCD_STATUS) {
+	if (address->address == RAM_LOCATION_LCD_STATUS) {
 		//bits 0-2 are read 
 		unsigned char currentValue = getRamAddressValue(hardware, address);
 		(*getRamAddressPointer(hardware, address)) = (value & 0xF8) | (currentValue & 0x7);
 	}
-	else if (address == RAM_LOCATION_LCD_Y_COORD) {
+	else if (address->address == RAM_LOCATION_LCD_Y_COORD) {
 		//writing should reset?
 		(*getRamAddressPointer(hardware, address)) = 0;
 	}
-	else if (address == RAM_LOCATION_DMA_TRANSFER) {
+	else if (address->address == RAM_LOCATION_DMA_TRANSFER) {
 		(*getRamAddressPointer(hardware, address)) = value;
 
 		//start DMA transfer
