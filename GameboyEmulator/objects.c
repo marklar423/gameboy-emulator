@@ -11,6 +11,17 @@ GameRom* createGameRom(unsigned char *romBytes, long romLength) {
 	return rom;
 }
 
+void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMappingList *mappingList) {
+	mappingList->value_A = createGBByteValue(&(hardware->registers->A));
+	mappingList->value_B = createGBByteValue(&(hardware->registers->B));
+	mappingList->value_C = createGBByteValue(&(hardware->registers->C));
+	mappingList->value_D = createGBByteValue(&(hardware->registers->D));
+	mappingList->value_E = createGBByteValue(&(hardware->registers->E));
+	mappingList->value_H = createGBByteValue(&(hardware->registers->H));
+	mappingList->value_L = createGBByteValue(&(hardware->registers->L));
+	mappingList->value_F = createGBByteValue(&(hardware->registers->F));
+}
+
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue) {
 	char **byteValuePointer = NULL, **byteValue2Pointer = NULL;
 	int **wordValuePointer = NULL;

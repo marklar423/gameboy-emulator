@@ -191,12 +191,13 @@ typedef struct _InstructionMapping {
 typedef struct _InstructionMappingList {
 	InstructionMapping mappings[NUM_OPCODES];
 
-
+	GBValue *value_A, *value_B, *value_C, *value_D, *value_E, *value_H, *value_L, *value_F;
 
 } InstructionMappingList;
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
 
+void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMappingList *mappingList);
 
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue);
 

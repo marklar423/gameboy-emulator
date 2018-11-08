@@ -88,7 +88,8 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues) {
 
 InstructionMapping* initInstructionMappings(Hardware *hardware) {
 	InstructionMappingList *mappingList = calloc(1, sizeof(InstructionMappingList));
-	
+	populateInstructionMappingDefaultValues(hardware, mappingList);
+
 	populateJumpInstructions(hardware, mappingList);
 	populateLoadInstructions(hardware, mappingList);
 	populateALUInstructions(hardware, mappingList);
@@ -99,7 +100,7 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 	return mappingList;
 }
 
-void tickCPU(InstructionMappingList *mappings) {
+void tickCPU(Hardware *hardware, InstructionMappingList *mappings) {
 
 	if (hardware->cpuCyclesToWait <= 1) {		
 		processInterrupts(hardware);

@@ -29,7 +29,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_MEM_HLD_A].operand1 =
 		mappings->mappings[OpCode_LD_MEM_HLI_A].operand1 =
 		mappings->mappings[OpCode_LD_MEM_HL_A].operand1 =
-		mappings->mappings[OpCode_LD_MEM_a16_A].operand1 = createGBByteValue(&(hardware->registers->A));
+		mappings->mappings[OpCode_LD_MEM_a16_A].operand1 = mappings->value_A;
 
 	mappings->mappings[OpCode_LD_A_B].operand1 =
 		mappings->mappings[OpCode_LD_B_B].operand1 =
@@ -38,7 +38,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_B].operand1 =
 		mappings->mappings[OpCode_LD_H_B].operand1 =
 		mappings->mappings[OpCode_LD_L_B].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_B].operand1 = createGBByteValue(&(hardware->registers->B));
+		mappings->mappings[OpCode_LD_MEM_HL_B].operand1 = mappings->value_B;
 
 	mappings->mappings[OpCode_LD_A_C].operand1 =
 		mappings->mappings[OpCode_LD_B_C].operand1 =
@@ -47,7 +47,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_C].operand1 =
 		mappings->mappings[OpCode_LD_H_C].operand1 =
 		mappings->mappings[OpCode_LD_L_C].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_C].operand1 = createGBByteValue(&(hardware->registers->C));
+		mappings->mappings[OpCode_LD_MEM_HL_C].operand1 = mappings->value_C;
 
 	mappings->mappings[OpCode_LD_A_D].operand1 =
 		mappings->mappings[OpCode_LD_B_D].operand1 =
@@ -56,7 +56,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_D].operand1 =
 		mappings->mappings[OpCode_LD_H_D].operand1 =
 		mappings->mappings[OpCode_LD_L_D].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_D].operand1 = createGBByteValue(&(hardware->registers->D));
+		mappings->mappings[OpCode_LD_MEM_HL_D].operand1 = mappings->value_D;
 
 	mappings->mappings[OpCode_LD_A_E].operand1 =
 		mappings->mappings[OpCode_LD_B_E].operand1 =
@@ -65,7 +65,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_E].operand1 =
 		mappings->mappings[OpCode_LD_H_E].operand1 =
 		mappings->mappings[OpCode_LD_L_E].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_E].operand1 = createGBByteValue(&(hardware->registers->E));
+		mappings->mappings[OpCode_LD_MEM_HL_E].operand1 = mappings->value_E;
 
 	mappings->mappings[OpCode_LD_A_H].operand1 =
 		mappings->mappings[OpCode_LD_B_H].operand1 =
@@ -74,7 +74,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_H].operand1 =
 		mappings->mappings[OpCode_LD_H_H].operand1 =
 		mappings->mappings[OpCode_LD_L_H].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_H].operand1 = createGBByteValue(&(hardware->registers->H));
+		mappings->mappings[OpCode_LD_MEM_HL_H].operand1 = mappings->value_H;
 
 	mappings->mappings[OpCode_LD_A_L].operand1 =
 		mappings->mappings[OpCode_LD_B_L].operand1 =
@@ -83,7 +83,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_L].operand1 =
 		mappings->mappings[OpCode_LD_H_L].operand1 =
 		mappings->mappings[OpCode_LD_L_L].operand1 =
-		mappings->mappings[OpCode_LD_MEM_HL_L].operand1 = createGBByteValue(&(hardware->registers->L));
+		mappings->mappings[OpCode_LD_MEM_HL_L].operand1 = mappings->value_L;
 
 	mappings->mappings[OpCode_LD_MEM_a16_SP].operand1 = createGBWordValue(&(hardware->registers->SP));
 
@@ -152,7 +152,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_A_MEM_HLD].destination =
 		mappings->mappings[OpCode_LD_A_MEM_HLI].destination =
 		mappings->mappings[OpCode_LD_A_MEM_a16].destination =
-		mappings->mappings[OpCode_LDH_A_MEM_a8].destination = createGBByteValue(&(hardware->registers->A));
+		mappings->mappings[OpCode_LDH_A_MEM_a8].destination = mappings->value_A;
 
 	mappings->mappings[OpCode_LD_B_A].destination =
 		mappings->mappings[OpCode_LD_B_B].destination =
@@ -162,7 +162,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_B_H].destination =
 		mappings->mappings[OpCode_LD_B_L].destination =
 		mappings->mappings[OpCode_LD_B_d8].destination =
-		mappings->mappings[OpCode_LD_B_MEM_HL].destination = createGBByteValue(&(hardware->registers->B));
+		mappings->mappings[OpCode_LD_B_MEM_HL].destination = mappings->value_B;
 
 	mappings->mappings[OpCode_LD_C_A].destination =
 		mappings->mappings[OpCode_LD_C_B].destination =
@@ -172,7 +172,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_C_H].destination =
 		mappings->mappings[OpCode_LD_C_L].destination =
 		mappings->mappings[OpCode_LD_C_MEM_HL].destination =
-		mappings->mappings[OpCode_LD_C_d8].destination = createGBByteValue(&(hardware->registers->C));
+		mappings->mappings[OpCode_LD_C_d8].destination = mappings->value_C;
 
 	mappings->mappings[OpCode_LD_D_A].destination =
 		mappings->mappings[OpCode_LD_D_B].destination =
@@ -182,7 +182,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_D_H].destination =
 		mappings->mappings[OpCode_LD_D_L].destination =
 		mappings->mappings[OpCode_LD_D_MEM_HL].destination =
-		mappings->mappings[OpCode_LD_D_d8].destination = createGBByteValue(&(hardware->registers->D));
+		mappings->mappings[OpCode_LD_D_d8].destination = mappings->value_D;
 
 	mappings->mappings[OpCode_LD_E_A].destination =
 		mappings->mappings[OpCode_LD_E_B].destination =
@@ -192,7 +192,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_E_H].destination =
 		mappings->mappings[OpCode_LD_E_L].destination =
 		mappings->mappings[OpCode_LD_E_MEM_HL].destination =
-		mappings->mappings[OpCode_LD_E_d8].destination = createGBByteValue(&(hardware->registers->E));
+		mappings->mappings[OpCode_LD_E_d8].destination = mappings->value_E;
 
 	mappings->mappings[OpCode_LD_H_A].destination =
 		mappings->mappings[OpCode_LD_H_B].destination =
@@ -202,7 +202,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_H_H].destination =
 		mappings->mappings[OpCode_LD_H_L].destination =
 		mappings->mappings[OpCode_LD_H_MEM_HL].destination =
-		mappings->mappings[OpCode_LD_H_d8].destination = createGBByteValue(&(hardware->registers->H));
+		mappings->mappings[OpCode_LD_H_d8].destination = mappings->value_H;
 
 	mappings->mappings[OpCode_LD_L_A].destination =
 		mappings->mappings[OpCode_LD_L_B].destination =
@@ -212,7 +212,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_L_H].destination =
 		mappings->mappings[OpCode_LD_L_L].destination =
 		mappings->mappings[OpCode_LD_L_MEM_HL].destination =
-		mappings->mappings[OpCode_LD_L_d8].destination = createGBByteValue(&(hardware->registers->L));
+		mappings->mappings[OpCode_LD_L_d8].destination = mappings->value_L;
 
 	mappings->mappings[OpCode_LD_SP_HL].destination =
 		mappings->mappings[OpCode_LD_SP_d16].destination = createGBWordValue(&(hardware->registers->SP));

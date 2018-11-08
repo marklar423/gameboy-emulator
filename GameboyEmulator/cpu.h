@@ -8,4 +8,4 @@ Hardware* initCPU(GameRom *rom, bool populateDefaultValues);
 
 InstructionMapping* initInstructionMappings(Hardware *hardware);
 
-void tickCPU(InstructionMappingList *mappings);
+void tickCPU(Hardware *hardware, InstructionMappingList *mappings);
