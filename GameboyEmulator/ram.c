@@ -243,7 +243,7 @@ void writeVideoSettings(Hardware *hardware, RamAddress *address, unsigned char v
 
 void pushByteToStack(Hardware *hardware, unsigned char value) {
 	hardware->registers->SP--;
-	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);
+	unsigned char* topOfStack = getRamAddressPointer(hardware, hardware->ramAddresses[hardware->registers->SP]);
 	*topOfStack = value;
 }
 
@@ -256,7 +256,7 @@ void pushWordToStack(Hardware *hardware, int value) {
 }
 
 unsigned char popByteFromStack(Hardware *hardware){
-	unsigned char* topOfStack = getRamAddress(hardware, hardware->registers->SP);
+	unsigned char* topOfStack = getRamAddressPointer(hardware, hardware->ramAddresses[hardware->registers->SP]);
 	hardware->registers->SP++;
 	return *topOfStack;
 }
