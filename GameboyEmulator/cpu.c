@@ -92,8 +92,8 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 
 	populateJumpInstructions(hardware, mappingList);
 	populateLoadInstructions(hardware, mappingList);
-	populateALUInstructions(mappingList);
-	populateBitwiseInstructions(mappingList);
+	populateALUInstructions(hardware, mappingList);
+	populateBitwiseInstructions(hardware, mappingList);
 	populateCPUCycleCounts(mappingList);
 	populateCPUOpSizes(mappingList);
 

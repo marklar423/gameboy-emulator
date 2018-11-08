@@ -13,19 +13,19 @@ static const unsigned char FIVE = 5;
 static const unsigned char SIX = 6;
 static const unsigned char SEVEN = 7;
 
-void populateBitwiseOperands1(InstructionMappingList *mappings);
-void populateBitwiseOperands2Destinations(InstructionMappingList *mappings);
-void populateBitwiseOperandsResults(InstructionMappingList *mappings);
-void populateBitwiseOperandsFlags(InstructionMappingList *mappings);
+void populateBitwiseOperands1(Hardware *hardware, InstructionMappingList *mappings);
+void populateBitwiseOperands2Destinations(Hardware *hardware, InstructionMappingList *mappings);
+void populateBitwiseOperandsResults(Hardware *hardware, InstructionMappingList *mappings);
+void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMappingList *mappings);
 
-void populateBitwiseInstructions(InstructionMappingList *mappings) {
-	populateBitwiseOperands1(mappings);
-	populateBitwiseOperands2Destinations(mappings);
-	populateBitwiseOperandsResults(mappings);
-	populateBitwiseOperandsFlags(mappings);
+void populateBitwiseInstructions(Hardware *hardware, InstructionMappingList *mappings) {
+	populateBitwiseOperands1(hardware, mappings);
+	populateBitwiseOperands2Destinations(hardware, mappings);
+	populateBitwiseOperandsResults(hardware, mappings);
+	populateBitwiseOperandsFlags(hardware, mappings);
 }
 
-void populateBitwiseOperands1(InstructionMappingList *mappings) {
+void populateBitwiseOperands1(Hardware *hardware, InstructionMappingList *mappings) {
 
 	mappings->mappings[OpCode_BIT_0_B].operand1 =
 		mappings->mappings[OpCode_BIT_0_C].operand1 =
@@ -304,7 +304,7 @@ void populateBitwiseOperands1(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_SRL_MEM_HL].operand1 = createGBBytePointer(&hardware->computedValues->memoryHL);
 }
 
-void populateBitwiseOperands2Destinations(InstructionMappingList *mappings) {
+void populateBitwiseOperands2Destinations(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_BIT_0_A].operand2 =
 		mappings->mappings[OpCode_BIT_1_A].operand2 =
 		mappings->mappings[OpCode_BIT_2_A].operand2 =
@@ -703,7 +703,7 @@ void populateBitwiseOperands2Destinations(InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_SWAP_MEM_HL].destination = createGBBytePointer(&hardware->computedValues->memoryHL);
 }
 
-void populateBitwiseOperandsResults(InstructionMappingList *mappings) {
+void populateBitwiseOperandsResults(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_BIT_0_B].result =
 		mappings->mappings[OpCode_BIT_0_C].result =
 		mappings->mappings[OpCode_BIT_0_D].result =
@@ -978,7 +978,7 @@ void populateBitwiseOperandsResults(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_SRL_MEM_HL].result = &hardware->operationResults->shiftRightLogical;
 }
 
-void populateBitwiseOperandsFlags(InstructionMappingList *mappings) {
+void populateBitwiseOperandsFlags(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_BIT_0_B].flagResult =
 		mappings->mappings[OpCode_BIT_0_C].flagResult =
 		mappings->mappings[OpCode_BIT_0_D].flagResult =

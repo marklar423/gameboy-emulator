@@ -9,12 +9,12 @@ static const bool FALSE_VAL = false;
 static const bool TRUE_VAL = true;
 
 void populateLoadInstructions(Hardware *hardware, InstructionMappingList *mappings) {
-	populateLoadOperands(mappings);
-	populateLoadDestinations(mappings);
+	populateLoadOperands(hardware, mappings);
+	populateLoadDestinations(hardware, mappings);
 	populateLoadNextSPs(hardware, mappings);
 }
 
-void populateLoadOperands(InstructionMappingList *mappings) {
+void populateLoadOperands(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_LDH_MEM_a8_A].operand1 =
 		mappings->mappings[OpCode_LD_A_A].operand1 =
 		mappings->mappings[OpCode_LD_B_A].operand1 =
@@ -136,7 +136,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 
 }
 
-void populateLoadDestinations(InstructionMappingList *mappings) {
+void populateLoadDestinations(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_LD_A_A].destination =
 		mappings->mappings[OpCode_LD_A_B].destination =
 		mappings->mappings[OpCode_LD_A_C].destination =

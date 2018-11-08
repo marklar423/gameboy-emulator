@@ -10,15 +10,15 @@ static const unsigned char FLAGS_CY_VALUE = FLAGS_CY;
 
 
 
-void populateALUInstructions(InstructionMappingList *mappings) {
-	populateALUOperands1(mappings);
-	populateALUOperands2(mappings);
-	populateALUResults(mappings);
-	populateALUDestinations(mappings);
-	populateALUFlagResults(mappings);
+void populateALUInstructions(Hardware *hardware, InstructionMappingList *mappings) {
+	populateALUOperands1(hardware, mappings);
+	populateALUOperands2(hardware, mappings);
+	populateALUResults(hardware, mappings);
+	populateALUDestinations(hardware, mappings);
+	populateALUFlagResults(hardware, mappings);
 }
 
-void populateALUOperands1(InstructionMappingList *mappings) {
+void populateALUOperands1(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_ADD_A_A].operand1 =
 		mappings->mappings[OpCode_ADD_A_B].operand1 =
 		mappings->mappings[OpCode_ADD_A_C].operand1 =
@@ -131,7 +131,7 @@ void populateALUOperands1(InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_CCF].operand1 = mappings->value_F;
 }
 
-void populateALUOperands2(InstructionMappingList *mappings) {
+void populateALUOperands2(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_ADC_A_A].operand2 =
 		mappings->mappings[OpCode_ADD_A_A].operand2 =
 		mappings->mappings[OpCode_CP_A].operand2 =
@@ -250,7 +250,7 @@ void populateALUOperands2(InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_CCF].operand2 = createGBByteValue(&(FLAGS_CY_VALUE));
 }
 
-void populateALUResults(InstructionMappingList *mappings) {
+void populateALUResults(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_DEC_A].result =
 		mappings->mappings[OpCode_DEC_B].result =
 		mappings->mappings[OpCode_DEC_BC].result =
@@ -365,7 +365,7 @@ void populateALUResults(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_CPL].result = &(hardware->operationResults->xor);
 }
 
-void populateALUDestinations(InstructionMappingList *mappings) {
+void populateALUDestinations(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_ADC_A_A].destination =
 		mappings->mappings[OpCode_ADC_A_B].destination =
 		mappings->mappings[OpCode_ADC_A_C].destination =
@@ -469,7 +469,7 @@ void populateALUDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_DEC_SP].destination = mappings->value_SP;
 }
 
-void populateALUFlagResults(InstructionMappingList *mappings) {
+void populateALUFlagResults(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_AND_A].flagResult =
 		mappings->mappings[OpCode_AND_B].flagResult =
 		mappings->mappings[OpCode_AND_C].flagResult =

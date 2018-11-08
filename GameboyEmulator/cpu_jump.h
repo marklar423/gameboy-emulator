@@ -6,8 +6,8 @@
 
 void populateJumpInstructions(Hardware *hardware, InstructionMappingList *mappings);
 
-void populateJumpCalculations(InstructionMappingList *mappings);
+void populateJumpCalculations(Hardware *hardware, InstructionMappingList *mappings);
 
 void populateJumpNextPC(Hardware *hardware, InstructionMappingList *mappings);
 
-void populateJumpFlagConditions(InstructionMappingList *mappings);
+void populateJumpFlagConditions(Hardware *hardware, InstructionMappingList *mappings);

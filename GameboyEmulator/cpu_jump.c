@@ -6,12 +6,12 @@ static const int HEX_00 = 0x0, HEX_08 = 0x8, HEX_10 = 0x10, HEX_18 = 0x18, HEX_2
 
 
 void populateJumpInstructions(Hardware *hardware, InstructionMappingList *mappings) {
-	populateJumpCalculations(mappings);
+	populateJumpCalculations(hardware, mappings);
 	populateJumpNextPC(hardware, mappings);
-	populateJumpFlagConditions(mappings);
+	populateJumpFlagConditions(hardware, mappings);
 }
 
-void populateJumpCalculations(InstructionMappingList *mappings) {
+void populateJumpCalculations(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_CALL_C_a16].operand1 =
 		mappings->mappings[OpCode_CALL_NC_a16].operand1 =
 		mappings->mappings[OpCode_CALL_NZ_a16].operand1 =
@@ -99,7 +99,7 @@ void populateJumpNextPC(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_RST_38H].nextPC = &HEX_38;
 }
 
-void populateJumpFlagConditions(InstructionMappingList *mappings) {	
+void populateJumpFlagConditions(Hardware *hardware, InstructionMappingList *mappings) {	
 	mappings->mappings[OpCode_CALL_C_a16].flagCondition =
 		mappings->mappings[OpCode_JP_C_a16].flagCondition =
 		mappings->mappings[OpCode_JR_C_r8].flagCondition =
