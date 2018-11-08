@@ -17,8 +17,9 @@ typedef struct _CartMBC1 {
 	unsigned char ramBytes[MBC1_RAM_SIZE];
 	bool ramEnable, isRamBankMode;
 } CartMBC1;
+
 typedef struct _GameRom {
-	unsigned char *romBytes;
+	unsigned char *romBytes, *romBytesSwitchable, *ramSwitchable;
 	long romLength;
 	char gameName[15];
 	CartType cartType;
@@ -134,6 +135,13 @@ typedef struct _ResultInfo {
 	bool isOperand1Bit0Set, isOperand1Bit7Set;
 } ResultInfo;
 
+typedef struct _RamAddress {
+	int address;
+	unsigned char *value;
+	unsigned char(*valueFunc)(void *hardware, void *ramAddress);
+	void (*writeValueFunc)(void *hardware, void *ramAddress, unsigned char value);
+} RamAddress;
+
 typedef struct _Hardware {
 	GameRom *rom;
 	Registers *registers;
@@ -149,7 +157,7 @@ typedef struct _Hardware {
 	int cpuCyclesToWait, ppuCyclesToWait;
 	OpCode opCodePrefix;
 	bool isOAMDMATriggered, pauseCPU;
-	unsigned char * ramAddresses[TOTAL_RAM_SIZE];
+	RamAddress * ramAddresses[TOTAL_RAM_SIZE];
 } Hardware;
 
 typedef struct _FlagResult {
@@ -177,6 +185,7 @@ typedef struct _InstructionMapping {
 } InstructionMapping;
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
+
 
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue);
 GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer, int **wordValuePointer);

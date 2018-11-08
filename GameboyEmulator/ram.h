@@ -4,10 +4,7 @@
 #include "objects.h"
 
 
-//unsigned char* getRamAddress(Hardware *hardware, int address);
-
 // Use this function when writing to RAM might be denied or have other effects, like with MBC
-void writeLocation(Hardware *hardware, unsigned char *location, unsigned char value);
 
 void pushByteToStack(Hardware *hardware, unsigned char value);
 
@@ -18,3 +15,6 @@ unsigned char popByteFromStack(Hardware *hardware);
 void setJoypadDataState(Hardware *hardware);
 
 void populateRamAddresses(Hardware *hardware);
+
+#define getRamAddressValue(hardware, ramAddress) ramAddress->valueFunc != NULL ? ramAddress->valueFunc(hardware, ramAddress) : *(ramAddress->value)
+#define writeRamAddressValue(hardware, ramAddress, value) ramAddress->writeValueFunc != NULL ? ramAddress->writeValueFunc(hardware, ramAddress, value) : *(ramAddress->value) = value;

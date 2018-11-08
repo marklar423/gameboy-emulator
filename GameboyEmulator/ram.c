@@ -8,18 +8,26 @@
 
 static unsigned char TODO = 0xFF;
 
+unsigned char getSwitchableRom(Hardware *hardware, RamAddress *address);
+
+void writeRomAddress(Hardware *hardware, RamAddress *address, unsigned char value);
+
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize);
 
-unsigned char* getRamAddress(Hardware *hardware, int address) {
-	if (address >= RAM_LOCATION_CART_FIXED && address <= RAM_LOCATION_CART_FIXED_END)
-		return &hardware->rom->romBytes[address];
+RamAddress* getRamAddress(Hardware *hardware, int address) {
+	RamAddress *ramAddress = calloc(1, sizeof(RamAddress));
+	ramAddress->address = address;
 
-	if (address >= RAM_LOCATION_CART_SWITCHABLE && address <= RAM_LOCATION_CART_SWITCHABLE_END)
-		//todo: implement memory bank switching
-		return &hardware->rom->romBytes[address];
-
+	if (address >= RAM_LOCATION_CART_FIXED && address <= RAM_LOCATION_CART_FIXED_END) {
+		ramAddress->value = &hardware->rom->romBytes[address];
+		ramAddress->writeValueFunc = writeRomAddress;
+	}
+	else if (address >= RAM_LOCATION_CART_SWITCHABLE && address <= RAM_LOCATION_CART_SWITCHABLE_END) {
+		ramAddress->valueFunc = getSwitchableRom;
+		ramAddress->writeValueFunc = writeRomAddress;
+	}
 	else if (address >= RAM_LOCATION_VRAM_TILES_1 && address < RAM_LOCATION_VRAM_BG_MAP_1)
-		return getArrayAddress (hardware->videoData->tileData, address - RAM_LOCATION_VRAM_TILES_1, VRAM_TOTAL_TILES_SIZE);
+		return getArrayAddress(hardware->videoData->tileData, address - RAM_LOCATION_VRAM_TILES_1, VRAM_TOTAL_TILES_SIZE);
 
 	else if (address >= RAM_LOCATION_VRAM_BG_MAP_1 && address < RAM_LOCATION_VRAM_BG_MAP_2)
 		return getArrayAddress(hardware->videoData->bgMap1, address - RAM_LOCATION_VRAM_BG_MAP_1, VRAM_BG_MAP_1_SIZE);
@@ -29,6 +37,9 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 
 	else if (address >= RAM_LOCATION_OAM && address <= RAM_LOCATION_OAM_END)
 		return getArrayAddress(hardware->videoData->oamTable, address - RAM_LOCATION_OAM, OAM_SIZE);
+
+	else if ((address >= RAM_LOCATION_CART_RAM && address <= RAM_LOCATION_CART_RAM_END) && hardware->rom->hasExternalRam)		
+		return getArrayAddress(hardware->rom->ramSwitchable, address - RAM_LOCATION_CART_RAM_END, SWITCHABLE_CART_RAM_ADDRESS_SIZE);
 
 	else if (address >= RAM_LOCATION_WORK_RAM_FIXED && address <= RAM_LOCATION_WORK_RAM_FIXED_END)
 		return getArrayAddress(hardware->workRam, address - RAM_LOCATION_WORK_RAM_FIXED, WORK_RAM_SIZE);
@@ -100,7 +111,7 @@ unsigned char* getRamAddress(Hardware *hardware, int address) {
 		return &TODO;
 
 	//assert(false && "Unknown RAM location");
-	return NULL;
+	return ramAddress;
 }
 
 unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize) {
@@ -108,8 +119,13 @@ unsigned char* getArrayAddress(unsigned char *array, int index, int arraySize) {
 	return &(array[index]);
 }
 
+unsigned char getSwitchableRom(Hardware *hardware, RamAddress *address) {
+	//todo: implement memory bank switching
+	return *getArrayAddress(hardware->rom->romBytesSwitchable, address->address - RAM_LOCATION_CART_SWITCHABLE, SWITCHABLE_CART_ROM_ADDRESS_SIZE);
+}
+
 void writeLocation(Hardware *hardware, unsigned char *location, unsigned char value) {
-		
+	
 	PPUFlag lcdMode = (hardware->videoData->lcdStatus & LCD_STAT_MODE_MASK);
 
 	if (location == &hardware->videoData->lcdStatus) {
