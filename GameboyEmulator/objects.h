@@ -193,7 +193,17 @@ typedef struct _InstructionMappingList {
 
 	GBValue *value_A, *value_B, *value_C, *value_D, *value_E, *value_H, *value_L, *value_F;
 	GBValue *value_AF, *value_BC, *value_DE, *value_HL;
-	GBValue *value_SP;
+	GBValue *value_SP, *value_nextPCAddress;
+
+	GBValue *value_immediateByte, *value_immediateByteSigned, *value_immediateWord;
+
+	GBValue *value_split_memoryImmediateWordPlusOne_memoryImmediateWord;
+	GBValue *value_highMemoryImmediateByte, *value_memoryImmediateWord, *value_memoryImmediateWordPlusOne;
+	GBValue *value_highMemoryC;
+	GBValue *value_memoryHL, *value_memoryBC, *value_memoryDE;
+	GBValue *value_split_stackPlusOne_stack;
+	GBValue *value_split_stackMinusOne_stackMinusTwo;
+
 } InstructionMappingList;
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);
@@ -205,9 +215,6 @@ GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char
 GBValue* createGBPointerValue(GBValueType type, unsigned char **byteValuePointer, unsigned char **byteValue2Pointer,
 	int **wordValuePointer, RamAddress *ramValue, RamAddress *ramValue2);
 
-int GBValueToInt(GBValue *value);
-bool GBValueIsByte(GBValue *value);
-
 #define createGBByteValue(byteValue) createGBValue(GBVALUE_BYTE, byteValue, NULL, NULL)
 #define createGBByteValueSigned(signedByteValue) createGBValue(GBVALUE_BYTE_SIGNED, signedByteValue, NULL, NULL)
 #define createGBWordValue(wordValue) createGBValue(GBVALUE_WORD, NULL, NULL, wordValue)
@@ -218,6 +225,10 @@ bool GBValueIsByte(GBValue *value);
 #define createGBSplitBytePointer(byteValue, byteValue2) createGBPointerValue(GBVALUE_SPLIT, byteValue, byteValue2, NULL, NULL, NULL)
 #define createGBRamAddress(ramValue) createGBPointerValue(GBVALUE_RAM, NULL, NULL, NULL, ramValue, NULL)
 #define createGBRamAddressSplit(ramValue, ramValue2) createGBPointerValue(GBVALUE_RAM_SPLIT, NULL, NULL, NULL, ramValue, ramValue2)
+
+int GBValueToInt(GBValue *value);
+bool GBValueIsByte(GBValue *value);
+
 
 FlagResult* createFlagResult(bool *isZero, bool *isSubtract, bool *isHalf, bool *isCarry);
 FlagCondition* createFlagCondition(char condition, bool negate);

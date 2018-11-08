@@ -24,7 +24,7 @@ void populateJumpCalculations(Hardware *hardware, InstructionMappingList *mappin
 		mappings->mappings[OpCode_RST_20H].operand1 =
 		mappings->mappings[OpCode_RST_28H].operand1 =
 		mappings->mappings[OpCode_RST_30H].operand1 =
-		mappings->mappings[OpCode_RST_38H].operand1 = createGBWordValue(&(hardware->computedValues->NextPCAddress));
+		mappings->mappings[OpCode_RST_38H].operand1 = mappings->value_nextPCAddress;
 	
 	mappings->mappings[OpCode_CALL_C_a16].destination =
 		mappings->mappings[OpCode_CALL_NC_a16].destination =
@@ -38,7 +38,7 @@ void populateJumpCalculations(Hardware *hardware, InstructionMappingList *mappin
 		mappings->mappings[OpCode_RST_20H].destination =
 		mappings->mappings[OpCode_RST_28H].destination =
 		mappings->mappings[OpCode_RST_30H].destination =
-		mappings->mappings[OpCode_RST_38H].destination = createGBSplitBytePointer(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
+		mappings->mappings[OpCode_RST_38H].destination = mappings->value_split_stackMinusOne_stackMinusTwo;
 
 	mappings->mappings[OpCode_CALL_C_a16].nextSP =
 		mappings->mappings[OpCode_CALL_NC_a16].nextSP =
