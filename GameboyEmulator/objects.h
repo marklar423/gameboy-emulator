@@ -8,11 +8,25 @@
 #include <assert.h>
 #include <intrin.h>
 
+typedef struct _CartRomOnly {
+	unsigned char ramBytes[ROM_ONLY_RAM_SIZE];
+} CartRomOnly;
+
+typedef struct _CartMBC1 {
+	unsigned char romBank, ramBank;
+	unsigned char ramBytes[MBC1_RAM_SIZE];
+	bool ramEnable, isRamBankMode;
+} CartMBC1;
 typedef struct _GameRom {
 	unsigned char *romBytes;
 	long romLength;
 	char gameName[15];
 	CartType cartType;
+
+	CartRomOnly *cartRomOnly;
+	CartMBC1 *cartMBC1;
+
+	bool hasExternalRam, hasExternalBattery;
 } GameRom;
 
 typedef struct _Config {
