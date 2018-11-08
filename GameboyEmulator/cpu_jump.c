@@ -5,9 +5,9 @@ static const unsigned char ONE = 1;
 static const int HEX_00 = 0x0, HEX_08 = 0x8, HEX_10 = 0x10, HEX_18 = 0x18, HEX_20 = 0x20, HEX_28 = 0x28, HEX_30 = 0x30, HEX_38 = 0x38;
 
 
-void populateJumpInstructions(InstructionMappingList *mappings) {
+void populateJumpInstructions(Hardware *hardware, InstructionMappingList *mappings) {
 	populateJumpCalculations(mappings);
-	populateJumpNextPC(mappings);
+	populateJumpNextPC(hardware, mappings);
 	populateJumpFlagConditions(mappings);
 }
 
@@ -62,7 +62,7 @@ void populateJumpCalculations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_RET_Z].nextSP = &hardware->computedValues->SPPlusTwo;
 }
 
-void populateJumpNextPC(InstructionMappingList *mappings) {
+void populateJumpNextPC(Hardware *hardware, InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_JP_MEM_HL].nextPC = &(hardware->computedValues->HL);
 
 	mappings->mappings[OpCode_JP_C_a16].nextPC =

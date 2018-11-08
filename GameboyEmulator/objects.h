@@ -123,7 +123,6 @@ typedef struct _ComputedValues {
 	RamAddress *highMemoryImmediateByte, *memoryImmediateWord, *memoryImmediateWordPlusOne;
 	RamAddress *highMemoryC;
 	RamAddress *memoryHL, *memoryBC, *memoryDE;
-	int AF, BC, DE, HL;
 	int NextPCAddress, NextPCAddressPlusImmediateByteSigned;
 	int SPPlusOne, SPPlusTwo, SPMinusOne, SPMinusTwo;
 	RamAddress *stackValue; //value on top of stack
@@ -192,7 +191,8 @@ typedef struct _InstructionMappingList {
 	InstructionMapping mappings[NUM_OPCODES];
 
 	GBValue *value_A, *value_B, *value_C, *value_D, *value_E, *value_H, *value_L, *value_F;
-
+	GBValue *value_AF, *value_BC, *value_DE, *value_HL;
+	GBValue *value_SP;
 } InstructionMappingList;
 
 GameRom* createGameRom(unsigned char *romBytes, long romLength);

@@ -6,9 +6,9 @@
 
 #pragma once
 
-void populateLoadInstructions(InstructionMappingList *mappings);
+void populateLoadInstructions(Hardware *hardware, InstructionMappingList *mappings);
 
 void populateLoadOperands(InstructionMappingList *mappings);
 void populateLoadDestinations(InstructionMappingList *mappings);
-void populateLoadNextSPs(InstructionMappingList *mappings);
+void populateLoadNextSPs(Hardware *hardware, InstructionMappingList *mappings);
 

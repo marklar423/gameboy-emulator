@@ -20,6 +20,13 @@ void populateInstructionMappingDefaultValues(Hardware *hardware, InstructionMapp
 	mappingList->value_H = createGBByteValue(&(hardware->registers->H));
 	mappingList->value_L = createGBByteValue(&(hardware->registers->L));
 	mappingList->value_F = createGBByteValue(&(hardware->registers->F));
+
+	mappingList->value_AF = createGBSplitByteValue(&(hardware->registers->A), &(hardware->registers->F));
+	mappingList->value_BC = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
+	mappingList->value_DE = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
+	mappingList->value_HL = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+
+	mappingList->value_SP = createGBWordValue(&(hardware->registers->SP));
 }
 
 GBValue* createGBValue(GBValueType type, unsigned char *byteValue, unsigned char *byteValue2, int *wordValue) {

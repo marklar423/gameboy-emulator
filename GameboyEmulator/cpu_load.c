@@ -8,10 +8,10 @@
 static const bool FALSE_VAL = false;
 static const bool TRUE_VAL = true;
 
-void populateLoadInstructions(InstructionMappingList *mappings) {
+void populateLoadInstructions(Hardware *hardware, InstructionMappingList *mappings) {
 	populateLoadOperands(mappings);
 	populateLoadDestinations(mappings);
-	populateLoadNextSPs(mappings);
+	populateLoadNextSPs(hardware, mappings);
 }
 
 void populateLoadOperands(InstructionMappingList *mappings) {
@@ -85,7 +85,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_L_L].operand1 =
 		mappings->mappings[OpCode_LD_MEM_HL_L].operand1 = mappings->value_L;
 
-	mappings->mappings[OpCode_LD_MEM_a16_SP].operand1 = createGBWordValue(&(hardware->registers->SP));
+	mappings->mappings[OpCode_LD_MEM_a16_SP].operand1 = mappings->value_SP;
 
 	mappings->mappings[OpCode_LD_A_d8].operand1 =
 		mappings->mappings[OpCode_LD_B_d8].operand1 =
@@ -101,7 +101,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_HL_d16].operand1 =
 		mappings->mappings[OpCode_LD_SP_d16].operand1 = createGBWordValue(&(hardware->computedValues->immediateWord));
 
-	mappings->mappings[OpCode_LD_SP_HL].operand1 = createGBWordValue(&(hardware->computedValues->HL));
+	mappings->mappings[OpCode_LD_SP_HL].operand1 = mappings->value_HL;
 	mappings->mappings[OpCode_LD_A_MEM_a16].operand1 = createGBBytePointer(&(hardware->computedValues->memoryImmediateWord));
 	mappings->mappings[OpCode_LDH_A_MEM_a8].operand1 = createGBBytePointer(&(hardware->computedValues->highMemoryImmediateByte));
 	mappings->mappings[OpCode_LD_A_MEM_C].operand1 = createGBBytePointer(&(hardware->computedValues->highMemoryC));
@@ -119,7 +119,7 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 	mappings->mappings[OpCode_LD_A_MEM_BC].operand1 = createGBBytePointer(&(hardware->computedValues->memoryBC));
 	mappings->mappings[OpCode_LD_A_MEM_DE].operand1 = createGBBytePointer(&(hardware->computedValues->memoryDE));
 
-	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = createGBWordValue(&(hardware->registers->SP));
+	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = mappings->value_SP;
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = createGBByteValueSigned(&(hardware->computedValues->immediateByte));
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].result = &hardware->operationResults->add;
@@ -129,10 +129,10 @@ void populateLoadOperands(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_POP_DE].operand1 =
 		mappings->mappings[OpCode_POP_HL].operand1 = createGBSplitBytePointer(&(hardware->computedValues->stackPlusOneValue), &(hardware->computedValues->stackValue));
 
-	mappings->mappings[OpCode_PUSH_AF].operand1 = createGBWordValue(&(hardware->computedValues->AF));
-	mappings->mappings[OpCode_PUSH_BC].operand1 = createGBWordValue(&(hardware->computedValues->BC));
-	mappings->mappings[OpCode_PUSH_DE].operand1 = createGBWordValue(&(hardware->computedValues->DE));
-	mappings->mappings[OpCode_PUSH_HL].operand1 = createGBWordValue(&(hardware->computedValues->HL));
+	mappings->mappings[OpCode_PUSH_AF].operand1 = mappings->value_AF;
+	mappings->mappings[OpCode_PUSH_BC].operand1 = mappings->value_BC;
+	mappings->mappings[OpCode_PUSH_DE].operand1 = mappings->value_DE;
+	mappings->mappings[OpCode_PUSH_HL].operand1 = mappings->value_HL;
 
 }
 
@@ -215,7 +215,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_LD_L_d8].destination = mappings->value_L;
 
 	mappings->mappings[OpCode_LD_SP_HL].destination =
-		mappings->mappings[OpCode_LD_SP_d16].destination = createGBWordValue(&(hardware->registers->SP));
+		mappings->mappings[OpCode_LD_SP_d16].destination = mappings->value_SP;
 
 	mappings->mappings[OpCode_LD_MEM_HL_A].destination =
 		mappings->mappings[OpCode_LD_MEM_HL_B].destination =
@@ -238,16 +238,16 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 
 	mappings->mappings[OpCode_LDH_MEM_a8_A].destination = createGBBytePointer(&(hardware->computedValues->highMemoryImmediateByte));
 
-	mappings->mappings[OpCode_LD_BC_d16].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
-	mappings->mappings[OpCode_LD_DE_d16].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
+	mappings->mappings[OpCode_LD_BC_d16].destination = mappings->value_BC;
+	mappings->mappings[OpCode_LD_DE_d16].destination = mappings->value_DE;
 
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].destination =
-		mappings->mappings[OpCode_LD_HL_d16].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+		mappings->mappings[OpCode_LD_HL_d16].destination = mappings->value_HL;
 
-	mappings->mappings[OpCode_POP_AF].destination = createGBSplitByteValue(&(hardware->registers->A), &(hardware->registers->F));
-	mappings->mappings[OpCode_POP_BC].destination = createGBSplitByteValue(&(hardware->registers->B), &(hardware->registers->C));
-	mappings->mappings[OpCode_POP_DE].destination = createGBSplitByteValue(&(hardware->registers->D), &(hardware->registers->E));
-	mappings->mappings[OpCode_POP_HL].destination = createGBSplitByteValue(&(hardware->registers->H), &(hardware->registers->L));
+	mappings->mappings[OpCode_POP_AF].destination = mappings->value_AF;
+	mappings->mappings[OpCode_POP_BC].destination = mappings->value_BC;
+	mappings->mappings[OpCode_POP_DE].destination = mappings->value_DE;
+	mappings->mappings[OpCode_POP_HL].destination = mappings->value_HL;
 
 	mappings->mappings[OpCode_PUSH_AF].destination =
 		mappings->mappings[OpCode_PUSH_BC].destination =
@@ -255,7 +255,7 @@ void populateLoadDestinations(InstructionMappingList *mappings) {
 		mappings->mappings[OpCode_PUSH_HL].destination = createGBSplitBytePointer(&(hardware->computedValues->stackMinusOneValue), &(hardware->computedValues->stackMinusTwoValue));
 }
 
-void populateLoadNextSPs(InstructionMappingList *mappings) {
+void populateLoadNextSPs(Hardware *hardware, InstructionMappingList *mappings) {
 
 	mappings->mappings[OpCode_POP_AF].nextSP =
 		mappings->mappings[OpCode_POP_BC].nextSP =

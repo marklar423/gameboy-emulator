@@ -92,8 +92,8 @@ InstructionMapping* initInstructionMappings(Hardware *hardware) {
 
 	populateJumpInstructions(hardware, mappingList);
 	populateLoadInstructions(hardware, mappingList);
-	populateALUInstructions(hardware, mappingList);
-	populateBitwiseInstructions(hardware, mappingList);
+	populateALUInstructions(mappingList);
+	populateBitwiseInstructions(mappingList);
 	populateCPUCycleCounts(mappingList);
 	populateCPUOpSizes(mappingList);
 
@@ -227,12 +227,14 @@ void processInstruction(Hardware *hardware, InstructionMapping *mapping, int ins
 
 			//special cases
 			if (instruction == OpCode_LD_A_MEM_HLI || instruction == OpCode_LD_MEM_HLI_A) {
-				hardware->computedValues->HL++;
-				splitBytes(hardware->computedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
+				int HL = joinBytes(hardware->registers->L, hardware->registers->H);
+				HL++;
+				splitBytes(HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_LD_A_MEM_HLD || instruction == OpCode_LD_MEM_HLD_A) {
-				hardware->computedValues->HL--;
-				splitBytes(hardware->computedValues->HL, &(hardware->registers->L), &(hardware->registers->H));
+				int HL = joinBytes(hardware->registers->L, hardware->registers->H);
+				HL--;
+				splitBytes(HL, &(hardware->registers->L), &(hardware->registers->H));
 			}
 			else if (instruction == OpCode_RETI) {
 				hardware->registers->globalInterruptsEnabled = true;
@@ -260,18 +262,18 @@ void populateComputedValues(Hardware *hardware, int nextPCAddressValue) {
 	cached->immediateByte = getImmediateByte(hardware, hardware->registers->PC + 1);
 	cached->immediateWord = getImmediateWord(hardware, hardware->registers->PC + 1);
 
-	cached->AF = joinBytes(hardware->registers->F, hardware->registers->A);
-	cached->BC = joinBytes(hardware->registers->C, hardware->registers->B);
-	cached->DE = joinBytes(hardware->registers->E, hardware->registers->D);
-	cached->HL = joinBytes(hardware->registers->L, hardware->registers->H);
+	int AF = joinBytes(hardware->registers->F, hardware->registers->A);
+	int BC = joinBytes(hardware->registers->C, hardware->registers->B);
+	int DE = joinBytes(hardware->registers->E, hardware->registers->D);
+	int HL = joinBytes(hardware->registers->L, hardware->registers->H);
 
 	cached->memoryImmediateWord = hardware->ramAddresses[cached->immediateWord];
 	cached->memoryImmediateWordPlusOne = hardware->ramAddresses[cached->immediateWord + 1];
 	cached->highMemoryImmediateByte = hardware->ramAddresses[0xFF00 + cached->immediateByte];
 	cached->highMemoryC = hardware->ramAddresses[0xFF00 + hardware->registers->C];
-	cached->memoryHL = hardware->ramAddresses[cached->HL];
-	cached->memoryBC = hardware->ramAddresses[cached->BC];
-	cached->memoryDE = hardware->ramAddresses[cached->DE];	
+	cached->memoryHL = hardware->ramAddresses[HL];
+	cached->memoryBC = hardware->ramAddresses[BC];
+	cached->memoryDE = hardware->ramAddresses[DE];	
 	cached->NextPCAddress = nextPCAddressValue;
 	cached->NextPCAddressPlusImmediateByteSigned = nextPCAddressValue + ((char)cached->immediateByte);
 	cached->SPMinusOne = hardware->registers->SP - 1;
