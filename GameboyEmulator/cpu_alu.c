@@ -551,7 +551,7 @@ void populateALUFlagResults(Hardware *hardware, InstructionMapping *mappings) {
 		mappings[OpCode_ADD_HL_HL].flagResult =
 		mappings[OpCode_ADD_HL_SP].flagResult = createFlagResult(NULL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
 
-	mappings[OpCode_ADD_SP_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
+	mappings[OpCode_ADD_SP_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), &(hardware->resultInfo->isAddCarry));
 
 	mappings[OpCode_CP_A].flagResult =
 		mappings[OpCode_CP_B].flagResult =
