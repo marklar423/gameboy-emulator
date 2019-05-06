@@ -120,10 +120,9 @@ void populateLoadOperands(Hardware *hardware, InstructionMappingList *mappings) 
 	mappings->mappings[OpCode_LD_A_MEM_DE].operand1 = mappings->value_memoryDE;
 
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand1 = mappings->value_SP;
-	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = mappings->value_immediateByteSigned;
-	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry16), &(hardware->resultInfo->isAddCarry16));
+	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].operand2 = mappings->value_immediateByteSigned;	
 	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].result = &hardware->operationResults->add;
-	mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), &(hardware->resultInfo->isAddCarry));
+	mappings->mappings[OpCode_LD_HL_SP_PLUS_r8].flagResult = createFlagResult(&FALSE_VAL, &FALSE_VAL, &(hardware->resultInfo->isAddHalfCarry), &(hardware->resultInfo->isAddCarry));
 
 	mappings->mappings[OpCode_POP_AF].operand1 =
 		mappings->mappings[OpCode_POP_BC].operand1 =
